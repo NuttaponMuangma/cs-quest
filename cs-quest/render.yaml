@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: cs-quest-game
+    env: node
+    region: singapore
+    buildCommand: cd server && npm install
+    startCommand: cd server && node server.js
+    envVars:
+      - key: PORT
+        value: 3000
+    healthCheckPath: /api/stats

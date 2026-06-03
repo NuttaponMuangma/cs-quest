@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS Quest — วิทยาการคำนวณ</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --green1:#2d5a1b;--green2:#3a7a24;--green3:#4a9a2e;--green4:#5cb83a;
+    --path:#8bc34a;--path2:#9ccc52;
+    --ui-bg:rgba(15,20,35,0.92);--ui-border:#4a6fa5;
+    --gold:#ffd700;--red:#e53935;--blue:#1976d2;
+  }
+  body{background:#1a1a2e;font-family:'Sarabun',sans-serif;overflow:hidden;
+       display:flex;flex-direction:column;height:100vh;width:100vw}
+
+  /* ===== SCREENS ===== */
+  .screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+          background:#0d1117;z-index:100}
+  .screen.hidden{display:none}
+
+  /* LOBBY */
+  #lobby{background:linear-gradient(135deg,#0d1117 0%,#1a1a2e 50%,#16213e 100%)}
+  .lobby-box{background:rgba(255,255,255,0.05);border:1px solid #4a6fa5;
+             border-radius:16px;padding:2rem 2.5rem;width:420px;text-align:center}
+  .game-logo{font-size:2.2rem;font-weight:700;color:#ffd700;margin-bottom:.3rem;
+             text-shadow:0 0 20px rgba(255,215,0,0.5)}
+  .game-sub{color:#8899aa;font-size:.95rem;margin-bottom:1.5rem}
+  .lobby-box input,.lobby-box select{
+    width:100%;padding:.6rem .9rem;border-radius:8px;
+    border:1px solid #4a6fa5;background:rgba(255,255,255,0.07);
+    color:#fff;font-size:1rem;font-family:'Sarabun',sans-serif;
+    margin-bottom:.75rem;outline:none;transition:border-color .2s}
+  .lobby-box input:focus,.lobby-box select:focus{border-color:#ffd700}
+  .lobby-box select option{background:#1a1a2e;color:#fff}
+  .label{color:#aab;font-size:.85rem;text-align:left;margin-bottom:.3rem;display:block}
+
+  /* Avatar picker */
+  .avatar-row{display:flex;gap:8px;justify-content:center;margin-bottom:1rem}
+  .av-btn{width:52px;height:52px;border-radius:10px;border:2px solid transparent;
+          background:rgba(255,255,255,0.08);cursor:pointer;font-size:1.6rem;
+          transition:all .2s;display:flex;align-items:center;justify-content:center}
+  .av-btn:hover{background:rgba(255,255,255,0.15)}
+  .av-btn.selected{border-color:#ffd700;background:rgba(255,215,0,0.15)}
+
+  /* Level cards */
+  .level-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem}
+  .lvl-card{border-radius:10px;border:1px solid rgba(255,255,255,0.1);padding:.6rem;
+            cursor:pointer;transition:all .2s;text-align:left}
+  .lvl-card:hover{transform:translateY(-2px)}
+  .lvl-card.selected{outline:2px solid #ffd700}
+  .lvl-card .lvl-name{font-size:.8rem;font-weight:600;color:#fff}
+  .lvl-card .lvl-desc{font-size:.72rem;color:rgba(255,255,255,0.6);margin-top:2px}
+
+  .btn-start{width:100%;padding:.75rem;border-radius:8px;border:none;
+             background:linear-gradient(135deg,#ffd700,#ff8c00);
+             color:#1a1a2e;font-size:1.1rem;font-weight:700;font-family:'Sarabun',sans-serif;
+             cursor:pointer;transition:all .2s;margin-top:.5rem}
+  .btn-start:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(255,215,0,0.4)}
+  .conn-status{font-size:.8rem;color:#888;margin-top:.75rem}
+  #conn-dot{display:inline-block;width:8px;height:8px;border-radius:50%;
+            background:#888;margin-right:5px;transition:background .3s}
+  #conn-dot.connected{background:#4caf50}
+  #conn-dot.connecting{background:#ff9800}
+
+  /* ===== GAME CANVAS AREA ===== */
+  #game-area{position:relative;width:100vw;height:100vh;overflow:hidden}
+  canvas{display:block;image-rendering:pixelated}
+  #gameCanvas{position:absolute;top:0;left:0}
+
+  /* ===== HUD ===== */
+  #hud{position:fixed;top:0;left:0;right:0;height:50px;
+       background:var(--ui-bg);border-bottom:1px solid var(--ui-border);
+       display:flex;align-items:center;padding:0 1rem;gap:1rem;z-index:50}
+  #hud-name{color:#ffd700;font-weight:700;font-size:.95rem}
+  #hud-score{color:#fff;font-size:.95rem}
+  .hud-sep{width:1px;height:24px;background:rgba(255,255,255,0.2)}
+  #hud-level{color:#aab;font-size:.85rem}
+  #hud-players{color:#8bc34a;font-size:.85rem;margin-left:auto}
+  #hud-ping{color:#666;font-size:.75rem}
+
+  /* ===== LEADERBOARD ===== */
+  #leaderboard{position:fixed;top:60px;right:10px;width:200px;
+               background:var(--ui-bg);border:1px solid var(--ui-border);
+               border-radius:10px;padding:.75rem;z-index:50}
+  #leaderboard h3{color:#ffd700;font-size:.8rem;margin-bottom:.5rem;
+                  text-align:center;letter-spacing:.5px}
+  #lb-list{list-style:none}
+  #lb-list li{display:flex;align-items:center;gap:6px;padding:3px 0;
+              font-size:.78rem;color:#ccc;border-bottom:1px solid rgba(255,255,255,0.05)}
+  #lb-list li:last-child{border:none}
+  .lb-rank{color:#888;width:16px;text-align:center;font-size:.7rem}
+  .lb-rank.gold{color:#ffd700}
+  .lb-rank.silver{color:#c0c0c0}
+  .lb-rank.bronze{color:#cd7f32}
+  .lb-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lb-score{color:#ffd700;font-weight:600;font-size:.8rem}
+  .lb-self{color:#fff!important;font-weight:600}
+
+  /* ===== NPC DIALOG ===== */
+  #dialog{position:fixed;bottom:0;left:0;right:0;
+          background:var(--ui-bg);border-top:2px solid var(--ui-border);
+          padding:1rem 1.5rem;z-index:60;transform:translateY(100%);
+          transition:transform .3s ease;max-height:55vh;overflow-y:auto}
+  #dialog.show{transform:translateY(0)}
+  #dialog-npc{color:#ffd700;font-weight:700;font-size:1rem;margin-bottom:.4rem}
+  #dialog-text{color:#e0e0e0;font-size:.95rem;line-height:1.6;margin-bottom:.8rem}
+  #quiz-area{display:none}
+  #quiz-q{color:#fff;font-size:1rem;font-weight:600;margin-bottom:.75rem;line-height:1.5}
+  .quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+  .opt-btn{padding:.6rem .8rem;border-radius:8px;border:1px solid rgba(255,255,255,0.2);
+           background:rgba(255,255,255,0.05);color:#fff;font-family:'Sarabun',sans-serif;
+           font-size:.88rem;cursor:pointer;text-align:left;transition:all .15s;line-height:1.4}
+  .opt-btn:hover:not(:disabled){background:rgba(74,111,165,0.4);border-color:#4a6fa5}
+  .opt-btn.correct{background:rgba(76,175,80,0.3);border-color:#4caf50;color:#a5d6a7}
+  .opt-btn.wrong{background:rgba(229,57,53,0.3);border-color:#e53935;color:#ef9a9a}
+  .opt-btn.reveal{background:rgba(76,175,80,0.15);border-color:#4caf50}
+  #quiz-explain{color:#aab;font-size:.85rem;margin-top:.6rem;display:none;line-height:1.5}
+  #quiz-score-pop{color:#ffd700;font-weight:700;font-size:1.1rem;display:none;margin-top:.5rem}
+  #dialog-close{padding:.5rem 1.5rem;border-radius:8px;border:1px solid #4a6fa5;
+                background:transparent;color:#aab;font-family:'Sarabun',sans-serif;
+                cursor:pointer;font-size:.9rem;margin-top:.5rem;display:none}
+  #dialog-close:hover{background:rgba(74,111,165,0.3)}
+
+  /* ===== CHAT ===== */
+  #chat-wrap{position:fixed;bottom:0;left:10px;width:280px;z-index:55}
+  #chat-log{background:rgba(0,0,0,0.5);border-radius:8px 8px 0 0;
+            padding:.5rem;max-height:120px;overflow-y:auto;
+            display:flex;flex-direction:column;gap:3px}
+  .chat-msg{font-size:.75rem;color:#ccc;line-height:1.3}
+  .chat-msg .cn{color:#ffd700;font-weight:600}
+  .chat-msg.sys{color:#8bc34a;font-style:italic}
+  #chat-input-row{display:flex;gap:4px}
+  #chat-in{flex:1;background:rgba(0,0,0,0.6);border:1px solid #4a6fa5;
+            border-radius:0 0 0 8px;color:#fff;font-family:'Sarabun',sans-serif;
+            font-size:.8rem;padding:.35rem .6rem;outline:none}
+  #chat-send{padding:.35rem .7rem;background:#4a6fa5;border:none;
+             color:#fff;border-radius:0 0 8px 0;cursor:pointer;font-size:.8rem}
+
+  /* MINIMAP */
+  #minimap{position:fixed;bottom:10px;right:10px;z-index:50;border-radius:8px;
+           border:1px solid var(--ui-border);overflow:hidden}
+
+  /* Controls hint */
+  #controls-hint{position:fixed;top:60px;left:10px;color:rgba(255,255,255,0.4);
+                 font-size:.72rem;line-height:1.6;z-index:50;pointer-events:none}
+
+  /* Level complete banner */
+  #lvl-banner{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);
+              background:rgba(15,20,35,0.97);border:2px solid #ffd700;border-radius:16px;
+              padding:2rem 3rem;text-align:center;z-index:80;transition:transform .3s ease}
+  #lvl-banner.show{transform:translate(-50%,-50%) scale(1)}
+  #lvl-banner h2{color:#ffd700;font-size:1.8rem;margin-bottom:.5rem}
+  #lvl-banner p{color:#ccc;font-size:1rem;margin-bottom:1rem}
+  #lvl-banner button{padding:.6rem 2rem;border-radius:8px;border:none;
+                      background:#ffd700;color:#1a1a2e;font-weight:700;
+                      font-family:'Sarabun',sans-serif;cursor:pointer;font-size:1rem}
+
+  /* Mobile joystick */
+  #joystick-area{display:none;position:fixed;bottom:80px;left:20px;z-index:55}
+  @media(max-width:768px){#joystick-area{display:block}}
+  #joystick-base{width:100px;height:100px;border-radius:50%;
+                 background:rgba(255,255,255,0.1);border:2px solid rgba(255,255,255,0.2);
+                 position:relative}
+  #joystick-knob{width:44px;height:44px;border-radius:50%;
+                 background:rgba(255,255,255,0.3);position:absolute;
+                 top:50%;left:50%;transform:translate(-50%,-50%)}
+</style>
+</head>
+<body>
+
+<!-- ===== LOBBY SCREEN ===== -->
+<div id="lobby" class="screen">
+  <div class="lobby-box">
+    <div class="game-logo">⚔️ CS Quest</div>
+    <div class="game-sub">วิทยาการคำนวณ ม.1 — RPG สำรวจความรู้</div>
+
+    <label class="label">ชื่อผู้เล่น</label>
+    <input id="inp-name" type="text" maxlength="16" placeholder="กรอกชื่อของคุณ..." />
+
+    <label class="label">เลือกตัวละคร</label>
+    <div class="avatar-row" id="avatar-row">
+      <button class="av-btn selected" data-av="0">🧑</button>
+      <button class="av-btn" data-av="1">👧</button>
+      <button class="av-btn" data-av="2">🧒</button>
+      <button class="av-btn" data-av="3">👦</button>
+      <button class="av-btn" data-av="4">🧙</button>
+      <button class="av-btn" data-av="5">🧝</button>
+    </div>
+
+    <label class="label">เลือกด่านการเรียนรู้</label>
+    <div class="level-grid" id="level-grid"></div>
+
+    <label class="label" style="margin-bottom:.3rem">รหัสห้อง (ว่างไว้ = ห้องกลาง)</label>
+    <input id="inp-room" type="text" maxlength="12" placeholder="เช่น class-101" />
+
+    <button class="btn-start" id="btn-start">🎮 เข้าสู่เกม</button>
+    <div class="conn-status">
+      <span id="conn-dot"></span><span id="conn-text">กำลังเชื่อมต่อ...</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== GAME AREA ===== -->
+<div id="game-area" class="hidden" style="display:none">
+  <canvas id="gameCanvas"></canvas>
+
+  <!-- HUD -->
+  <div id="hud">
+    <span id="hud-av" style="font-size:1.3rem"></span>
+    <span id="hud-name">ผู้เล่น</span>
+    <div class="hud-sep"></div>
+    <span id="hud-level">ด่าน —</span>
+    <div class="hud-sep"></div>
+    <span>⭐</span><span id="hud-score">0</span>
+    <span id="hud-players" style="margin-left:auto">👥 1</span>
+    <span class="hud-sep"></span>
+    <span id="hud-ping">— ms</span>
+  </div>
+
+  <!-- Leaderboard -->
+  <div id="leaderboard">
+    <h3>🏆 อันดับ</h3>
+    <ul id="lb-list"></ul>
+  </div>
+
+  <!-- Controls -->
+  <div id="controls-hint">WASD / ลูกศร = เดิน<br>Space / E = คุยกับ NPC<br>Enter = แชท</div>
+
+  <!-- NPC Dialog -->
+  <div id="dialog">
+    <div id="dialog-npc"></div>
+    <div id="dialog-text"></div>
+    <div id="quiz-area">
+      <div id="quiz-q"></div>
+      <div class="quiz-opts" id="quiz-opts"></div>
+      <div id="quiz-explain"></div>
+      <div id="quiz-score-pop"></div>
+    </div>
+    <button id="dialog-close" onclick="closeDialog()">ปิด ✕</button>
+  </div>
+
+  <!-- Chat -->
+  <div id="chat-wrap">
+    <div id="chat-log"></div>
+    <div id="chat-input-row">
+      <input id="chat-in" type="text" maxlength="60" placeholder="พิมพ์ข้อความ..." />
+      <button id="chat-send">ส่ง</button>
+    </div>
+  </div>
+
+  <!-- Minimap -->
+  <canvas id="minimap" width="120" height="90"></canvas>
+
+  <!-- Level complete banner -->
+  <div id="lvl-banner">
+    <h2 id="lvl-banner-title">🎉 ผ่านด่านแล้ว!</h2>
+    <p id="lvl-banner-msg">คุณตอบคำถามครบทั้งหมดแล้ว</p>
+    <button onclick="closeLevelBanner()">ต่อไป →</button>
+  </div>
+
+  <!-- Mobile Joystick -->
+  <div id="joystick-area">
+    <div id="joystick-base"><div id="joystick-knob"></div></div>
+  </div>
+</div>
+
+<script src="questions.js"></script>
+<script>
+// ==================== CONFIG ====================
+const WS_URL = (() => {
+  const h = window.location.hostname;
+  const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const port = window.location.port;
+  if(h === 'localhost' || h === '127.0.0.1'){
+    return `ws://${h}:${port||3000}`;
+  }
+  return `${proto}//${h}${port?':'+port:''}`;
+})();
+
+const TILE = 32;
+const MAP_W = 40, MAP_H = 30;
+const CANVAS_W = MAP_W * TILE, CANVAS_H = MAP_H * TILE;
+const AVATARS = ['🧑','👧','🧒','👦','🧙','🧝'];
+const COLORS_AVATAR = ['#ff6b6b','#e91e63','#ff9800','#2196f3','#9c27b0','#4caf50'];
+const NPC_INTERACT_DIST = 64;
+const SEND_RATE = 50;
+
+// ==================== STATE ====================
+let ws = null;
+let selfId = null;
+let players = {};
+let myScore = 0;
+let selectedLevel = 1;
+let selectedAvatar = 0;
+let dialogOpen = false;
+let currentNPC = null;
+let currentQIdx = 0;
+let answeredNPCs = new Set();
+let pingStart = 0, pingMs = 0;
+let lastSent = 0;
+let levelData = null;
+
+// Map tiles: 0=grass, 1=path, 2=wall/tree, 3=water, 4=flower
+let mapTiles = [];
+let npcDefs = [];
+
+const keys = {};
+
+// Player data
+let me = {
+  id:null, name:'', avatar:0,
+  x:200, y:200, vx:0, vy:0,
+  direction:'down', moving:false, score:0
+};
+
+// ==================== LOBBY SETUP ====================
+function buildLobby(){
+  const grid = document.getElementById('level-grid');
+  grid.innerHTML = '';
+  Object.entries(QUESTIONS).forEach(([id,lv])=>{
+    const d = document.createElement('div');
+    d.className = 'lvl-card' + (id==1?' selected':'');
+    d.style.background = `linear-gradient(135deg, ${lv.color}22, ${lv.color}44)`;
+    d.style.borderColor = lv.color+'55';
+    d.innerHTML = `<div class="lvl-name" style="color:${lv.color}">${lv.name}</div>
+                   <div class="lvl-desc">${lv.questions.length} คำถาม</div>`;
+    d.dataset.id = id;
+    d.onclick = ()=>{
+      document.querySelectorAll('.lvl-card').forEach(c=>c.classList.remove('selected'));
+      d.classList.add('selected');
+      selectedLevel = parseInt(id);
+    };
+    grid.appendChild(d);
+  });
+
+  document.querySelectorAll('.av-btn').forEach(btn=>{
+    btn.onclick=()=>{
+      document.querySelectorAll('.av-btn').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedAvatar = parseInt(btn.dataset.av);
+    };
+  });
+
+  document.getElementById('btn-start').onclick = startGame;
+  document.getElementById('inp-name').addEventListener('keydown',e=>{
+    if(e.key==='Enter') startGame();
+  });
+}
+
+// ==================== WEBSOCKET ====================
+function connectWS(){
+  try{
+    ws = new WebSocket(WS_URL);
+    document.getElementById('conn-dot').className = 'connecting';
+    document.getElementById('conn-text').textContent = 'กำลังเชื่อมต่อ...';
+
+    ws.onopen = ()=>{
+      document.getElementById('conn-dot').className = 'connected';
+      document.getElementById('conn-text').textContent = 'เชื่อมต่อสำเร็จ ✓';
+    };
+
+    ws.onmessage = e => handleServerMsg(JSON.parse(e.data));
+
+    ws.onclose = ()=>{
+      document.getElementById('conn-dot').className = '';
+      document.getElementById('conn-text').textContent = 'ขาดการเชื่อมต่อ — รีเฟรชเพื่อลองใหม่';
+      addChat('ขาดการเชื่อมต่อกับเซิร์ฟเวอร์','sys');
+    };
+
+    ws.onerror = ()=>{
+      document.getElementById('conn-dot').className = '';
+      document.getElementById('conn-text').textContent = 'เชื่อมต่อไม่ได้ — ตรวจสอบ server';
+    };
+  } catch(e){
+    document.getElementById('conn-text').textContent = 'WebSocket ไม่พร้อมใช้งาน';
+  }
+}
+
+function wsSend(type, payload){
+  if(ws && ws.readyState === WebSocket.OPEN){
+    ws.send(JSON.stringify({type, payload}));
+  }
+}
+
+function handleServerMsg(msg){
+  const {type, payload} = msg;
+  switch(type){
+    case 'INIT':
+      selfId = payload.selfId;
+      me.id = selfId;
+      payload.players.forEach(p=>{ if(p.id!==selfId) players[p.id]=p; });
+      updateLeaderboard(payload.leaderboard);
+      updatePlayerCount();
+      break;
+
+    case 'PLAYER_JOINED':
+      if(payload.id !== selfId){
+        players[payload.id] = payload;
+        addChat(`${payload.name} เข้าร่วมเกม 🎉`,'sys');
+        updatePlayerCount();
+      }
+      break;
+
+    case 'PLAYER_LEFT':
+      delete players[payload.id];
+      addChat(`${payload.name} ออกจากเกม`,'sys');
+      updatePlayerCount();
+      break;
+
+    case 'PLAYER_MOVED':
+      if(payload.id !== selfId && players[payload.id]){
+        const p = players[payload.id];
+        p.x = payload.x; p.y = payload.y;
+        p.direction = payload.direction;
+        p.moving = payload.moving;
+      }
+      break;
+
+    case 'SCORE_UPDATE':
+      myScore = payload.score;
+      me.score = myScore;
+      document.getElementById('hud-score').textContent = myScore;
+      break;
+
+    case 'LEADERBOARD':
+      updateLeaderboard(payload.leaderboard);
+      break;
+
+    case 'CHAT_MSG':
+      addChat(payload.text, 'user', payload.name, payload.id===selfId);
+      showBubble(payload.id, payload.text);
+      break;
+
+    case 'PONG':
+      pingMs = Date.now()-pingStart;
+      document.getElementById('hud-ping').textContent = pingMs+'ms';
+      break;
+  }
+}
+
+// ==================== MAP GENERATION ====================
+function generateMap(lvl){
+  const q = QUESTIONS[lvl];
+  mapTiles = [];
+  for(let y=0;y<MAP_H;y++){
+    mapTiles[y]=[];
+    for(let x=0;x<MAP_W;x++){
+      if(x===0||y===0||x===MAP_W-1||y===MAP_H-1) mapTiles[y][x]=2;
+      else mapTiles[y][x]=0;
+    }
+  }
+
+  // Main paths
+  const paths=[
+    {x1:2,y1:2,x2:MAP_W-3,y2:2},
+    {x1:2,y1:MAP_H-3,x2:MAP_W-3,y2:MAP_H-3},
+    {x1:2,y1:2,x2:2,y2:MAP_H-3},
+    {x1:MAP_W-3,y1:2,x2:MAP_W-3,y2:MAP_H-3},
+    {x1:MAP_W/2|0,y1:2,x2:MAP_W/2|0,y2:MAP_H-3},
+    {x1:2,y1:MAP_H/2|0,x2:MAP_W-3,y2:MAP_H/2|0},
+    {x1:8,y1:2,x2:8,y2:MAP_H/2|0},
+    {x1:MAP_W-9,y1:MAP_H/2|0,x2:MAP_W-9,y2:MAP_H-3},
+    {x1:2,y1:7,x2:MAP_W/2|0,y2:7},
+    {x1:MAP_W/2|0,y1:MAP_H-8,x2:MAP_W-3,y2:MAP_H-8},
+  ];
+
+  paths.forEach(p=>{
+    const xs=Math.min(p.x1,p.x2), xe=Math.max(p.x1,p.x2);
+    const ys=Math.min(p.y1,p.y2), ye=Math.max(p.y1,p.y2);
+    for(let y=ys;y<=ye;y++) for(let x=xs;x<=xe;x++){
+      if(y>0&&y<MAP_H-1&&x>0&&x<MAP_W-1) mapTiles[y][x]=1;
+    }
+  });
+
+  // Path widths +1
+  const pathCopy=mapTiles.map(r=>[...r]);
+  for(let y=1;y<MAP_H-1;y++) for(let x=1;x<MAP_W-1;x++){
+    if(pathCopy[y][x]===1){
+      mapTiles[y][x]=1;
+      if(y+1<MAP_H-1) mapTiles[y+1][x]=1;
+      if(x+1<MAP_W-1) mapTiles[y][x+1]=1;
+    }
+  }
+
+  // Scatter trees on grass edges
+  for(let y=1;y<MAP_H-1;y++) for(let x=1;x<MAP_W-1;x++){
+    if(mapTiles[y][x]===0 && Math.random()<0.12) mapTiles[y][x]=2;
+  }
+
+  // Flowers
+  for(let y=1;y<MAP_H-1;y++) for(let x=1;x<MAP_W-1;x++){
+    if(mapTiles[y][x]===0 && Math.random()<0.05) mapTiles[y][x]=4;
+  }
+
+  // NPC positions (on path tiles near interesting spots)
+  npcDefs = [];
+  const npcSpots=[
+    {x:3*TILE,y:3*TILE},{x:(MAP_W-4)*TILE,y:3*TILE},
+    {x:3*TILE,y:(MAP_H-4)*TILE},{x:(MAP_W-4)*TILE,y:(MAP_H-4)*TILE},
+    {x:(MAP_W/2|0)*TILE,y:5*TILE},
+  ];
+
+  const numNPCs = Math.min(q.questions.length, npcSpots.length);
+  for(let i=0;i<numNPCs;i++){
+    npcDefs.push({
+      id: i,
+      x: npcSpots[i].x,
+      y: npcSpots[i].y,
+      name: q.npcName,
+      qIdx: i,
+      color: q.color,
+      bubble: null,
+      bubbleTimer: 0
+    });
+    // Clear tile under NPC
+    const tx=npcSpots[i].x/TILE|0, ty=npcSpots[i].y/TILE|0;
+    if(ty>0&&ty<MAP_H-1&&tx>0&&tx<MAP_W-1) mapTiles[ty][tx]=1;
+  }
+
+  // Spawn point
+  me.x=(MAP_W/2|0)*TILE + 16;
+  me.y=(MAP_H/2|0)*TILE + 16;
+}
+
+function isSolid(x,y){
+  const tx=(x/TILE)|0, ty=(y/TILE)|0;
+  if(tx<0||ty<0||tx>=MAP_W||ty>=MAP_H) return true;
+  const t=mapTiles[ty]?.[tx];
+  return t===2;
+}
+
+// ==================== DRAWING ====================
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const mmCanvas = document.getElementById('minimap');
+const mmCtx = mmCanvas.getContext('2d');
+
+// Camera
+let camX=0, camY=0;
+
+const TILE_COLORS = {
+  0:['#4a7c2f','#3d6b28'],  // grass variants
+  1:['#8bc34a','#9ccc52'],  // path
+  2:['#2d5a1b','#1e3d12'],  // tree/wall
+  3:['#1565c0','#1976d2'],  // water
+  4:['#4a7c2f','#3d6b28'],  // flower base
+};
+
+let animFrame=0;
+const bubbles = {}; // playerId -> {text,timer}
+
+function drawTile(x,y,t){
+  const px=x*TILE-camX, py=y*TILE-camY;
+  if(px<-TILE||py<-TILE||px>canvas.width||py>canvas.height) return;
+  const c=TILE_COLORS[t]||['#4a7c2f','#3d6b28'];
+  ctx.fillStyle = c[(x+y)%2];
+  ctx.fillRect(px,py,TILE,TILE);
+  if(t===2){
+    // Tree
+    ctx.fillStyle='#1e3d12';
+    ctx.fillRect(px+2,py+2,TILE-4,TILE-4);
+    ctx.fillStyle='#2d5a1b';
+    ctx.fillRect(px+4,py+4,TILE-8,TILE-10);
+    ctx.fillStyle='#8B4513';
+    ctx.fillRect(px+TILE/2-3,py+TILE-8,6,8);
+  } else if(t===4){
+    // Flower
+    ctx.fillStyle=['#ff6b6b','#ffeb3b','#e91e63'][(x*3+y*7)%3];
+    ctx.beginPath();
+    ctx.arc(px+TILE/2,py+TILE/2,4,0,Math.PI*2);
+    ctx.fill();
+  } else if(t===3){
+    ctx.fillStyle='rgba(255,255,255,0.1)';
+    ctx.fillRect(px+(animFrame%20),py,TILE/3,TILE);
+  }
+}
+
+function drawNPC(npc){
+  const px=npc.x-camX, py=npc.y-camY;
+  if(px<-60||py<-60||px>canvas.width+60||py>canvas.height+60) return;
+
+  const answered=answeredNPCs.has(npc.id);
+  const dist=Math.hypot(me.x-npc.x,me.y-npc.y);
+  const nearby=dist<NPC_INTERACT_DIST*1.5;
+
+  // Shadow
+  ctx.fillStyle='rgba(0,0,0,0.2)';
+  ctx.beginPath();
+  ctx.ellipse(px+16,py+30,12,4,0,0,Math.PI*2);
+  ctx.fill();
+
+  // Body
+  ctx.fillStyle=npc.color;
+  ctx.beginPath();
+  ctx.roundRect(px+4,py+14,24,18,4);
+  ctx.fill();
+
+  // Head
+  ctx.fillStyle='#ffcc80';
+  ctx.beginPath();
+  ctx.arc(px+16,py+10,10,0,Math.PI*2);
+  ctx.fill();
+
+  // Eyes
+  ctx.fillStyle='#333';
+  ctx.fillRect(px+10,py+8,3,3);
+  ctx.fillRect(px+19,py+8,3,3);
+
+  // Smile
+  ctx.strokeStyle='#333'; ctx.lineWidth=1.5;
+  ctx.beginPath();
+  ctx.arc(px+16,py+11,4,0.2,Math.PI-0.2);
+  ctx.stroke();
+
+  // ! or check indicator
+  if(!answered && nearby){
+    ctx.fillStyle='#ffd700';
+    ctx.font='bold 18px sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText('!', px+16, py-4);
+  } else if(answered){
+    ctx.fillStyle='#4caf50';
+    ctx.font='16px sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText('✓', px+16, py-4);
+  }
+
+  // Name tag
+  ctx.fillStyle='rgba(0,0,0,0.6)';
+  ctx.fillRect(px+16-28,py-22,56,14);
+  ctx.fillStyle='#ffd700';
+  ctx.font='10px Sarabun,sans-serif';
+  ctx.textAlign='center';
+  ctx.fillText(npc.name, px+16, py-11);
+}
+
+function drawPlayer(p, isSelf){
+  const px=p.x-camX, py=p.y-camY;
+  if(px<-60||py<-60||px>canvas.width+60||py>canvas.height+60) return;
+
+  const av=p.avatar||0;
+  const col=COLORS_AVATAR[av%COLORS_AVATAR.length];
+  const bob=isSelf&&p.moving ? Math.sin(animFrame*0.3)*2 : 0;
+  const py2=py+bob;
+
+  // Shadow
+  ctx.fillStyle='rgba(0,0,0,0.25)';
+  ctx.beginPath();
+  ctx.ellipse(px+16,py2+30,10,4,0,0,Math.PI*2);
+  ctx.fill();
+
+  // Body
+  ctx.fillStyle=col;
+  ctx.beginPath();
+  ctx.roundRect(px+6,py2+14,20,18,3);
+  ctx.fill();
+
+  // Head
+  ctx.fillStyle='#ffcc80';
+  ctx.beginPath();
+  ctx.arc(px+16,py2+10,9,0,Math.PI*2);
+  ctx.fill();
+
+  // Hair style by avatar
+  ctx.fillStyle=['#5d4037','#e91e63','#ff9800','#1565c0','#6a1b9a','#2e7d32'][av];
+  if(av===1||av===5){
+    ctx.fillRect(px+6,py2+1,20,8);
+    ctx.fillRect(px+4,py2+5,4,10);
+    ctx.fillRect(px+24,py2+5,4,10);
+  } else if(av===4){
+    ctx.beginPath();
+    ctx.arc(px+16,py2+8,10,Math.PI,0);
+    ctx.fill();
+    ctx.fillRect(px+6,py2+1,4,12);
+    ctx.fillRect(px+22,py2+1,4,12);
+  } else {
+    ctx.fillRect(px+7,py2+2,18,7);
+  }
+
+  // Eyes
+  ctx.fillStyle='#333';
+  if(p.direction==='up'){
+    // Back of head
+  } else {
+    ctx.fillRect(px+10,py2+8,3,3);
+    ctx.fillRect(px+19,py2+8,3,3);
+  }
+
+  // Self indicator ring
+  if(isSelf){
+    ctx.strokeStyle='#ffd700';
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.arc(px+16,py2+10,11,0,Math.PI*2);
+    ctx.stroke();
+  }
+
+  // Name tag
+  const nm=p.name||'?';
+  ctx.fillStyle='rgba(0,0,0,0.7)';
+  ctx.fillRect(px+16-nm.length*3.5-4, py2-22, nm.length*7+8, 14);
+  ctx.fillStyle=isSelf?'#ffd700':'#fff';
+  ctx.font='10px Sarabun,sans-serif';
+  ctx.textAlign='center';
+  ctx.fillText(nm, px+16, py2-11);
+
+  // Chat bubble
+  const bub=bubbles[p.id||'self'];
+  if(bub && bub.timer>0){
+    const bx=px+16, by=py2-36;
+    const tw=ctx.measureText(bub.text).width+10;
+    ctx.fillStyle='rgba(255,255,255,0.9)';
+    ctx.beginPath();
+    ctx.roundRect(bx-tw/2,by-14,tw,18,5);
+    ctx.fill();
+    ctx.fillStyle='#222';
+    ctx.font='10px Sarabun,sans-serif';
+    ctx.fillText(bub.text.slice(0,20),bx,by);
+    bub.timer--;
+  }
+}
+
+function drawMinimap(){
+  mmCtx.clearRect(0,0,120,90);
+  mmCtx.fillStyle='rgba(0,0,0,0.7)';
+  mmCtx.fillRect(0,0,120,90);
+  const sw=120/MAP_W, sh=90/MAP_H;
+  for(let y=0;y<MAP_H;y++) for(let x=0;x<MAP_W;x++){
+    const t=mapTiles[y]?.[x];
+    mmCtx.fillStyle=t===2?'#1e3d12':t===1?'#7cb342':'#3d6b28';
+    mmCtx.fillRect(x*sw,y*sh,sw,sh);
+  }
+  // NPC dots
+  npcDefs.forEach(n=>{
+    mmCtx.fillStyle=answeredNPCs.has(n.id)?'#4caf50':'#ffd700';
+    mmCtx.fillRect(n.x/TILE*sw-1,n.y/TILE*sh-1,4,4);
+  });
+  // Other players
+  Object.values(players).forEach(p=>{
+    mmCtx.fillStyle='#90caf9';
+    mmCtx.fillRect(p.x/TILE*sw-1,p.y/TILE*sh-1,3,3);
+  });
+  // Self
+  mmCtx.fillStyle='#ffd700';
+  mmCtx.fillRect(me.x/TILE*sw-1,me.y/TILE*sh-1,4,4);
+}
+
+// ==================== GAME LOOP ====================
+let lastTime=0;
+function gameLoop(ts){
+  const dt=Math.min((ts-lastTime)/1000, 0.05);
+  lastTime=ts;
+  animFrame++;
+
+  update(dt);
+  render();
+
+  requestAnimationFrame(gameLoop);
+}
+
+function update(dt){
+  if(dialogOpen) return;
+
+  const speed=120;
+  let vx=0,vy=0;
+  if(keys['ArrowLeft']||keys['KeyA']) vx=-1;
+  if(keys['ArrowRight']||keys['KeyD']) vx=1;
+  if(keys['ArrowUp']||keys['KeyW']) vy=-1;
+  if(keys['ArrowDown']||keys['KeyS']) vy=1;
+
+  if(vx!==0&&vy!==0){vx*=0.707;vy*=0.707;}
+
+  const nx=me.x+vx*speed*dt;
+  const ny=me.y+vy*speed*dt;
+  const r=10;
+
+  // Collision checks
+  let canX=!isSolid(nx-r,me.y)&&!isSolid(nx+r,me.y)&&!isSolid(nx-r,me.y+r*2)&&!isSolid(nx+r,me.y+r*2);
+  let canY=!isSolid(me.x-r,ny)&&!isSolid(me.x+r,ny)&&!isSolid(me.x-r,ny+r*2)&&!isSolid(me.x+r,ny+r*2);
+  let canXY=canX&&canY;
+
+  const margin=r;
+  if(nx>=margin&&nx<=CANVAS_W-margin && canX) me.x=nx;
+  if(ny>=margin&&ny<=CANVAS_H-margin && canY) me.y=ny;
+
+  if(vx<0) me.direction='left';
+  else if(vx>0) me.direction='right';
+  else if(vy<0) me.direction='up';
+  else if(vy>0) me.direction='down';
+
+  me.moving=(vx!==0||vy!==0);
+
+  // Send position
+  if(Date.now()-lastSent>SEND_RATE){
+    wsSend('MOVE',{x:me.x,y:me.y,direction:me.direction,moving:me.moving});
+    lastSent=Date.now();
+  }
+
+  // Camera follow
+  const cw=canvas.width, ch=canvas.height;
+  camX=Math.max(0,Math.min(me.x-cw/2, CANVAS_W-cw));
+  camY=Math.max(0,Math.min(me.y-ch/2, CANVAS_H-ch));
+
+  // NPC proximity check
+  for(const npc of npcDefs){
+    const dist=Math.hypot(me.x-npc.x-16,me.y-npc.y-16);
+    if(dist<NPC_INTERACT_DIST && !answeredNPCs.has(npc.id) && !dialogOpen){
+      if(keys['Space']||keys['KeyE']){
+        keys['Space']=false; keys['KeyE']=false;
+        openDialog(npc);
+        break;
+      }
+    }
+  }
+
+  // Ping every 5s
+  if(animFrame%300===0){
+    pingStart=Date.now();
+    wsSend('PING',{});
+  }
+}
+
+function render(){
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // Background fill
+  ctx.fillStyle='#2d5a1b';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  // Tiles
+  const tx0=Math.max(0,(camX/TILE)|0)-1;
+  const ty0=Math.max(0,(camY/TILE)|0)-1;
+  const tx1=Math.min(MAP_W,tx0+Math.ceil(canvas.width/TILE)+3);
+  const ty1=Math.min(MAP_H,ty0+Math.ceil(canvas.height/TILE)+3);
+  for(let y=ty0;y<ty1;y++) for(let x=tx0;x<tx1;x++){
+    drawTile(x,y,mapTiles[y]?.[x]||0);
+  }
+
+  // NPCs
+  npcDefs.forEach(n=>drawNPC(n));
+
+  // Other players (sorted by y)
+  const allPlayers=[...Object.values(players),{...me,id:me.id||'self',isSelf:true}];
+  allPlayers.sort((a,b)=>a.y-b.y);
+  allPlayers.forEach(p=>drawPlayer(p,p.id===me.id||p.isSelf));
+
+  // Minimap
+  drawMinimap();
+}
+
+// ==================== DIALOG / QUIZ ====================
+function openDialog(npc){
+  dialogOpen=true;
+  currentNPC=npc;
+  const lv=QUESTIONS[selectedLevel];
+  const q=lv.questions[npc.qIdx];
+  currentQIdx=npc.qIdx;
+
+  document.getElementById('dialog-npc').innerHTML=`${npc.name} 💬`;
+  document.getElementById('dialog-text').textContent=`สวัสดี! ฉันจะถามคำถามเรื่อง "${lv.name}" ให้คุณ`;
+  document.getElementById('quiz-area').style.display='block';
+  document.getElementById('quiz-q').textContent=`❓ ${q.q}`;
+  document.getElementById('quiz-explain').style.display='none';
+  document.getElementById('quiz-score-pop').style.display='none';
+  document.getElementById('dialog-close').style.display='none';
+
+  const opts=document.getElementById('quiz-opts');
+  opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const btn=document.createElement('button');
+    btn.className='opt-btn';
+    btn.textContent=['ก','ข','ค','ง'][i]+') '+o;
+    btn.onclick=()=>selectAnswer(npc,q,i,btn);
+    opts.appendChild(btn);
+  });
+
+  document.getElementById('dialog').classList.add('show');
+}
+
+function selectAnswer(npc,q,idx,btn){
+  document.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
+  const correct=idx===q.ans;
+  btn.className='opt-btn '+(correct?'correct':'wrong');
+  if(!correct){
+    document.querySelectorAll('.opt-btn')[q.ans].className='opt-btn reveal';
+  }
+
+  document.getElementById('quiz-explain').textContent='💡 '+q.explain;
+  document.getElementById('quiz-explain').style.display='block';
+
+  const pts=correct?100:0;
+  if(correct){
+    document.getElementById('quiz-score-pop').textContent='🌟 +100 คะแนน!';
+    document.getElementById('quiz-score-pop').style.display='block';
+    wsSend('SCORE',{delta:pts});
+    answeredNPCs.add(npc.id);
+    checkLevelComplete();
+  } else {
+    document.getElementById('quiz-score-pop').textContent='❌ ลองใหม่ในครั้งหน้า';
+    document.getElementById('quiz-score-pop').style.display='block';
+  }
+
+  document.getElementById('dialog-close').style.display='block';
+}
+
+function closeDialog(){
+  dialogOpen=false;
+  document.getElementById('dialog').classList.remove('show');
+}
+
+function checkLevelComplete(){
+  const lv=QUESTIONS[selectedLevel];
+  const total=Math.min(lv.questions.length,npcDefs.length);
+  if(answeredNPCs.size>=total){
+    setTimeout(()=>{
+      document.getElementById('lvl-banner-title').textContent='🎉 ผ่านด่านแล้ว!';
+      document.getElementById('lvl-banner-msg').textContent=
+        `คุณตอบถูกทุกข้อในด่านนี้! รวมคะแนน: ${myScore} คะแนน`;
+      document.getElementById('lvl-banner').classList.add('show');
+    }, 600);
+  }
+}
+
+function closeLevelBanner(){
+  document.getElementById('lvl-banner').classList.remove('show');
+}
+
+// ==================== UI UPDATES ====================
+function updateLeaderboard(lb){
+  const list=document.getElementById('lb-list');
+  list.innerHTML='';
+  lb.forEach((p,i)=>{
+    const li=document.createElement('li');
+    const rankClass=i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    const isSelfEl=p.id===selfId?'lb-self':'';
+    li.innerHTML=`<span class="lb-rank ${rankClass}">${i+1}</span>
+                  <span class="lb-name ${isSelfEl}">${p.name}</span>
+                  <span class="lb-score">${p.score}</span>`;
+    list.appendChild(li);
+  });
+}
+
+function updatePlayerCount(){
+  const n=Object.keys(players).length+1;
+  document.getElementById('hud-players').textContent=`👥 ${n}`;
+}
+
+function addChat(text, type='user', name='', isSelf=false){
+  const log=document.getElementById('chat-log');
+  const div=document.createElement('div');
+  div.className='chat-msg'+(type==='sys'?' sys':'');
+  if(type==='sys'){
+    div.textContent=text;
+  } else {
+    div.innerHTML=`<span class="cn">${isSelf?'คุณ':name}:</span> ${text}`;
+  }
+  log.appendChild(div);
+  log.scrollTop=log.scrollHeight;
+  if(log.children.length>50) log.removeChild(log.firstChild);
+}
+
+function showBubble(id,text){
+  bubbles[id]={text,timer:180};
+}
+
+// ==================== INPUT ====================
+document.addEventListener('keydown',e=>{
+  keys[e.code]=true;
+  if(e.code==='Enter'){
+    const ci=document.getElementById('chat-in');
+    if(document.activeElement===ci){
+      sendChat();
+    } else {
+      ci.focus();
+    }
+    e.preventDefault();
+  }
+  if(e.code==='Escape') closeDialog();
+  if((e.code==='Space'||e.code==='KeyE')&&dialogOpen){e.preventDefault();}
+});
+document.addEventListener('keyup',e=>{ keys[e.code]=false; });
+
+function sendChat(){
+  const ci=document.getElementById('chat-in');
+  const text=ci.value.trim();
+  if(!text) return;
+  ci.value='';
+  wsSend('CHAT',{text});
+  addChat(text,'user','',true);
+  if(me.id) showBubble(me.id,text);
+  ci.blur();
+}
+
+document.getElementById('chat-send').onclick=sendChat;
+document.getElementById('chat-in').addEventListener('keydown',e=>{
+  if(e.key==='Enter'){sendChat();e.preventDefault();}
+  e.stopPropagation();
+});
+
+// Mobile joystick
+let joystickActive=false, joyOrigin={x:0,y:0};
+const joyBase=document.getElementById('joystick-base');
+const joyKnob=document.getElementById('joystick-knob');
+
+joyBase.addEventListener('touchstart',e=>{
+  joystickActive=true;
+  const t=e.touches[0];
+  joyOrigin={x:t.clientX,y:t.clientY};
+  e.preventDefault();
+},{passive:false});
+
+document.addEventListener('touchmove',e=>{
+  if(!joystickActive) return;
+  const t=e.touches[0];
+  const dx=t.clientX-joyOrigin.x, dy=t.clientY-joyOrigin.y;
+  const len=Math.hypot(dx,dy);
+  const max=36;
+  const cx=dx/Math.max(len,1)*Math.min(len,max);
+  const cy=dy/Math.max(len,1)*Math.min(len,max);
+  joyKnob.style.transform=`translate(calc(-50% + ${cx}px), calc(-50% + ${cy}px))`;
+  if(Math.abs(cx)>8||Math.abs(cy)>8){
+    keys['ArrowLeft']=cx<-8;
+    keys['ArrowRight']=cx>8;
+    keys['ArrowUp']=cy<-8;
+    keys['ArrowDown']=cy>8;
+  }
+  e.preventDefault();
+},{passive:false});
+
+document.addEventListener('touchend',()=>{
+  joystickActive=false;
+  joyKnob.style.transform='translate(-50%,-50%)';
+  ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].forEach(k=>keys[k]=false);
+});
+
+// Touch NPC interaction
+canvas.addEventListener('touchstart',e=>{
+  for(const npc of npcDefs){
+    const dist=Math.hypot(me.x-npc.x-16,me.y-npc.y-16);
+    if(dist<NPC_INTERACT_DIST&&!answeredNPCs.has(npc.id)&&!dialogOpen){
+      openDialog(npc);
+      break;
+    }
+  }
+},{passive:true});
+
+// ==================== START GAME ====================
+function startGame(){
+  const name=document.getElementById('inp-name').value.trim()||'นักเรียน';
+  const room=document.getElementById('inp-room').value.trim()||'default';
+
+  me.name=name;
+  me.avatar=selectedAvatar;
+  levelData=QUESTIONS[selectedLevel];
+
+  // Generate map
+  generateMap(selectedLevel);
+
+  // Join server
+  const payload={name,avatar:selectedAvatar,roomId:room};
+  if(ws&&ws.readyState===WebSocket.OPEN){
+    wsSend('JOIN',payload);
+  } else {
+    // Offline mode — generate fake self id
+    selfId='local-'+Date.now();
+    me.id=selfId;
+  }
+
+  // Update HUD
+  document.getElementById('hud-av').textContent=AVATARS[selectedAvatar];
+  document.getElementById('hud-name').textContent=name;
+  document.getElementById('hud-level').textContent=levelData.name;
+  document.getElementById('hud-score').textContent='0';
+
+  // Switch screens
+  document.getElementById('lobby').classList.add('hidden');
+  document.getElementById('lobby').style.display='none';
+  document.getElementById('game-area').style.display='block';
+
+  addChat(`ยินดีต้อนรับ ${name} สู่ ${levelData.name}! 🎮`,'sys');
+
+  requestAnimationFrame(gameLoop);
+}
+
+// ==================== INIT ====================
+window.addEventListener('load',()=>{
+  buildLobby();
+  connectWS();
+});
+window.addEventListener('resize',()=>{
+  if(document.getElementById('game-area').style.display!=='none'){
+    canvas.width=window.innerWidth;
+    canvas.height=window.innerHeight;
+  }
+});
+</script>
+</body>
+</html>
