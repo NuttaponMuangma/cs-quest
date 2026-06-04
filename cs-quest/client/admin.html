@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CS Quest — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0e14;--panel:rgba(10,20,10,0.97);--border:#1e3a1e;--green:#5dde3a;--gold:#ffd700;--red:#e53935;--text:#d4e8d4;--muted:#4a6a4a}
+body{background:var(--bg);font-family:'Sarabun',sans-serif;color:var(--text);min-height:100vh;padding:1.5rem}
+h1{font-size:1.6rem;font-weight:800;color:var(--green);margin-bottom:.2rem}
+.sub{color:var(--muted);font-size:.85rem;margin-bottom:1.5rem}
+.back-link{color:var(--muted);font-size:.8rem;text-decoration:none;margin-left:1rem}
+.back-link:hover{color:var(--green)}
+
+/* Tabs */
+.tabs{display:flex;gap:.5rem;margin-bottom:1.2rem;flex-wrap:wrap}
+.tab{padding:.45rem 1.1rem;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,0.03);color:var(--muted);font-size:.85rem;cursor:pointer;transition:all .15s;font-family:'Sarabun',sans-serif}
+.tab.on{background:rgba(93,222,58,0.12);border-color:var(--green);color:var(--green);font-weight:700}
+.tab-pane{display:none}
+.tab-pane.on{display:block}
+
+/* Question cards */
+.q-grid{display:flex;flex-direction:column;gap:.7rem;margin-bottom:1.5rem}
+.q-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem}
+.q-hd{display:flex;align-items:flex-start;gap:.7rem;margin-bottom:.5rem}
+.q-num{color:var(--gold);font-size:.75rem;font-weight:700;min-width:24px}
+.q-text{flex:1;font-size:.88rem;color:#fff;font-weight:600;line-height:1.4}
+.q-btns{display:flex;gap:.4rem;margin-left:auto;flex-shrink:0}
+.opts-row{display:grid;grid-template-columns:1fr 1fr;gap:.3rem .7rem;margin-bottom:.35rem}
+.opt-item{font-size:.78rem;padding:.2rem .4rem;border-radius:5px}
+.opt-item.correct{background:rgba(76,175,80,0.15);color:#a5d6a7;border:1px solid #4caf5066}
+.opt-item.wrong{color:var(--muted)}
+.q-exp{font-size:.73rem;color:var(--muted);line-height:1.4}
+
+/* Buttons */
+.btn{padding:.4rem .9rem;border-radius:7px;border:none;font-family:'Sarabun',sans-serif;font-size:.82rem;cursor:pointer;transition:all .15s;font-weight:600}
+.btn-edit{background:rgba(33,150,243,0.15);color:#64b5f6;border:1px solid rgba(33,150,243,.3)}
+.btn-edit:hover{background:rgba(33,150,243,.25)}
+.btn-del{background:rgba(229,57,53,0.15);color:#ef9a9a;border:1px solid rgba(229,57,53,.3)}
+.btn-del:hover{background:rgba(229,57,53,.25)}
+.btn-add{background:linear-gradient(135deg,var(--green),#3cb821);color:#0a0e14;font-weight:800;padding:.55rem 1.4rem;font-size:.9rem}
+.btn-add:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(93,222,58,.3)}
+.btn-save{background:linear-gradient(135deg,var(--gold),#ff9800);color:#0a0e14;font-weight:800;padding:.5rem 1.4rem}
+.btn-cancel{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.5rem 1rem}
+
+/* Modal */
+#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center}
+#modal-overlay.show{display:flex}
+#modal{background:#0d1a0d;border:1px solid var(--border);border-radius:14px;padding:1.4rem 1.6rem;width:560px;max-width:96vw;max-height:90vh;overflow-y:auto}
+#modal h2{color:var(--green);font-size:1.1rem;margin-bottom:1rem}
+.form-row{margin-bottom:.8rem}
+label{display:block;color:var(--muted);font-size:.78rem;margin-bottom:.25rem}
+input,textarea,select{width:100%;padding:.5rem .75rem;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:#fff;font-size:.88rem;font-family:'Sarabun',sans-serif;outline:none;transition:border-color .2s}
+input:focus,textarea:focus,select:focus{border-color:var(--green)}
+textarea{min-height:72px;resize:vertical}
+.opts-form{display:flex;flex-direction:column;gap:.45rem;margin-bottom:.8rem}
+.opt-form-row{display:flex;align-items:center;gap:.5rem}
+.opt-form-row input{flex:1}
+.opt-radio{display:flex;align-items:center;gap:.3rem;min-width:80px;font-size:.78rem;cursor:pointer;color:var(--muted)}
+.opt-radio input[type=radio]{width:auto;accent-color:var(--green)}
+.modal-btns{display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem}
+
+/* Stats */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;margin-bottom:1.5rem}
+.stat-box{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:.8rem;text-align:center}
+.stat-n{font-size:1.8rem;font-weight:800;color:var(--gold)}
+.stat-l{font-size:.75rem;color:var(--muted);margin-top:.2rem}
+</style>
+</head>
+<body>
+
+<div style="display:flex;align-items:baseline;gap:.5rem;margin-bottom:.2rem">
+  <h1>⚙️ Admin — จัดการคำถาม</h1>
+  <a href="/" class="back-link">← กลับเกม</a>
+</div>
+<div class="sub">เพิ่ม แก้ไข และลบคำถามในแต่ละด่าน (แก้ไข questions.js โดยตรง)</div>
+
+<!-- Stats -->
+<div class="stat-row" id="stat-row"></div>
+
+<!-- Tabs -->
+<div class="tabs" id="tabs-row"></div>
+
+<!-- Panes -->
+<div id="panes"></div>
+
+<!-- Add button -->
+<button class="btn btn-add" id="btn-add-main">+ เพิ่มคำถามใหม่</button>
+
+<!-- Modal -->
+<div id="modal-overlay">
+  <div id="modal">
+    <h2 id="modal-title">เพิ่มคำถาม</h2>
+    <div class="form-row">
+      <label>ด่านที่</label>
+      <select id="f-level"></select>
+    </div>
+    <div class="form-row">
+      <label>คำถาม</label>
+      <textarea id="f-q" placeholder="พิมพ์คำถาม..."></textarea>
+    </div>
+    <div class="form-row">
+      <label>ตัวเลือก (เลือกวงกลมด้านหน้าเพื่อกำหนดคำตอบที่ถูก)</label>
+      <div class="opts-form" id="f-opts">
+        <!-- 4 options built by JS -->
+      </div>
+    </div>
+    <div class="form-row">
+      <label>คำอธิบายเฉลย</label>
+      <textarea id="f-exp" placeholder="อธิบายเหตุผล..." style="min-height:52px"></textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-cancel" onclick="closeModal()">ยกเลิก</button>
+      <button class="btn btn-save" id="btn-save-q">💾 บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<script src="questions.js"></script>
+<script>
+// ─── Admin works on an in-memory copy of QUESTIONS ───
+// Changes generate a new questions.js string for download/copy.
+// Since the server serves static files, you replace questions.js
+// on the server via GitHub commit after downloading.
+
+let editingLevel=null, editingIdx=null, selLevel=1;
+
+function buildPage(){
+  // Stats
+  const sr=document.getElementById('stat-row');
+  sr.innerHTML='';
+  let total=0;
+  Object.values(QUESTIONS).forEach(lv=>total+=lv.questions.length);
+  const stats=[
+    {n:Object.keys(QUESTIONS).length,l:'ด่านทั้งหมด'},
+    {n:total,l:'คำถามทั้งหมด'},
+    {n:10,l:'ข้อ/Wave'},
+    {n:30,l:'ผู้เล่น/ห้อง'},
+  ];
+  stats.forEach(s=>{ const d=document.createElement('div'); d.className='stat-box'; d.innerHTML=`<div class="stat-n">${s.n}</div><div class="stat-l">${s.l}</div>`; sr.appendChild(d); });
+
+  // Tabs
+  const tabs=document.getElementById('tabs-row'); tabs.innerHTML='';
+  const panes=document.getElementById('panes'); panes.innerHTML='';
+  Object.entries(QUESTIONS).forEach(([id,lv],idx)=>{
+    const tab=document.createElement('button');
+    tab.className='tab'+(idx===0?' on':'');
+    tab.textContent=`${lv.npcEmoji} ${lv.name} (${lv.questions.length})`;
+    tab.onclick=()=>{ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on')); document.querySelectorAll('.tab-pane').forEach(t=>t.classList.remove('on')); tab.classList.add('on'); document.getElementById('pane-'+id).classList.add('on'); selLevel=parseInt(id); };
+    tabs.appendChild(tab);
+
+    const pane=document.createElement('div');
+    pane.id='pane-'+id; pane.className='tab-pane'+(idx===0?' on':'');
+    pane.innerHTML=buildPane(id,lv);
+    panes.appendChild(pane);
+  });
+
+  // Fill level select in modal
+  const fs=document.getElementById('f-level'); fs.innerHTML='';
+  Object.entries(QUESTIONS).forEach(([id,lv])=>{ const o=document.createElement('option'); o.value=id; o.textContent=`ด่าน ${id}: ${lv.name}`; fs.appendChild(o); });
+
+  // Build opts form
+  buildOptsForm();
+  document.getElementById('btn-add-main').onclick=()=>openModal(null,null);
+  document.getElementById('btn-save-q').onclick=saveQuestion;
+}
+
+function buildPane(id,lv){
+  let html=`<div class="q-grid">`;
+  lv.questions.forEach((q,i)=>{
+    html+=`<div class="q-card">
+      <div class="q-hd">
+        <span class="q-num">ข้อ ${i+1}</span>
+        <span class="q-text">${q.q}</span>
+        <div class="q-btns">
+          <button class="btn btn-edit" onclick="openModal(${id},${i})">✏️ แก้ไข</button>
+          <button class="btn btn-del" onclick="deleteQ(${id},${i})">🗑️</button>
+        </div>
+      </div>
+      <div class="opts-row">
+        ${q.opts.map((o,oi)=>`<div class="opt-item ${oi===q.ans?'correct':'wrong'}">${['ก','ข','ค','ง'][oi]}) ${o}${oi===q.ans?' ✓':''}</div>`).join('')}
+      </div>
+      <div class="q-exp">💡 ${q.explain}</div>
+    </div>`;
+  });
+  html+=`</div>`;
+  return html;
+}
+
+function buildOptsForm(){
+  const c=document.getElementById('f-opts'); c.innerHTML='';
+  ['ก','ข','ค','ง'].forEach((l,i)=>{
+    const row=document.createElement('div'); row.className='opt-form-row';
+    row.innerHTML=`<label class="opt-radio"><input type="radio" name="ans" value="${i}"> คำตอบที่ถูก</label>
+      <input type="text" id="fopt-${i}" placeholder="ตัวเลือก ${l}..."/>`;
+    c.appendChild(row);
+  });
+}
+
+function openModal(lvlId,qIdx){
+  editingLevel=lvlId; editingIdx=qIdx;
+  document.getElementById('modal-title').textContent=qIdx===null?'เพิ่มคำถาม':'แก้ไขคำถาม';
+  document.getElementById('f-level').value=lvlId||selLevel;
+  if(lvlId!==null&&qIdx!==null){
+    const q=QUESTIONS[lvlId].questions[qIdx];
+    document.getElementById('f-q').value=q.q;
+    q.opts.forEach((o,i)=>{ document.getElementById(`fopt-${i}`).value=o; });
+    document.querySelectorAll('input[name=ans]')[q.ans].checked=true;
+    document.getElementById('f-exp').value=q.explain;
+  } else {
+    document.getElementById('f-q').value='';
+    [0,1,2,3].forEach(i=>{ document.getElementById(`fopt-${i}`).value=''; });
+    document.querySelectorAll('input[name=ans]')[0].checked=true;
+    document.getElementById('f-exp').value='';
+  }
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function closeModal(){ document.getElementById('modal-overlay').classList.remove('show'); }
+
+function saveQuestion(){
+  const q_text=document.getElementById('f-q').value.trim();
+  const opts=[0,1,2,3].map(i=>document.getElementById(`fopt-${i}`).value.trim());
+  const ans=parseInt(document.querySelector('input[name=ans]:checked')?.value||0);
+  const explain=document.getElementById('f-exp').value.trim();
+  const lvl=parseInt(document.getElementById('f-level').value);
+
+  if(!q_text||opts.some(o=>!o)||!explain){ alert('กรุณากรอกให้ครบทุกช่อง'); return; }
+
+  const newQ={q:q_text,opts,ans,explain};
+  if(editingLevel!==null&&editingIdx!==null){
+    QUESTIONS[editingLevel].questions[editingIdx]=newQ;
+  } else {
+    QUESTIONS[lvl].questions.push(newQ);
+  }
+
+  closeModal();
+  buildPage();
+  downloadJS();
+}
+
+function deleteQ(lvlId,qIdx){
+  if(!confirm(`ลบคำถามข้อ ${qIdx+1} ใช่ไหม?`)) return;
+  QUESTIONS[lvlId].questions.splice(qIdx,1);
+  buildPage();
+  downloadJS();
+}
+
+function downloadJS(){
+  // Generate new questions.js content
+  let js=`// ===== CS Quest — Question Bank (auto-generated) =====\n\nconst QUESTIONS = `;
+  const obj={};
+  Object.entries(QUESTIONS).forEach(([id,lv])=>{ obj[id]={...lv}; });
+  js+=JSON.stringify(obj,null,2)
+    .replace(/"([^"]+)":/g,'$1:')  // unquote keys
+    .replace(/"/g,"'");            // single quotes
+  js+=`;\n`;
+
+  const blob=new Blob([js],{type:'text/javascript'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='questions.js'; a.click();
+  URL.revokeObjectURL(url);
+
+  // Also show copy notification
+  const n=document.createElement('div');
+  n.style.cssText='position:fixed;top:1rem;right:1rem;background:#5dde3a;color:#0a0e14;padding:.5rem 1rem;border-radius:8px;font-weight:700;z-index:999;font-size:.85rem';
+  n.textContent='✅ ดาวน์โหลด questions.js แล้ว — อัพโหลดขึ้น GitHub เพื่ออัพเดทเกม';
+  document.body.appendChild(n);
+  setTimeout(()=>n.remove(),4000);
+}
+
+document.getElementById('modal-overlay').addEventListener('click',e=>{ if(e.target===document.getElementById('modal-overlay')) closeModal(); });
+window.addEventListener('load',buildPage);
+</script>
+</body>
+</html>

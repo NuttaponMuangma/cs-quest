@@ -2,1103 +2,1073 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>CS Quest — วิทยาการคำนวณ</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  :root{
-    --green1:#2d5a1b;--green2:#3a7a24;--green3:#4a9a2e;--green4:#5cb83a;
-    --path:#8bc34a;--path2:#9ccc52;
-    --ui-bg:rgba(15,20,35,0.92);--ui-border:#4a6fa5;
-    --gold:#ffd700;--red:#e53935;--blue:#1976d2;
-  }
-  body{background:#1a1a2e;font-family:'Sarabun',sans-serif;overflow:hidden;
-       display:flex;flex-direction:column;height:100vh;width:100vw}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0e14;--panel:rgba(10,20,10,0.96);--border:#1e3a1e;
+  --green:#5dde3a;--gold:#ffd700;--red:#e53935;--blue:#29b6f6;
+  --text:#d4e8d4;--muted:#4a6a4a;
+}
+body{background:var(--bg);font-family:'Sarabun',sans-serif;overflow:hidden;height:100vh;width:100vw;color:var(--text)}
 
-  /* ===== SCREENS ===== */
-  .screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-          background:#0d1117;z-index:100}
-  .screen.hidden{display:none}
+/* ── SCREEN SYSTEM ── */
+.screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:200}
+.screen.off{display:none!important}
 
-  /* LOBBY */
-  #lobby{background:linear-gradient(135deg,#0d1117 0%,#1a1a2e 50%,#16213e 100%)}
-  .lobby-box{background:rgba(255,255,255,0.05);border:1px solid #4a6fa5;
-             border-radius:16px;padding:2rem 2.5rem;width:420px;text-align:center}
-  .game-logo{font-size:2.2rem;font-weight:700;color:#ffd700;margin-bottom:.3rem;
-             text-shadow:0 0 20px rgba(255,215,0,0.5)}
-  .game-sub{color:#8899aa;font-size:.95rem;margin-bottom:1.5rem}
-  .lobby-box input,.lobby-box select{
-    width:100%;padding:.6rem .9rem;border-radius:8px;
-    border:1px solid #4a6fa5;background:rgba(255,255,255,0.07);
-    color:#fff;font-size:1rem;font-family:'Sarabun',sans-serif;
-    margin-bottom:.75rem;outline:none;transition:border-color .2s}
-  .lobby-box input:focus,.lobby-box select:focus{border-color:#ffd700}
-  .lobby-box select option{background:#1a1a2e;color:#fff}
-  .label{color:#aab;font-size:.85rem;text-align:left;margin-bottom:.3rem;display:block}
+/* ── LOBBY SCREEN ── */
+#s-lobby{background:radial-gradient(ellipse at 50% -20%,#0d2a0d,#0a0e14 60%)}
+.lb-wrap{display:flex;gap:2rem;width:900px;max-width:98vw;align-items:flex-start}
+.lb-left{flex:0 0 340px}
+.lb-right{flex:1;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:14px;padding:1.2rem;min-height:300px}
+.logo{font-size:2rem;font-weight:800;color:var(--green);text-shadow:0 0 24px rgba(93,222,58,0.4);margin-bottom:.2rem}
+.logo-sub{color:var(--muted);font-size:.85rem;margin-bottom:1.2rem}
+.panel{background:rgba(255,255,255,0.035);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1.4rem;margin-bottom:.9rem}
+.field-label{color:var(--muted);font-size:.78rem;margin-bottom:.28rem;display:block}
+input,select{width:100%;padding:.5rem .8rem;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:#fff;font-size:.92rem;font-family:'Sarabun',sans-serif;outline:none;transition:border-color .2s}
+input:focus,select:focus{border-color:var(--green)}
+select option{background:#0d1a0d}
+.mb{margin-bottom:.65rem}
 
-  /* Avatar picker */
-  .avatar-row{display:flex;gap:8px;justify-content:center;margin-bottom:1rem}
-  .av-btn{width:52px;height:52px;border-radius:10px;border:2px solid transparent;
-          background:rgba(255,255,255,0.08);cursor:pointer;font-size:1.6rem;
-          transition:all .2s;display:flex;align-items:center;justify-content:center}
-  .av-btn:hover{background:rgba(255,255,255,0.15)}
-  .av-btn.selected{border-color:#ffd700;background:rgba(255,215,0,0.15)}
+/* Avatar */
+.av-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:.6rem}
+.av-btn{width:44px;height:44px;border-radius:9px;border:2px solid transparent;background:rgba(255,255,255,0.06);cursor:pointer;font-size:1.35rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.av-btn:hover{background:rgba(255,255,255,0.12)}
+.av-btn.on{border-color:var(--green);background:rgba(93,222,58,0.12)}
 
-  /* Level cards */
-  .level-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem}
-  .lvl-card{border-radius:10px;border:1px solid rgba(255,255,255,0.1);padding:.6rem;
-            cursor:pointer;transition:all .2s;text-align:left}
-  .lvl-card:hover{transform:translateY(-2px)}
-  .lvl-card.selected{outline:2px solid #ffd700}
-  .lvl-card .lvl-name{font-size:.8rem;font-weight:600;color:#fff}
-  .lvl-card .lvl-desc{font-size:.72rem;color:rgba(255,255,255,0.6);margin-top:2px}
+/* Level cards */
+.lv-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:.6rem}
+.lv-card{border-radius:9px;border:1px solid rgba(255,255,255,0.07);padding:.5rem .65rem;cursor:pointer;transition:all .15s;position:relative}
+.lv-card.on{outline:2px solid var(--green)}
+.lv-card .lv-name{font-size:.75rem;font-weight:700;color:#fff}
+.lv-card .lv-sub{font-size:.68rem;color:rgba(255,255,255,0.45);margin-top:1px}
 
-  .btn-start{width:100%;padding:.75rem;border-radius:8px;border:none;
-             background:linear-gradient(135deg,#ffd700,#ff8c00);
-             color:#1a1a2e;font-size:1.1rem;font-weight:700;font-family:'Sarabun',sans-serif;
-             cursor:pointer;transition:all .2s;margin-top:.5rem}
-  .btn-start:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(255,215,0,0.4)}
-  .conn-status{font-size:.8rem;color:#888;margin-top:.75rem}
-  #conn-dot{display:inline-block;width:8px;height:8px;border-radius:50%;
-            background:#888;margin-right:5px;transition:background .3s}
-  #conn-dot.connected{background:#4caf50}
-  #conn-dot.connecting{background:#ff9800}
+.btn{width:100%;padding:.65rem;border-radius:9px;border:none;font-size:1rem;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;transition:all .18s}
+.btn-green{background:linear-gradient(135deg,var(--green),#3cb821);color:#0a0e14}
+.btn-green:hover{transform:translateY(-2px);box-shadow:0 4px 18px rgba(93,222,58,.35)}
+.btn-green:disabled{opacity:.4;cursor:default;transform:none}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted);font-size:.85rem;padding:.45rem;margin-top:.4rem}
+.btn-outline:hover{border-color:var(--green);color:var(--green)}
 
-  /* ===== GAME CANVAS AREA ===== */
-  #game-area{position:relative;width:100vw;height:100vh;overflow:hidden}
-  canvas{display:block;image-rendering:pixelated}
-  #gameCanvas{position:absolute;top:0;left:0}
+.conn-row{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--muted);margin-top:.5rem}
+#cdot{width:7px;height:7px;border-radius:50%;background:var(--muted)}
+#cdot.on{background:var(--green)}
+#cdot.wait{background:#ff9800}
 
-  /* ===== HUD ===== */
-  #hud{position:fixed;top:0;left:0;right:0;height:50px;
-       background:var(--ui-bg);border-bottom:1px solid var(--ui-border);
-       display:flex;align-items:center;padding:0 1rem;gap:1rem;z-index:50}
-  #hud-name{color:#ffd700;font-weight:700;font-size:.95rem}
-  #hud-score{color:#fff;font-size:.95rem}
-  .hud-sep{width:1px;height:24px;background:rgba(255,255,255,0.2)}
-  #hud-level{color:#aab;font-size:.85rem}
-  #hud-players{color:#8bc34a;font-size:.85rem;margin-left:auto}
-  #hud-ping{color:#666;font-size:.75rem}
+/* Lobby right panel */
+.lb-right h3{color:var(--gold);font-size:.85rem;margin-bottom:.8rem;text-align:center}
+#lobby-players{display:flex;flex-direction:column;gap:.4rem;min-height:120px}
+.lp-row{display:flex;align-items:center;gap:.5rem;padding:.4rem .5rem;background:rgba(255,255,255,0.04);border-radius:7px}
+.lp-av{font-size:1.1rem}
+.lp-name{font-size:.85rem;font-weight:600;flex:1}
+.lp-ready{font-size:.72rem}
+.ready-yes{color:var(--green)}
+.ready-no{color:var(--muted)}
+.lobby-info{color:var(--muted);font-size:.78rem;text-align:center;margin-top:.8rem;line-height:1.6}
 
-  /* ===== LEADERBOARD ===== */
-  #leaderboard{position:fixed;top:60px;right:10px;width:200px;
-               background:var(--ui-bg);border:1px solid var(--ui-border);
-               border-radius:10px;padding:.75rem;z-index:50}
-  #leaderboard h3{color:#ffd700;font-size:.8rem;margin-bottom:.5rem;
-                  text-align:center;letter-spacing:.5px}
-  #lb-list{list-style:none}
-  #lb-list li{display:flex;align-items:center;gap:6px;padding:3px 0;
-              font-size:.78rem;color:#ccc;border-bottom:1px solid rgba(255,255,255,0.05)}
-  #lb-list li:last-child{border:none}
-  .lb-rank{color:#888;width:16px;text-align:center;font-size:.7rem}
-  .lb-rank.gold{color:#ffd700}
-  .lb-rank.silver{color:#c0c0c0}
-  .lb-rank.bronze{color:#cd7f32}
-  .lb-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .lb-score{color:#ffd700;font-weight:600;font-size:.8rem}
-  .lb-self{color:#fff!important;font-weight:600}
+/* ── HUD ── */
+#hud{position:fixed;top:0;left:0;right:0;height:46px;background:rgba(8,14,8,0.95);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 .8rem;gap:.7rem;z-index:100;backdrop-filter:blur(6px)}
+.hud-sep{width:1px;height:18px;background:rgba(255,255,255,0.12)}
+#hud-av{font-size:1.15rem}
+#hud-name{color:var(--green);font-weight:700;font-size:.88rem;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#hud-lv{color:var(--muted);font-size:.78rem}
+#hud-wave{color:var(--gold);font-size:.8rem;font-weight:700}
+#hud-sc{color:#fff;font-size:.9rem;font-weight:700}
+#hud-pl{color:var(--green);font-size:.78rem}
+#hud-ms{color:#3a5a3a;font-size:.7rem}
 
-  /* ===== NPC DIALOG ===== */
-  #dialog{position:fixed;bottom:0;left:0;right:0;
-          background:var(--ui-bg);border-top:2px solid var(--ui-border);
-          padding:1rem 1.5rem;z-index:60;transform:translateY(100%);
-          transition:transform .3s ease;max-height:55vh;overflow-y:auto}
-  #dialog.show{transform:translateY(0)}
-  #dialog-npc{color:#ffd700;font-weight:700;font-size:1rem;margin-bottom:.4rem}
-  #dialog-text{color:#e0e0e0;font-size:.95rem;line-height:1.6;margin-bottom:.8rem}
-  #quiz-area{display:none}
-  #quiz-q{color:#fff;font-size:1rem;font-weight:600;margin-bottom:.75rem;line-height:1.5}
-  .quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
-  .opt-btn{padding:.6rem .8rem;border-radius:8px;border:1px solid rgba(255,255,255,0.2);
-           background:rgba(255,255,255,0.05);color:#fff;font-family:'Sarabun',sans-serif;
-           font-size:.88rem;cursor:pointer;text-align:left;transition:all .15s;line-height:1.4}
-  .opt-btn:hover:not(:disabled){background:rgba(74,111,165,0.4);border-color:#4a6fa5}
-  .opt-btn.correct{background:rgba(76,175,80,0.3);border-color:#4caf50;color:#a5d6a7}
-  .opt-btn.wrong{background:rgba(229,57,53,0.3);border-color:#e53935;color:#ef9a9a}
-  .opt-btn.reveal{background:rgba(76,175,80,0.15);border-color:#4caf50}
-  #quiz-explain{color:#aab;font-size:.85rem;margin-top:.6rem;display:none;line-height:1.5}
-  #quiz-score-pop{color:#ffd700;font-weight:700;font-size:1.1rem;display:none;margin-top:.5rem}
-  #dialog-close{padding:.5rem 1.5rem;border-radius:8px;border:1px solid #4a6fa5;
-                background:transparent;color:#aab;font-family:'Sarabun',sans-serif;
-                cursor:pointer;font-size:.9rem;margin-top:.5rem;display:none}
-  #dialog-close:hover{background:rgba(74,111,165,0.3)}
+/* Wave progress */
+#wbar-wrap{position:fixed;top:46px;left:0;right:0;height:4px;background:rgba(255,255,255,0.04);z-index:100}
+#wbar{height:100%;background:linear-gradient(90deg,var(--green),var(--gold));transition:width .5s}
 
-  /* ===== CHAT ===== */
-  #chat-wrap{position:fixed;bottom:0;left:10px;width:280px;z-index:55}
-  #chat-log{background:rgba(0,0,0,0.5);border-radius:8px 8px 0 0;
-            padding:.5rem;max-height:120px;overflow-y:auto;
-            display:flex;flex-direction:column;gap:3px}
-  .chat-msg{font-size:.75rem;color:#ccc;line-height:1.3}
-  .chat-msg .cn{color:#ffd700;font-weight:600}
-  .chat-msg.sys{color:#8bc34a;font-style:italic}
-  #chat-input-row{display:flex;gap:4px}
-  #chat-in{flex:1;background:rgba(0,0,0,0.6);border:1px solid #4a6fa5;
-            border-radius:0 0 0 8px;color:#fff;font-family:'Sarabun',sans-serif;
-            font-size:.8rem;padding:.35rem .6rem;outline:none}
-  #chat-send{padding:.35rem .7rem;background:#4a6fa5;border:none;
-             color:#fff;border-radius:0 0 8px 0;cursor:pointer;font-size:.8rem}
+/* ── LEADERBOARD ── */
+#lb-hud{position:fixed;top:60px;right:7px;width:178px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:.6rem;z-index:90}
+#lb-hud h4{color:var(--gold);font-size:.75rem;text-align:center;margin-bottom:.45rem}
+#lb-list{list-style:none;display:flex;flex-direction:column;gap:2px}
+#lb-list li{display:flex;align-items:center;gap:5px;padding:2px 0;font-size:.7rem;color:#99b;border-bottom:1px solid rgba(255,255,255,0.04)}
+#lb-list li:last-child{border:none}
+.lbr{width:13px;text-align:center;font-size:.65rem;color:#556}
+.lbr.g{color:var(--gold)}.lbr.s{color:#c0c0c0}.lbr.b{color:#cd7f32}
+.lbn{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lbs{color:var(--gold);font-weight:700;font-size:.72rem}
+.lb-me{color:var(--green)!important;font-weight:700}
 
-  /* MINIMAP */
-  #minimap{position:fixed;bottom:10px;right:10px;z-index:50;border-radius:8px;
-           border:1px solid var(--ui-border);overflow:hidden}
+/* ── NPC DIALOG ── */
+#dialog{position:fixed;bottom:0;left:0;right:0;background:rgba(8,14,8,0.98);border-top:2px solid var(--border);padding:.85rem 1.1rem;z-index:150;transform:translateY(100%);transition:transform .25s ease;max-height:60vh;overflow-y:auto}
+#dialog.show{transform:translateY(0)}
+#dlg-npc{color:var(--green);font-weight:700;font-size:.9rem;margin-bottom:.25rem}
+#dlg-sub{color:var(--muted);font-size:.78rem;margin-bottom:.6rem}
+#quiz-area{display:none}
+#quiz-q{color:#fff;font-size:.92rem;font-weight:700;margin-bottom:.6rem;line-height:1.5}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
+.ob{padding:.5rem .7rem;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:var(--text);font-family:'Sarabun',sans-serif;font-size:.82rem;cursor:pointer;text-align:left;line-height:1.4;transition:all .13s}
+.ob:hover:not(:disabled){background:rgba(93,222,58,0.1);border-color:var(--green)}
+.ob.ok{background:rgba(76,175,80,0.2);border-color:#4caf50;color:#a5d6a7}
+.ob.no{background:rgba(229,57,53,0.2);border-color:#e53935;color:#ef9a9a}
+.ob.show-ans{background:rgba(76,175,80,0.12);border-color:#4caf50}
+#quiz-exp{color:#6a9a6a;font-size:.78rem;margin-top:.45rem;display:none;line-height:1.5}
+#quiz-pop{font-weight:700;font-size:.95rem;display:none;margin-top:.4rem}
+.pop-ok{color:var(--gold)}
+.pop-no{color:var(--red)}
+#dlg-close{padding:.4rem 1.1rem;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Sarabun',sans-serif;cursor:pointer;font-size:.82rem;margin-top:.4rem;display:none}
+#dlg-close:hover{border-color:var(--green);color:var(--green)}
 
-  /* Controls hint */
-  #controls-hint{position:fixed;top:60px;left:10px;color:rgba(255,255,255,0.4);
-                 font-size:.72rem;line-height:1.6;z-index:50;pointer-events:none}
+/* ── WAVE CLEAR BANNER ── */
+#wave-clear{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:rgba(8,14,8,.98);border:2px solid var(--green);border-radius:16px;padding:1.6rem 2.2rem;text-align:center;z-index:180;transition:transform .3s cubic-bezier(.34,1.56,.64,1);min-width:280px}
+#wave-clear.show{transform:translate(-50%,-50%) scale(1)}
+.wc-icon{font-size:2.8rem;margin-bottom:.3rem}
+.wc-title{color:var(--green);font-size:1.5rem;font-weight:800;margin-bottom:.2rem}
+.wc-sub{color:var(--muted);font-size:.85rem;margin-bottom:.4rem}
+.wc-score{color:var(--gold);font-size:2.2rem;font-weight:800;margin-bottom:1rem}
+.wc-btn{padding:.55rem 1.8rem;border-radius:9px;border:none;background:var(--green);color:#0a0e14;font-weight:800;font-family:'Sarabun',sans-serif;cursor:pointer;font-size:.95rem;transition:all .15s}
+.wc-btn:hover{background:#3cb821;transform:translateY(-1px)}
 
-  /* Level complete banner */
-  #lvl-banner{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);
-              background:rgba(15,20,35,0.97);border:2px solid #ffd700;border-radius:16px;
-              padding:2rem 3rem;text-align:center;z-index:80;transition:transform .3s ease}
-  #lvl-banner.show{transform:translate(-50%,-50%) scale(1)}
-  #lvl-banner h2{color:#ffd700;font-size:1.8rem;margin-bottom:.5rem}
-  #lvl-banner p{color:#ccc;font-size:1rem;margin-bottom:1rem}
-  #lvl-banner button{padding:.6rem 2rem;border-radius:8px;border:none;
-                      background:#ffd700;color:#1a1a2e;font-weight:700;
-                      font-family:'Sarabun',sans-serif;cursor:pointer;font-size:1rem}
+/* ── RESULTS SCREEN ── */
+#s-results{background:rgba(8,14,8,.97)}
+.res-box{width:600px;max-width:96vw;text-align:center}
+.res-title{font-size:2rem;font-weight:800;color:var(--gold);margin-bottom:.3rem;text-shadow:0 0 20px rgba(255,215,0,.4)}
+.res-sub{color:var(--muted);margin-bottom:1.5rem;font-size:.9rem}
+.res-table{width:100%;border-collapse:collapse;margin-bottom:1.2rem}
+.res-table th{color:var(--muted);font-size:.75rem;font-weight:600;padding:.4rem;border-bottom:1px solid var(--border);text-align:left}
+.res-table td{padding:.45rem .4rem;font-size:.88rem;border-bottom:1px solid rgba(255,255,255,0.04)}
+.res-table tr:last-child td{border:none}
+.rank-1{color:var(--gold);font-weight:800;font-size:1.05rem}
+.rank-2{color:#c0c0c0;font-weight:700}
+.rank-3{color:#cd7f32;font-weight:700}
+.medal{font-size:1.2rem}
+.res-self{background:rgba(93,222,58,0.08)!important}
+.res-self td{color:var(--green)!important}
+.res-btn-row{display:flex;gap:.6rem;justify-content:center}
+.btn-sm{padding:.5rem 1.4rem;border-radius:8px;font-size:.88rem}
 
-  /* Mobile joystick */
-  #joystick-area{display:none;position:fixed;bottom:80px;left:20px;z-index:55}
-  @media(max-width:768px){#joystick-area{display:block}}
-  #joystick-base{width:100px;height:100px;border-radius:50%;
-                 background:rgba(255,255,255,0.1);border:2px solid rgba(255,255,255,0.2);
-                 position:relative}
-  #joystick-knob{width:44px;height:44px;border-radius:50%;
-                 background:rgba(255,255,255,0.3);position:absolute;
-                 top:50%;left:50%;transform:translate(-50%,-50%)}
+/* ── CHAT ── */
+#chat-wrap{position:fixed;bottom:0;left:7px;width:240px;z-index:90}
+#chat-log{background:rgba(0,0,0,0.4);border-radius:8px 8px 0 0;padding:.35rem;max-height:90px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.cm{font-size:.68rem;color:#8a9a8a;line-height:1.3}
+.cm .cn{color:var(--green);font-weight:700}
+.cm.sys{color:#4a7a4a;font-style:italic}
+#chat-row{display:flex}
+#ci{flex:1;background:rgba(0,0,0,0.5);border:1px solid var(--border);border-radius:0 0 0 8px;color:#fff;font-family:'Sarabun',sans-serif;font-size:.72rem;padding:.28rem .45rem;outline:none}
+#cs{padding:.28rem .55rem;background:var(--border);border:none;color:var(--green);border-radius:0 0 8px 0;cursor:pointer;font-size:.7rem}
+
+/* Minimap */
+#mm{position:fixed;bottom:7px;right:7px;z-index:90;border-radius:7px;border:1px solid var(--border);image-rendering:pixelated}
+
+/* Controls hint */
+#ctrl-hint{position:fixed;top:60px;left:7px;color:rgba(255,255,255,0.25);font-size:.65rem;line-height:1.8;z-index:90;pointer-events:none}
+
+/* Mobile joystick */
+#joy-wrap{display:none;position:fixed;bottom:68px;left:16px;z-index:90}
+@media(max-width:768px){#joy-wrap{display:block}}
+#joy-base{width:82px;height:82px;border-radius:50%;background:rgba(93,222,58,0.06);border:1.5px solid rgba(93,222,58,0.2);position:relative}
+#joy-knob{width:34px;height:34px;border-radius:50%;background:rgba(93,222,58,0.2);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+
+/* Admin link */
+.admin-link{color:var(--muted);font-size:.7rem;text-decoration:none;display:inline-block;margin-top:.4rem}
+.admin-link:hover{color:var(--green)}
+
+canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
+#gc{position:absolute;top:0;left:0}
 </style>
 </head>
 <body>
 
-<!-- ===== LOBBY SCREEN ===== -->
-<div id="lobby" class="screen">
-  <div class="lobby-box">
-    <div class="game-logo">⚔️ CS Quest</div>
-    <div class="game-sub">วิทยาการคำนวณ ม.1 — RPG สำรวจความรู้</div>
+<!-- ══ SCREEN: LOBBY ══ -->
+<div id="s-lobby" class="screen">
+  <div class="lb-wrap">
+    <!-- Left: Setup -->
+    <div class="lb-left">
+      <div class="logo">⚔️ CS Quest</div>
+      <div class="logo-sub">วิทยาการคำนวณ ม.1 — Pixel RPG Multiplayer</div>
 
-    <label class="label">ชื่อผู้เล่น</label>
-    <input id="inp-name" type="text" maxlength="16" placeholder="กรอกชื่อของคุณ..." />
+      <div class="panel">
+        <label class="field-label">ชื่อผู้เล่น</label>
+        <input id="inp-name" class="mb" type="text" maxlength="16" placeholder="กรอกชื่อ..."/>
 
-    <label class="label">เลือกตัวละคร</label>
-    <div class="avatar-row" id="avatar-row">
-      <button class="av-btn selected" data-av="0">🧑</button>
-      <button class="av-btn" data-av="1">👧</button>
-      <button class="av-btn" data-av="2">🧒</button>
-      <button class="av-btn" data-av="3">👦</button>
-      <button class="av-btn" data-av="4">🧙</button>
-      <button class="av-btn" data-av="5">🧝</button>
+        <label class="field-label">เลือกตัวละคร</label>
+        <div class="av-row" id="av-row"></div>
+
+        <label class="field-label">เลือกด่านการเรียนรู้</label>
+        <div class="lv-grid" id="lv-grid"></div>
+
+        <label class="field-label" style="margin-bottom:.28rem">รหัสห้อง</label>
+        <input id="inp-room" class="mb" type="text" maxlength="12" placeholder="เช่น m1-101"/>
+
+        <button class="btn btn-green mb" id="btn-join">เข้าห้องรอ 🚪</button>
+        <div class="conn-row"><span id="cdot"></span><span id="ctxt">กำลังเชื่อมต่อ...</span></div>
+        <div style="text-align:center"><a class="admin-link" href="/admin.html">⚙️ จัดการคำถาม (Admin)</a></div>
+      </div>
     </div>
 
-    <label class="label">เลือกด่านการเรียนรู้</label>
-    <div class="level-grid" id="level-grid"></div>
-
-    <label class="label" style="margin-bottom:.3rem">รหัสห้อง (ว่างไว้ = ห้องกลาง)</label>
-    <input id="inp-room" type="text" maxlength="12" placeholder="เช่น class-101" />
-
-    <button class="btn-start" id="btn-start">🎮 เข้าสู่เกม</button>
-    <div class="conn-status">
-      <span id="conn-dot"></span><span id="conn-text">กำลังเชื่อมต่อ...</span>
+    <!-- Right: Lobby wait room -->
+    <div class="lb-right">
+      <h3>🏠 ห้องรอ</h3>
+      <div id="lobby-players"><div style="color:var(--muted);font-size:.8rem;text-align:center;padding:1rem">เข้าห้องก่อนเพื่อดูผู้เล่น</div></div>
+      <div class="lobby-info" id="lobby-info">กรอกชื่อและเลือกตั้งค่า จากนั้นกด "เข้าห้องรอ"</div>
+      <div style="margin-top:.8rem;display:flex;flex-direction:column;gap:.4rem">
+        <button class="btn btn-green" id="btn-ready" style="display:none">✅ พร้อมแล้ว!</button>
+        <button class="btn btn-outline" id="btn-start-now" style="display:none">▶ เริ่มเลย (ครู)</button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ===== GAME AREA ===== -->
-<div id="game-area" class="hidden" style="display:none">
-  <canvas id="gameCanvas"></canvas>
+<!-- ══ SCREEN: GAME ══ -->
+<div id="s-game" class="screen off" style="align-items:flex-start;justify-content:flex-start">
+  <div id="game-area" style="position:relative;width:100vw;height:100vh;overflow:hidden">
+    <canvas id="gc"></canvas>
 
-  <!-- HUD -->
-  <div id="hud">
-    <span id="hud-av" style="font-size:1.3rem"></span>
-    <span id="hud-name">ผู้เล่น</span>
-    <div class="hud-sep"></div>
-    <span id="hud-level">ด่าน —</span>
-    <div class="hud-sep"></div>
-    <span>⭐</span><span id="hud-score">0</span>
-    <span id="hud-players" style="margin-left:auto">👥 1</span>
-    <span class="hud-sep"></span>
-    <span id="hud-ping">— ms</span>
-  </div>
-
-  <!-- Leaderboard -->
-  <div id="leaderboard">
-    <h3>🏆 อันดับ</h3>
-    <ul id="lb-list"></ul>
-  </div>
-
-  <!-- Controls -->
-  <div id="controls-hint">WASD / ลูกศร = เดิน<br>Space / E = คุยกับ NPC<br>Enter = แชท</div>
-
-  <!-- NPC Dialog -->
-  <div id="dialog">
-    <div id="dialog-npc"></div>
-    <div id="dialog-text"></div>
-    <div id="quiz-area">
-      <div id="quiz-q"></div>
-      <div class="quiz-opts" id="quiz-opts"></div>
-      <div id="quiz-explain"></div>
-      <div id="quiz-score-pop"></div>
+    <div id="hud">
+      <span id="hud-av"></span>
+      <span id="hud-name"></span>
+      <div class="hud-sep"></div>
+      <span id="hud-lv"></span>
+      <div class="hud-sep"></div>
+      <span id="hud-wave" style="color:var(--gold)"></span>
+      <div class="hud-sep"></div>
+      <span>⭐</span><span id="hud-sc">0</span>
+      <span id="hud-pl" style="margin-left:auto">👥 1</span>
+      <div class="hud-sep"></div>
+      <span id="hud-ms">—ms</span>
     </div>
-    <button id="dialog-close" onclick="closeDialog()">ปิด ✕</button>
-  </div>
+    <div id="wbar-wrap"><div id="wbar" style="width:0%"></div></div>
 
-  <!-- Chat -->
-  <div id="chat-wrap">
-    <div id="chat-log"></div>
-    <div id="chat-input-row">
-      <input id="chat-in" type="text" maxlength="60" placeholder="พิมพ์ข้อความ..." />
-      <button id="chat-send">ส่ง</button>
+    <div id="lb-hud"><h4>🏆 อันดับ</h4><ul id="lb-list"></ul></div>
+    <div id="ctrl-hint">WASD / ลูกศร = เดิน<br>Space / E = คุย NPC<br>Enter = แชท</div>
+
+    <div id="dialog">
+      <div id="dlg-npc"></div>
+      <div id="dlg-sub"></div>
+      <div id="quiz-area">
+        <div id="quiz-q"></div>
+        <div class="opts" id="qopts"></div>
+        <div id="quiz-exp"></div>
+        <div id="quiz-pop"></div>
+      </div>
+      <button id="dlg-close" onclick="closeDialog()">ปิด ✕</button>
     </div>
+
+    <div id="chat-wrap">
+      <div id="chat-log"></div>
+      <div id="chat-row">
+        <input id="ci" type="text" maxlength="60" placeholder="ข้อความ..."/>
+        <button id="cs">ส่ง</button>
+      </div>
+    </div>
+
+    <canvas id="mm" width="108" height="76"></canvas>
+
+    <div id="wave-clear">
+      <div class="wc-icon" id="wc-icon">🎉</div>
+      <div class="wc-title" id="wc-title">Wave สำเร็จ!</div>
+      <div class="wc-sub" id="wc-sub"></div>
+      <div class="wc-score" id="wc-score"></div>
+      <button class="wc-btn" id="wc-btn">ต่อไป →</button>
+    </div>
+
+    <div id="joy-wrap"><div id="joy-base"><div id="joy-knob"></div></div></div>
   </div>
+</div>
 
-  <!-- Minimap -->
-  <canvas id="minimap" width="120" height="90"></canvas>
-
-  <!-- Level complete banner -->
-  <div id="lvl-banner">
-    <h2 id="lvl-banner-title">🎉 ผ่านด่านแล้ว!</h2>
-    <p id="lvl-banner-msg">คุณตอบคำถามครบทั้งหมดแล้ว</p>
-    <button onclick="closeLevelBanner()">ต่อไป →</button>
-  </div>
-
-  <!-- Mobile Joystick -->
-  <div id="joystick-area">
-    <div id="joystick-base"><div id="joystick-knob"></div></div>
+<!-- ══ SCREEN: RESULTS ══ -->
+<div id="s-results" class="screen off">
+  <div class="res-box">
+    <div class="res-title">🏆 จบเกมแล้ว!</div>
+    <div class="res-sub" id="res-sub">สรุปผลคะแนนทั้งหมด</div>
+    <table class="res-table">
+      <thead><tr><th>อันดับ</th><th>ตัวละคร</th><th>ชื่อ</th><th style="text-align:right">คะแนน</th></tr></thead>
+      <tbody id="res-tbody"></tbody>
+    </table>
+    <div class="res-btn-row">
+      <button class="btn btn-green btn-sm" onclick="goLobby()">🔄 เล่นใหม่</button>
+    </div>
   </div>
 </div>
 
 <script src="questions.js"></script>
 <script>
-// ==================== CONFIG ====================
-const WS_URL = (() => {
-  const h = window.location.hostname;
-  const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  const port = window.location.port;
-  if(h === 'localhost' || h === '127.0.0.1'){
-    return `ws://${h}:${port||3000}`;
-  }
-  return `${proto}//${h}${port?':'+port:''}`;
+// ═══════════════════════════════════════════════════════
+//  CONSTANTS & CONFIG
+// ═══════════════════════════════════════════════════════
+const WS_URL = (()=>{
+  const h=window.location.hostname, p=window.location.protocol==='https:'?'wss:':'ws:', pt=window.location.port;
+  return (h==='localhost'||h==='127.0.0.1') ? `ws://${h}:${pt||3000}` : `${p}//${h}${pt?':'+pt:''}`;
 })();
 
-const TILE = 32;
-const MAP_W = 40, MAP_H = 30;
-const CANVAS_W = MAP_W * TILE, CANVAS_H = MAP_H * TILE;
-const AVATARS = ['🧑','👧','🧒','👦','🧙','🧝'];
-const COLORS_AVATAR = ['#ff6b6b','#e91e63','#ff9800','#2196f3','#9c27b0','#4caf50'];
-const NPC_INTERACT_DIST = 64;
-const SEND_RATE = 50;
+const TILE=16, TW=64, TH=48;          // tile size 16px, map 64×48 tiles
+const CW=TW*TILE, CH=TH*TILE;         // canvas world size 1024×768
+const AVATARS=['🧑','👧','🧒','👦','🧙','🧝‍♀️'];
+const AV_COL=['#e74c3c','#e91e63','#ff9800','#2196f3','#9c27b0','#27ae60'];
+const INTERACT=56, MOVE_SEND=50;
+const QS_PER_WAVE=10;
 
-// ==================== STATE ====================
-let ws = null;
-let selfId = null;
-let players = {};
-let myScore = 0;
-let selectedLevel = 1;
-let selectedAvatar = 0;
-let dialogOpen = false;
-let currentNPC = null;
-let currentQIdx = 0;
-let answeredNPCs = new Set();
-let pingStart = 0, pingMs = 0;
-let lastSent = 0;
-let levelData = null;
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+let ws=null, selfId=null;
+let players={}, myScore=0;
+let selLv=1, selAv=0;
+let dialogOpen=false, currentNPC=null;
+let answeredNPCs=new Set();
+let waveNum=1, wavePool=[], waveAnswered=0;
+let camX=0, camY=0;
+let pingT=0, pingMs=0, lastSent=0, animF=0;
+let mapTiles=[], npcDefs=[], spriteCache=new Map();
+let inLobby=true, isHost=false;
+const keys={}, bubbles={};
+let me={id:null,name:'',avatar:0,x:CW/2,y:CH/2,score:0,direction:'down',moving:false};
+let rafId=null;
 
-// Map tiles: 0=grass, 1=path, 2=wall/tree, 3=water, 4=flower
-let mapTiles = [];
-let npcDefs = [];
+// ═══════════════════════════════════════════════════════
+//  PIXEL ART RENDERER  (16-pixel grid, drawn to offscreen canvas)
+// ═══════════════════════════════════════════════════════
+const pxCache=new Map();
 
-const keys = {};
+function pxSprite(key, w, h, drawFn){
+  if(pxCache.has(key)) return pxCache.get(key);
+  const oc=document.createElement('canvas'); oc.width=w; oc.height=h;
+  const ox=oc.getContext('2d'); ox.imageSmoothingEnabled=false;
+  drawFn(ox);
+  if(pxCache.size>400) pxCache.clear();
+  pxCache.set(key, oc); return oc;
+}
 
-// Player data
-let me = {
-  id:null, name:'', avatar:0,
-  x:200, y:200, vx:0, vy:0,
-  direction:'down', moving:false, score:0
-};
+// pixel block helper — draws NxN block of 1px pixels
+function pb(ctx, x, y, c){ ctx.fillStyle=c; ctx.fillRect(x,y,1,1); }
+function pRect(ctx,x,y,w,h,c){ ctx.fillStyle=c; ctx.fillRect(x,y,w,h); }
 
-// ==================== LOBBY SETUP ====================
-function buildLobby(){
-  const grid = document.getElementById('level-grid');
-  grid.innerHTML = '';
-  Object.entries(QUESTIONS).forEach(([id,lv])=>{
-    const d = document.createElement('div');
-    d.className = 'lvl-card' + (id==1?' selected':'');
-    d.style.background = `linear-gradient(135deg, ${lv.color}22, ${lv.color}44)`;
-    d.style.borderColor = lv.color+'55';
-    d.innerHTML = `<div class="lvl-name" style="color:${lv.color}">${lv.name}</div>
-                   <div class="lvl-desc">${lv.questions.length} คำถาม</div>`;
-    d.dataset.id = id;
-    d.onclick = ()=>{
-      document.querySelectorAll('.lvl-card').forEach(c=>c.classList.remove('selected'));
-      d.classList.add('selected');
-      selectedLevel = parseInt(id);
-    };
-    grid.appendChild(d);
-  });
-
-  document.querySelectorAll('.av-btn').forEach(btn=>{
-    btn.onclick=()=>{
-      document.querySelectorAll('.av-btn').forEach(b=>b.classList.remove('selected'));
-      btn.classList.add('selected');
-      selectedAvatar = parseInt(btn.dataset.av);
-    };
-  });
-
-  document.getElementById('btn-start').onclick = startGame;
-  document.getElementById('inp-name').addEventListener('keydown',e=>{
-    if(e.key==='Enter') startGame();
+// ── 32×40 Tree (pixel art style) ──────────────────────
+function makeTree(variant){
+  return pxSprite(`tree_${variant}`, 32, 40, (c)=>{
+    const dark=['#1a3a0d','#213d12','#172e0b'][variant%3];
+    const mid=['#2e6b1a','#356022','#2a5c16'][variant%3];
+    const lite=['#4a9627','#52a030','#429024'][variant%3];
+    const hi='#6fc43a';
+    // Trunk
+    pRect(c,13,28,6,12,'#5d3a1a'); pRect(c,14,29,2,10,'#7a4e24');
+    // Shadow
+    c.fillStyle='rgba(0,0,0,0.25)'; c.beginPath(); c.ellipse(16,40,10,3,0,0,Math.PI*2); c.fill();
+    // Foliage — 3 layers pixel blocks
+    [[6,18,20,14,dark],[4,14,24,16,mid],[7,10,18,12,mid],[9,7,14,8,lite],[11,4,10,6,lite],[12,2,8,5,hi],
+     [3,20,6,6,dark],[23,20,6,6,dark],[5,16,4,6,mid],[23,16,4,6,mid]
+    ].forEach(([x,y,w,h,col])=>pRect(c,x,y,w,h,col));
+    // Highlight dots
+    [[10,8],[14,5],[8,15],[20,15]].forEach(([x,y])=>{ c.fillStyle='rgba(255,255,255,0.3)'; c.fillRect(x,y,2,2); });
   });
 }
 
-// ==================== WEBSOCKET ====================
+// ── 24×20 Bush ─────────────────────────────────────────
+function makeBush(v){
+  return pxSprite(`bush_${v}`,24,20,(c)=>{
+    const cols=[['#1a5a0d','#2a7a1a','#3a9628'],['#1a4a2a','#2a6a3a','#3a8a4a'],['#3a5a0a','#5a7a1a','#7a9a28']];
+    const [d,m,l]=cols[v%3];
+    c.fillStyle='rgba(0,0,0,0.2)'; c.beginPath(); c.ellipse(12,19,10,3,0,0,Math.PI*2); c.fill();
+    [[2,8,8,10,d],[14,8,8,10,d],[6,6,12,12,m],[4,5,16,12,m],[7,3,10,8,l],[9,1,6,5,l]].forEach(([x,y,w,h,col])=>pRect(c,x,y,w,h,col));
+    c.fillStyle='rgba(255,255,255,0.25)'; c.fillRect(9,3,3,3);
+  });
+}
+
+// ── 20×28 Flower ───────────────────────────────────────
+function makeFlower(v){
+  const pc=[['#ff6b9d','#ff2266','#ff99bb'],['#ffee44','#ffcc00','#fff176'],['#cc88ff','#9900ff','#e0b0ff'],['#44ddff','#0099cc','#99eeff']];
+  return pxSprite(`flower_${v}`,20,28,(c)=>{
+    const [p1,p2,hi]=pc[v%4];
+    pRect(c,9,18,2,9,'#388e3c'); // stem
+    pRect(c,4,22,6,3,'#4caf50'); pRect(c,10,20,6,3,'#4caf50'); // leaves
+    // 6 petals
+    [[5,9,4,4],[5,13,4,4],[11,9,4,4],[11,13,4,4],[7,7,6,3],[7,16,6,3]].forEach(([x,y,w,h])=>pRect(c,x,y,w,h,p1));
+    pRect(c,6,8,8,3,p1); pRect(c,6,15,8,3,p1);
+    pRect(c,7,10,6,6,p2); // center
+    pRect(c,8,11,2,2,hi); // shine
+  });
+}
+
+// ── 24×20 Rock ──────────────────────────────────────────
+function makeRock(v){
+  return pxSprite(`rock_${v}`,24,20,(c)=>{
+    const cols=[['#455a64','#607d8b','#90a4ae'],['#4e342e','#6d4c41','#8d6e63'],['#37474f','#546e7a','#78909c']];
+    const [d,m,l]=cols[v%3];
+    c.fillStyle='rgba(0,0,0,0.2)'; c.beginPath(); c.ellipse(12,19,9,3,0,0,Math.PI*2); c.fill();
+    [[2,10,20,9,d],[4,7,16,10,m],[5,6,14,8,m],[7,4,10,6,l]].forEach(([x,y,w,h,col])=>pRect(c,x,y,w,h,col));
+    c.fillStyle='rgba(255,255,255,0.3)'; c.fillRect(7,6,4,3);
+  });
+}
+
+// ── 24×24 Chest ─────────────────────────────────────────
+function makeChest(open, frame){
+  return pxSprite(`chest_${open}_${frame%4}`,24,24,(c)=>{
+    pRect(c,3,12,18,11,'#5d3a1a'); pRect(c,4,13,16,9,'#7a4e24');
+    if(open){
+      pRect(c,3,6,18,8,'#7a4e24');
+      pRect(c,4,7,16,6,'#9a6a34');
+      if(frame%8<4){
+        [[7,4],[12,2],[17,5],[9,1]].forEach(([x,y])=>{ c.fillStyle='#ffd700'; c.fillRect(x,y,2,2); });
+      }
+    } else {
+      pRect(c,3,8,18,6,'#7a4e24'); pRect(c,4,9,16,4,'#9a6a34');
+    }
+    c.fillStyle='#ffd700'; c.beginPath(); c.arc(12,17,2.5,0,Math.PI*2); c.fill();
+    c.strokeStyle='#ffd700'; c.lineWidth=1.5; c.beginPath(); c.arc(12,15,2,Math.PI,0); c.stroke();
+    [[4,13],[20,13],[4,21],[20,21]].forEach(([x,y])=>{ c.fillStyle='#ffd700'; c.fillRect(x,y,2,2); });
+  });
+}
+
+// ── 16×24 Star (animated) ───────────────────────────────
+function makeStar(frame){
+  return pxSprite(`star_${frame%8}`,16,24,(c)=>{
+    const bob=Math.floor(frame/4)%4;
+    const y=4+bob;
+    c.fillStyle='rgba(0,0,0,0.18)'; c.beginPath(); c.ellipse(8,22,5,2,0,0,Math.PI*2); c.fill();
+    const pts=[];
+    for(let i=0;i<10;i++){
+      const a=i*Math.PI/5-Math.PI/2, r=i%2===0?7:3;
+      pts.push([8+Math.cos(a)*r, y+8+Math.sin(a)*r]);
+    }
+    c.beginPath(); c.moveTo(pts[0][0],pts[0][1]);
+    pts.slice(1).forEach(([px,py])=>c.lineTo(px,py));
+    c.closePath(); c.fillStyle='#ffd700'; c.fill();
+    c.strokeStyle='#ff9800'; c.lineWidth=0.8; c.stroke();
+    c.fillStyle='rgba(255,255,255,0.5)'; c.fillRect(5,y+4,3,3);
+  });
+}
+
+// ── 16×20 Fence ──────────────────────────────────────────
+function makeFence(){
+  return pxSprite('fence',16,20,(c)=>{
+    pRect(c,0,8,16,3,'#8d6e3a'); pRect(c,0,9,16,1,'#a0825a');
+    pRect(c,1,5,3,12,'#8d6e3a'); pRect(c,12,5,3,12,'#8d6e3a');
+    pRect(c,2,6,2,4,'#a0825a'); pRect(c,13,6,2,4,'#a0825a');
+  });
+}
+
+// ── 16×16 Player sprite ───────────────────────────────────
+function makePlayer(av, dir, frame, moving){
+  const col=AV_COL[av%AV_COL.length];
+  const hair=['#5d3a1a','#c2185b','#e65100','#0d47a1','#4a148c','#1b5e20'][av];
+  const walk=moving?Math.floor(frame/8)%2:0;
+  return pxSprite(`pl_${av}_${dir}_${walk}`,16,24,(c)=>{
+    // shadow
+    c.fillStyle='rgba(0,0,0,0.2)'; c.beginPath(); c.ellipse(8,23,5,2,0,0,Math.PI*2); c.fill();
+    // legs
+    const la=walk?2:-2;
+    pRect(c,4,18,4,6,col+'bb');
+    pRect(c,8,18,4,6,col+'bb');
+    if(moving){ c.fillRect(4,18+la,4,6); c.fillRect(8,18-la,4,6); }
+    // body
+    pRect(c,3,11,10,9,col);
+    pRect(c,4,12,3,2,'rgba(255,255,255,0.2)');
+    // arms
+    pRect(c,0,12,3,7,col+'cc');
+    pRect(c,13,12,3,7,col+'cc');
+    // head
+    pRect(c,3,4,10,9,'#ffcc80');
+    // hair
+    pRect(c,3,3,10,4,hair);
+    if(av===1||av===5){pRect(c,1,4,3,6,hair);pRect(c,12,4,3,6,hair);}
+    // eyes (not when dir=up)
+    if(dir!=='up'){
+      pRect(c,5,7,2,2,'#333');pRect(c,9,7,2,2,'#333');
+      pRect(c,5,7,1,1,'#fff5');pRect(c,9,7,1,1,'#fff5');
+    }
+    // NPC interaction glow ring (drawn separately)
+  });
+}
+
+// ── 16×24 NPC sprite ─────────────────────────────────────
+function makeNPC(col, frame){
+  const bob=Math.floor(frame/20)%2;
+  return pxSprite(`npc_${col}_${bob}`,16,24,(c)=>{
+    c.fillStyle='rgba(0,0,0,0.2)'; c.beginPath(); c.ellipse(8,23,5,2,0,0,Math.PI*2); c.fill();
+    // robe
+    pRect(c,2,11,12,13,col+'cc');
+    pRect(c,3,12,10,11,col);
+    // body detail
+    pRect(c,5,14,6,2,'rgba(255,255,255,0.15)');
+    pRect(c,5,17,6,2,'rgba(255,255,255,0.1)');
+    // head
+    pRect(c,3,3,10,9,'#ffcc80');
+    // hat
+    pRect(c,2,2,12,3,col+'dd');
+    pRect(c,4,0,8,4,col);
+    // eyes
+    pRect(c,5,6,2,2,'#333');pRect(c,9,6,2,2,'#333');
+    pRect(c,5,6,1,1,'#fff6');pRect(c,9,6,1,1,'#fff6');
+    // smile
+    c.fillStyle='#c66'; c.fillRect(6,9,4,1);
+  });
+}
+
+// ── Tile drawing ─────────────────────────────────────────
+const GRASS=['#2e5e1a','#2c5c18','#306020','#2a5818'];
+const PATH=['#7cad42','#82b848','#78a840'];
+const WATER=['#1565c0','#1976d2','#0d47a1'];
+
+function drawTile(ctx, tx, ty, tile, px, py){
+  const T=TILE;
+  switch(tile){
+    case 0: // grass
+      ctx.fillStyle=GRASS[(tx*3+ty*7)%4]; ctx.fillRect(px,py,T,T);
+      // grass tufts
+      if((tx*5+ty*3)%9===0){ ctx.fillStyle='rgba(255,255,255,0.05)'; ctx.fillRect(px+3,py+4,1,4); ctx.fillRect(px+7,py+3,1,5); ctx.fillRect(px+11,py+5,1,3); }
+      break;
+    case 1: // path (dirt)
+      ctx.fillStyle=PATH[(tx+ty)%3]; ctx.fillRect(px,py,T,T);
+      if((tx*7+ty)%6===0){ ctx.fillStyle='rgba(0,0,0,0.08)'; ctx.fillRect(px+2,py+6,T-4,2); }
+      break;
+    case 2: // water
+      ctx.fillStyle=WATER[(tx+ty)%3]; ctx.fillRect(px,py,T,T);
+      const wv=Math.floor(animF/8)%T;
+      ctx.fillStyle='rgba(255,255,255,0.08)'; ctx.fillRect(px+((tx*5+wv)%T),py,2,T);
+      break;
+    case 3: // wall (stone)
+      ctx.fillStyle='#3a3a4a'; ctx.fillRect(px,py,T,T);
+      ctx.fillStyle='#2a2a38'; ctx.fillRect(px,py,T,1); ctx.fillRect(px,py,1,T);
+      ctx.fillStyle='#4a4a5a'; ctx.fillRect(px+1,py+1,T-2,T-2);
+      break;
+    default: // grass under deco
+      ctx.fillStyle=GRASS[(tx*3+ty*7)%4]; ctx.fillRect(px,py,T,T);
+  }
+}
+
+// Decoration tile types:  10=tree 11=bush 12=flower 13=rock 14=chest 15=star 16=fence
+function drawDeco(ctx, tx, ty, tile, px, py){
+  const T=TILE;
+  let sp;
+  if(tile===10) sp=makeTree((tx*3+ty)%3);
+  else if(tile===11) sp=makeBush((tx+ty*2)%3);
+  else if(tile===12) sp=makeFlower((tx*7+ty*3)%4);
+  else if(tile===13) sp=makeRock((tx+ty)%3);
+  else if(tile===14) sp=makeChest(false, animF);
+  else if(tile===15) sp=makeStar(animF);
+  else if(tile===16) sp=makeFence();
+  else return;
+  // Draw centered on tile, slightly above
+  if(sp) ctx.drawImage(sp, px+(T-sp.width)/2, py+T-sp.height, sp.width, sp.height);
+}
+
+// ═══════════════════════════════════════════════════════
+//  MAP GENERATION
+// ═══════════════════════════════════════════════════════
+function seededRnd(seed){ let s=seed|0; return ()=>{ s=(s*1664525+1013904223)&0x7fffffff; return s/0x7fffffff; }; }
+
+function generateMap(lvl, wave){
+  const rnd=seededRnd(lvl*999+wave*137);
+  mapTiles=[];
+  for(let y=0;y<TH;y++){ mapTiles[y]=[]; for(let x=0;x<TW;x++) mapTiles[y][x]=0; }
+
+  // Border walls
+  for(let x=0;x<TW;x++){ mapTiles[0][x]=3; mapTiles[TH-1][x]=3; }
+  for(let y=0;y<TH;y++){ mapTiles[y][0]=3; mapTiles[y][TW-1]=3; }
+
+  // Main paths (cross pattern)
+  const cx=TW>>1, cy=TH>>1;
+  for(let x=1;x<TW-1;x++){ mapTiles[cy][x]=1; mapTiles[cy+1][x]=1; mapTiles[cy-1][x]=1; }
+  for(let y=1;y<TH-1;y++){ mapTiles[y][cx]=1; mapTiles[y][cx+1]=1; mapTiles[y][cx-1]=1; }
+  // Perimeter path
+  for(let x=2;x<TW-2;x++){ mapTiles[2][x]=1; mapTiles[TH-3][x]=1; }
+  for(let y=2;y<TH-2;y++){ mapTiles[y][2]=1; mapTiles[y][TW-3]=1; }
+  // Corner connectors
+  [[cx/2|0,2,cx/2|0,cy],[cx+cx/2|0,cy,cx+cx/2|0,TH-3],[2,cy/2|0,cx,cy/2|0],[cx,cy+cy/2|0,TW-3,cy+cy/2|0]].forEach(([x1,y1,x2,y2])=>{
+    const xs=Math.min(x1,x2),xe=Math.max(x1,x2),ys=Math.min(y1,y2),ye=Math.max(y1,y2);
+    for(let y=ys;y<=ye;y++) for(let x=xs;x<=xe;x++) if(mapTiles[y]&&mapTiles[y][x]===0) mapTiles[y][x]=1;
+  });
+
+  // Decorations on grass
+  for(let y=1;y<TH-1;y++) for(let x=1;x<TW-1;x++){
+    if(mapTiles[y][x]!==0) continue;
+    const r=rnd();
+    if(r<0.09) mapTiles[y][x]=10;       // tree
+    else if(r<0.13) mapTiles[y][x]=11;  // bush
+    else if(r<0.17) mapTiles[y][x]=12;  // flower
+    else if(r<0.19) mapTiles[y][x]=13;  // rock
+    else if(r<0.192) mapTiles[y][x]=16; // fence
+  }
+  // Stars on path
+  for(let y=1;y<TH-1;y++) for(let x=1;x<TW-1;x++){
+    if(mapTiles[y][x]===1&&rnd()<0.018) mapTiles[y][x]=15;
+  }
+  // Water patches
+  for(let py=0;py<3;py++){
+    const wx=2+Math.floor(rnd()*(TW-10)), wy=2+Math.floor(rnd()*(TH-10));
+    const wr=1+Math.floor(rnd()*2), wc=1+Math.floor(rnd()*3);
+    for(let y=wy;y<wy+wc&&y<TH-2;y++) for(let x=wx;x<wx+wr&&x<TW-2;x++) if(mapTiles[y][x]===0) mapTiles[y][x]=2;
+  }
+
+  // NPC spots — on path, spread out
+  const npcSpots=[
+    {x:(cx+1)*TILE+8,y:3*TILE+8},
+    {x:3*TILE+8,y:(cy+1)*TILE+8},
+    {x:(TW-4)*TILE+8,y:(cy+1)*TILE+8},
+    {x:(cx+1)*TILE+8,y:(TH-4)*TILE+8},
+    {x:(cx/2|0)*TILE+8,y:(cy/2|0)*TILE+8},
+    {x:(cx+cx/2|0)*TILE+8,y:(cy+cy/2|0)*TILE+8},
+  ];
+  npcDefs=[];
+  const lv=QUESTIONS[selLv];
+  const nCount=Math.min(wavePool.length, npcSpots.length);
+  for(let i=0;i<nCount;i++){
+    const tx=Math.round(npcSpots[i].x/TILE), ty=Math.round(npcSpots[i].y/TILE);
+    for(let dy=-2;dy<=2;dy++) for(let dx=-2;dx<=2;dx++){
+      const nx=tx+dx,ny=ty+dy;
+      if(nx>0&&nx<TW-1&&ny>0&&ny<TH-1) mapTiles[ny][nx]=1;
+    }
+    // Place chest decoration near NPC
+    if(tx+3<TW-1) mapTiles[ty][tx+2]=14;
+    npcDefs.push({ id:i, x:npcSpots[i].x, y:npcSpots[i].y, name:lv.npcName, emoji:lv.npcEmoji, qIdx:i, color:lv.color, bubble:null });
+  }
+
+  // Player spawn center
+  me.x=(cx+1)*TILE+8; me.y=(cy+1)*TILE+8;
+}
+
+function isSolid(wx,wy){
+  const tx=wx/TILE|0, ty=wy/TILE|0;
+  if(tx<0||ty<0||tx>=TW||ty>=TH) return true;
+  const t=mapTiles[ty]?.[tx];
+  return t===3||t===10||t===11||t===13||t===16;
+}
+
+// ═══════════════════════════════════════════════════════
+//  WAVE SYSTEM
+// ═══════════════════════════════════════════════════════
+function initWave(wave){
+  waveNum=wave; waveAnswered=0; answeredNPCs.clear();
+  spriteCache.clear(); pxCache.clear();
+  const lv=QUESTIONS[selLv], all=[...lv.questions];
+  // Shuffle
+  for(let i=all.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [all[i],all[j]]=[all[j],all[i]]; }
+  wavePool=all.slice(0,Math.min(QS_PER_WAVE,all.length));
+  generateMap(selLv,wave);
+  document.getElementById('hud-wave').textContent=`Wave ${wave}`;
+  updateWBar();
+}
+
+function updateWBar(){
+  const pct=Math.min(100,(waveAnswered/QS_PER_WAVE)*100);
+  document.getElementById('wbar').style.width=pct+'%';
+}
+
+// ═══════════════════════════════════════════════════════
+//  LOBBY BUILD
+// ═══════════════════════════════════════════════════════
+function buildLobby(){
+  const ar=document.getElementById('av-row'); ar.innerHTML='';
+  AVATARS.forEach((a,i)=>{
+    const b=document.createElement('button');
+    b.className='av-btn'+(i===0?' on':''); b.textContent=a; b.dataset.i=i;
+    b.onclick=()=>{ document.querySelectorAll('.av-btn').forEach(x=>x.classList.remove('on')); b.classList.add('on'); selAv=i; };
+    ar.appendChild(b);
+  });
+  const lg=document.getElementById('lv-grid'); lg.innerHTML='';
+  Object.entries(QUESTIONS).forEach(([id,lv])=>{
+    const d=document.createElement('div');
+    d.className='lv-card'+(id==='1'?' on':'');
+    d.style.cssText=`background:linear-gradient(135deg,${lv.color}18,${lv.color}28);border-color:${lv.color}44`;
+    d.innerHTML=`<div class="lv-name" style="color:${lv.color}">${lv.npcEmoji} ${lv.name}</div><div class="lv-sub">${lv.questions.length} คำถาม</div>`;
+    d.onclick=()=>{ document.querySelectorAll('.lv-card').forEach(c=>c.classList.remove('on')); d.classList.add('on'); selLv=parseInt(id); };
+    lg.appendChild(d);
+  });
+  document.getElementById('btn-join').onclick=joinRoom;
+  document.getElementById('btn-ready').onclick=sendReady;
+  document.getElementById('btn-start-now').onclick=()=>wsSend('START_NOW',{});
+  document.getElementById('inp-name').addEventListener('keydown',e=>{ if(e.key==='Enter') joinRoom(); });
+}
+
+// ═══════════════════════════════════════════════════════
+//  WEBSOCKET
+// ═══════════════════════════════════════════════════════
 function connectWS(){
   try{
-    ws = new WebSocket(WS_URL);
-    document.getElementById('conn-dot').className = 'connecting';
-    document.getElementById('conn-text').textContent = 'กำลังเชื่อมต่อ...';
+    ws=new WebSocket(WS_URL);
+    const dot=document.getElementById('cdot'), txt=document.getElementById('ctxt');
+    dot.className='wait'; txt.textContent='กำลังเชื่อมต่อ...';
+    ws.onopen=()=>{ dot.className='on'; txt.textContent='เชื่อมต่อสำเร็จ ✓'; };
+    ws.onmessage=e=>handleMsg(JSON.parse(e.data));
+    ws.onclose=()=>{ dot.className=''; txt.textContent='ขาดการเชื่อมต่อ'; addChat('⚠ ขาดการเชื่อมต่อ','sys'); };
+    ws.onerror=()=>{ dot.className=''; txt.textContent='เชื่อมต่อไม่ได้ — ตรวจสอบ server'; };
+  }catch(e){}
+}
+function wsSend(t,p){ if(ws&&ws.readyState===1) ws.send(JSON.stringify({type:t,payload:p})); }
 
-    ws.onopen = ()=>{
-      document.getElementById('conn-dot').className = 'connected';
-      document.getElementById('conn-text').textContent = 'เชื่อมต่อสำเร็จ ✓';
-    };
-
-    ws.onmessage = e => handleServerMsg(JSON.parse(e.data));
-
-    ws.onclose = ()=>{
-      document.getElementById('conn-dot').className = '';
-      document.getElementById('conn-text').textContent = 'ขาดการเชื่อมต่อ — รีเฟรชเพื่อลองใหม่';
-      addChat('ขาดการเชื่อมต่อกับเซิร์ฟเวอร์','sys');
-    };
-
-    ws.onerror = ()=>{
-      document.getElementById('conn-dot').className = '';
-      document.getElementById('conn-text').textContent = 'เชื่อมต่อไม่ได้ — ตรวจสอบ server';
-    };
-  } catch(e){
-    document.getElementById('conn-text').textContent = 'WebSocket ไม่พร้อมใช้งาน';
+function handleMsg(msg){
+  const{type:t,payload:p}=msg;
+  if(t==='INIT'){
+    selfId=p.selfId; me.id=selfId;
+    p.players.forEach(x=>{ if(x.id!==selfId) players[x.id]=x; });
+    isHost=p.players[0]?.id===selfId || p.players.length===1;
+    updateLobbyPanel(p); updateLB(p.leaderboard);
   }
+  else if(t==='LOBBY_UPDATE'){
+    p.players.forEach(x=>{ if(x.id!==selfId) players[x.id]={...players[x.id],...x}; });
+    updateLobbyPanel(p);
+  }
+  else if(t==='PLAYER_JOINED'){ if(p.id!==selfId){ players[p.id]=p; } updatePCount(); }
+  else if(t==='PLAYER_LEFT'){ delete players[p.id]; addChat(`${p.name} ออกจากเกม`,'sys'); updatePCount(); }
+  else if(t==='GAME_START'){ startGame(p.wave||1); }
+  else if(t==='PLAYER_MOVED'){
+    if(p.id!==selfId&&players[p.id]){ const q=players[p.id]; q.x=p.x;q.y=p.y;q.direction=p.direction;q.moving=p.moving; }
+  }
+  else if(t==='SCORE_UPDATE'){ myScore=p.score; me.score=myScore; document.getElementById('hud-sc').textContent=myScore; }
+  else if(t==='LEADERBOARD'){ updateLB(p.leaderboard); }
+  else if(t==='CHAT_MSG'){ addChat(p.text,'user',p.name,p.id===selfId); showBubble(p.id,p.text); }
+  else if(t==='SHOW_RESULTS'){ showResults(p.leaderboard); }
+  else if(t==='PONG'){ pingMs=Date.now()-pingT; document.getElementById('hud-ms').textContent=pingMs+'ms'; }
 }
 
-function wsSend(type, payload){
-  if(ws && ws.readyState === WebSocket.OPEN){
-    ws.send(JSON.stringify({type, payload}));
-  }
-}
-
-function handleServerMsg(msg){
-  const {type, payload} = msg;
-  switch(type){
-    case 'INIT':
-      selfId = payload.selfId;
-      me.id = selfId;
-      payload.players.forEach(p=>{ if(p.id!==selfId) players[p.id]=p; });
-      updateLeaderboard(payload.leaderboard);
-      updatePlayerCount();
-      break;
-
-    case 'PLAYER_JOINED':
-      if(payload.id !== selfId){
-        players[payload.id] = payload;
-        addChat(`${payload.name} เข้าร่วมเกม 🎉`,'sys');
-        updatePlayerCount();
-      }
-      break;
-
-    case 'PLAYER_LEFT':
-      delete players[payload.id];
-      addChat(`${payload.name} ออกจากเกม`,'sys');
-      updatePlayerCount();
-      break;
-
-    case 'PLAYER_MOVED':
-      if(payload.id !== selfId && players[payload.id]){
-        const p = players[payload.id];
-        p.x = payload.x; p.y = payload.y;
-        p.direction = payload.direction;
-        p.moving = payload.moving;
-      }
-      break;
-
-    case 'SCORE_UPDATE':
-      myScore = payload.score;
-      me.score = myScore;
-      document.getElementById('hud-score').textContent = myScore;
-      break;
-
-    case 'LEADERBOARD':
-      updateLeaderboard(payload.leaderboard);
-      break;
-
-    case 'CHAT_MSG':
-      addChat(payload.text, 'user', payload.name, payload.id===selfId);
-      showBubble(payload.id, payload.text);
-      break;
-
-    case 'PONG':
-      pingMs = Date.now()-pingStart;
-      document.getElementById('hud-ping').textContent = pingMs+'ms';
-      break;
-  }
-}
-
-// ==================== MAP GENERATION ====================
-function generateMap(lvl){
-  const q = QUESTIONS[lvl];
-  mapTiles = [];
-  for(let y=0;y<MAP_H;y++){
-    mapTiles[y]=[];
-    for(let x=0;x<MAP_W;x++){
-      if(x===0||y===0||x===MAP_W-1||y===MAP_H-1) mapTiles[y][x]=2;
-      else mapTiles[y][x]=0;
-    }
-  }
-
-  // Main paths
-  const paths=[
-    {x1:2,y1:2,x2:MAP_W-3,y2:2},
-    {x1:2,y1:MAP_H-3,x2:MAP_W-3,y2:MAP_H-3},
-    {x1:2,y1:2,x2:2,y2:MAP_H-3},
-    {x1:MAP_W-3,y1:2,x2:MAP_W-3,y2:MAP_H-3},
-    {x1:MAP_W/2|0,y1:2,x2:MAP_W/2|0,y2:MAP_H-3},
-    {x1:2,y1:MAP_H/2|0,x2:MAP_W-3,y2:MAP_H/2|0},
-    {x1:8,y1:2,x2:8,y2:MAP_H/2|0},
-    {x1:MAP_W-9,y1:MAP_H/2|0,x2:MAP_W-9,y2:MAP_H-3},
-    {x1:2,y1:7,x2:MAP_W/2|0,y2:7},
-    {x1:MAP_W/2|0,y1:MAP_H-8,x2:MAP_W-3,y2:MAP_H-8},
-  ];
-
-  paths.forEach(p=>{
-    const xs=Math.min(p.x1,p.x2), xe=Math.max(p.x1,p.x2);
-    const ys=Math.min(p.y1,p.y2), ye=Math.max(p.y1,p.y2);
-    for(let y=ys;y<=ye;y++) for(let x=xs;x<=xe;x++){
-      if(y>0&&y<MAP_H-1&&x>0&&x<MAP_W-1) mapTiles[y][x]=1;
-    }
+function updateLobbyPanel(snap){
+  const container=document.getElementById('lobby-players');
+  container.innerHTML='';
+  const all=[...(snap.players||[])];
+  if(all.length===0){ container.innerHTML='<div style="color:var(--muted);font-size:.8rem;text-align:center;padding:.8rem">ยังไม่มีผู้เล่น...</div>'; return; }
+  all.forEach((p,i)=>{
+    const div=document.createElement('div'); div.className='lp-row';
+    const isSelf=p.id===selfId;
+    div.innerHTML=`<span class="lp-av">${AVATARS[p.avatar||0]}</span>
+      <span class="lp-name" style="${isSelf?'color:var(--green)':''}">${p.name}${i===0?' 👑':''}</span>
+      <span class="lp-ready ${p.ready?'ready-yes':'ready-no'}">${p.ready?'✅ พร้อม':'⏳ รอ...'}</span>`;
+    container.appendChild(div);
   });
-
-  // Path widths +1
-  const pathCopy=mapTiles.map(r=>[...r]);
-  for(let y=1;y<MAP_H-1;y++) for(let x=1;x<MAP_W-1;x++){
-    if(pathCopy[y][x]===1){
-      mapTiles[y][x]=1;
-      if(y+1<MAP_H-1) mapTiles[y+1][x]=1;
-      if(x+1<MAP_W-1) mapTiles[y][x+1]=1;
-    }
-  }
-
-  // Scatter trees on grass edges
-  for(let y=1;y<MAP_H-1;y++) for(let x=1;x<MAP_W-1;x++){
-    if(mapTiles[y][x]===0 && Math.random()<0.12) mapTiles[y][x]=2;
-  }
-
-  // Flowers
-  for(let y=1;y<MAP_H-1;y++) for(let x=1;x<MAP_W-1;x++){
-    if(mapTiles[y][x]===0 && Math.random()<0.05) mapTiles[y][x]=4;
-  }
-
-  // NPC positions (on path tiles near interesting spots)
-  npcDefs = [];
-  const npcSpots=[
-    {x:3*TILE,y:3*TILE},{x:(MAP_W-4)*TILE,y:3*TILE},
-    {x:3*TILE,y:(MAP_H-4)*TILE},{x:(MAP_W-4)*TILE,y:(MAP_H-4)*TILE},
-    {x:(MAP_W/2|0)*TILE,y:5*TILE},
-  ];
-
-  const numNPCs = Math.min(q.questions.length, npcSpots.length);
-  for(let i=0;i<numNPCs;i++){
-    npcDefs.push({
-      id: i,
-      x: npcSpots[i].x,
-      y: npcSpots[i].y,
-      name: q.npcName,
-      qIdx: i,
-      color: q.color,
-      bubble: null,
-      bubbleTimer: 0
-    });
-    // Clear tile under NPC
-    const tx=npcSpots[i].x/TILE|0, ty=npcSpots[i].y/TILE|0;
-    if(ty>0&&ty<MAP_H-1&&tx>0&&tx<MAP_W-1) mapTiles[ty][tx]=1;
-  }
-
-  // Spawn point
-  me.x=(MAP_W/2|0)*TILE + 16;
-  me.y=(MAP_H/2|0)*TILE + 16;
+  const ready=all.filter(p=>p.ready).length;
+  document.getElementById('lobby-info').textContent=`ผู้เล่น ${all.length} คน | พร้อม ${ready}/${all.length} คน`;
+  document.getElementById('btn-ready').style.display='block';
+  if(isHost || all.length===1) document.getElementById('btn-start-now').style.display='block';
 }
 
-function isSolid(x,y){
-  const tx=(x/TILE)|0, ty=(y/TILE)|0;
-  if(tx<0||ty<0||tx>=MAP_W||ty>=MAP_H) return true;
-  const t=mapTiles[ty]?.[tx];
-  return t===2;
-}
+// ═══════════════════════════════════════════════════════
+//  RENDERING ENGINE
+// ═══════════════════════════════════════════════════════
+const gc=document.getElementById('gc'), gctx=gc.getContext('2d');
+const mmc=document.getElementById('mm'), mmx=mmc.getContext('2d');
 
-// ==================== DRAWING ====================
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-const mmCanvas = document.getElementById('minimap');
-const mmCtx = mmCanvas.getContext('2d');
+function render(){
+  gc.width=window.innerWidth; gc.height=window.innerHeight;
+  const W=gc.width, H=gc.height;
+  gctx.fillStyle='#1a3a0d'; gctx.fillRect(0,0,W,H);
 
-// Camera
-let camX=0, camY=0;
+  camX=Math.max(0,Math.min(me.x-W/2, CW-W));
+  camY=Math.max(0,Math.min(me.y-H/2, CH-H));
 
-const TILE_COLORS = {
-  0:['#4a7c2f','#3d6b28'],  // grass variants
-  1:['#8bc34a','#9ccc52'],  // path
-  2:['#2d5a1b','#1e3d12'],  // tree/wall
-  3:['#1565c0','#1976d2'],  // water
-  4:['#4a7c2f','#3d6b28'],  // flower base
-};
+  // Visible tile range
+  const tx0=Math.max(0,(camX/TILE|0)-1), ty0=Math.max(0,(camY/TILE|0)-1);
+  const tx1=Math.min(TW,tx0+Math.ceil(W/TILE)+2), ty1=Math.min(TH,ty0+Math.ceil(H/TILE)+2);
+  const T=TILE;
 
-let animFrame=0;
-const bubbles = {}; // playerId -> {text,timer}
-
-function drawTile(x,y,t){
-  const px=x*TILE-camX, py=y*TILE-camY;
-  if(px<-TILE||py<-TILE||px>canvas.width||py>canvas.height) return;
-  const c=TILE_COLORS[t]||['#4a7c2f','#3d6b28'];
-  ctx.fillStyle = c[(x+y)%2];
-  ctx.fillRect(px,py,TILE,TILE);
-  if(t===2){
-    // Tree
-    ctx.fillStyle='#1e3d12';
-    ctx.fillRect(px+2,py+2,TILE-4,TILE-4);
-    ctx.fillStyle='#2d5a1b';
-    ctx.fillRect(px+4,py+4,TILE-8,TILE-10);
-    ctx.fillStyle='#8B4513';
-    ctx.fillRect(px+TILE/2-3,py+TILE-8,6,8);
-  } else if(t===4){
-    // Flower
-    ctx.fillStyle=['#ff6b6b','#ffeb3b','#e91e63'][(x*3+y*7)%3];
-    ctx.beginPath();
-    ctx.arc(px+TILE/2,py+TILE/2,4,0,Math.PI*2);
-    ctx.fill();
-  } else if(t===3){
-    ctx.fillStyle='rgba(255,255,255,0.1)';
-    ctx.fillRect(px+(animFrame%20),py,TILE/3,TILE);
-  }
-}
-
-function drawNPC(npc){
-  const px=npc.x-camX, py=npc.y-camY;
-  if(px<-60||py<-60||px>canvas.width+60||py>canvas.height+60) return;
-
-  const answered=answeredNPCs.has(npc.id);
-  const dist=Math.hypot(me.x-npc.x,me.y-npc.y);
-  const nearby=dist<NPC_INTERACT_DIST*1.5;
-
-  // Shadow
-  ctx.fillStyle='rgba(0,0,0,0.2)';
-  ctx.beginPath();
-  ctx.ellipse(px+16,py+30,12,4,0,0,Math.PI*2);
-  ctx.fill();
-
-  // Body
-  ctx.fillStyle=npc.color;
-  ctx.beginPath();
-  ctx.roundRect(px+4,py+14,24,18,4);
-  ctx.fill();
-
-  // Head
-  ctx.fillStyle='#ffcc80';
-  ctx.beginPath();
-  ctx.arc(px+16,py+10,10,0,Math.PI*2);
-  ctx.fill();
-
-  // Eyes
-  ctx.fillStyle='#333';
-  ctx.fillRect(px+10,py+8,3,3);
-  ctx.fillRect(px+19,py+8,3,3);
-
-  // Smile
-  ctx.strokeStyle='#333'; ctx.lineWidth=1.5;
-  ctx.beginPath();
-  ctx.arc(px+16,py+11,4,0.2,Math.PI-0.2);
-  ctx.stroke();
-
-  // ! or check indicator
-  if(!answered && nearby){
-    ctx.fillStyle='#ffd700';
-    ctx.font='bold 18px sans-serif';
-    ctx.textAlign='center';
-    ctx.fillText('!', px+16, py-4);
-  } else if(answered){
-    ctx.fillStyle='#4caf50';
-    ctx.font='16px sans-serif';
-    ctx.textAlign='center';
-    ctx.fillText('✓', px+16, py-4);
+  // Ground layer
+  for(let ty=ty0;ty<ty1;ty++) for(let tx=tx0;tx<tx1;tx++){
+    const tile=mapTiles[ty]?.[tx]||0;
+    const px=tx*T-camX|0, py=ty*T-camY|0;
+    if(tile<10) drawTile(gctx,tx,ty,tile,px,py);
+    else gctx.fillStyle=GRASS[(tx*3+ty*7)%4], gctx.fillRect(px,py,T,T); // grass under deco
   }
 
+  // Decoration layer (sorted by y)
+  const decos=[];
+  for(let ty=ty0;ty<ty1;ty++) for(let tx=tx0;tx<tx1;tx++){
+    const tile=mapTiles[ty]?.[tx]||0;
+    if(tile>=10) decos.push({tx,ty,tile});
+  }
+  decos.sort((a,b)=>a.ty-b.ty);
+  decos.forEach(d=>drawDeco(gctx,d.tx,d.ty,d.tile,d.tx*T-camX|0,d.ty*T-camY|0));
+
+  // NPCs
+  npcDefs.forEach(n=>renderNPC(n));
+
+  // Players sorted by y
+  const allP=[...Object.values(players),{...me,isSelf:true}];
+  allP.sort((a,b)=>a.y-b.y);
+  allP.forEach(p=>renderPlayer(p,p.isSelf||(p.id===me.id)));
+
+  // Minimap
+  renderMinimap();
+}
+
+function renderNPC(npc){
+  const px=npc.x-camX|0, py=npc.y-camY|0;
+  if(px<-40||py<-40||px>gc.width+40||py>gc.height+40) return;
+  const done=answeredNPCs.has(npc.id);
+  const near=Math.hypot(me.x-npc.x,me.y-npc.y)<INTERACT*1.5;
+
+  const sp=makeNPC(npc.color, animF);
+  gctx.drawImage(sp,px,py-8);
+
+  // Interaction indicator
+  if(!done&&near){
+    const bob=Math.sin(animF*.12)*3|0;
+    gctx.font='bold 16px sans-serif'; gctx.textAlign='center';
+    gctx.fillStyle='rgba(0,0,0,0.5)'; gctx.fillRect(px+8-8,py-22+bob,16,14);
+    gctx.fillStyle='#ffd700'; gctx.fillText('!',px+8,py-11+bob);
+  } else if(done){
+    gctx.font='13px sans-serif'; gctx.textAlign='center'; gctx.fillStyle='#4caf50';
+    gctx.fillText('✓',px+8,py-12);
+  }
   // Name tag
-  ctx.fillStyle='rgba(0,0,0,0.6)';
-  ctx.fillRect(px+16-28,py-22,56,14);
-  ctx.fillStyle='#ffd700';
-  ctx.font='10px Sarabun,sans-serif';
-  ctx.textAlign='center';
-  ctx.fillText(npc.name, px+16, py-11);
+  const nm=npc.emoji+' '+npc.name;
+  const tw=gctx.measureText(nm).width+8;
+  gctx.fillStyle='rgba(0,0,0,0.7)'; gctx.fillRect(px+8-tw/2,py-34,tw,13);
+  gctx.fillStyle='#ffd700'; gctx.font='9px Sarabun,sans-serif'; gctx.textAlign='center';
+  gctx.fillText(nm,px+8,py-23);
 }
 
-function drawPlayer(p, isSelf){
-  const px=p.x-camX, py=p.y-camY;
-  if(px<-60||py<-60||px>canvas.width+60||py>canvas.height+60) return;
+function renderPlayer(p,isSelf){
+  const px=p.x-camX|0, py=p.y-camY|0;
+  if(px<-40||py<-40||px>gc.width+40||py>gc.height+40) return;
+  const sp=makePlayer(p.avatar||0,p.direction||'down',animF,p.moving);
+  gctx.drawImage(sp,px-8,py-8);
 
-  const av=p.avatar||0;
-  const col=COLORS_AVATAR[av%COLORS_AVATAR.length];
-  const bob=isSelf&&p.moving ? Math.sin(animFrame*0.3)*2 : 0;
-  const py2=py+bob;
-
-  // Shadow
-  ctx.fillStyle='rgba(0,0,0,0.25)';
-  ctx.beginPath();
-  ctx.ellipse(px+16,py2+30,10,4,0,0,Math.PI*2);
-  ctx.fill();
-
-  // Body
-  ctx.fillStyle=col;
-  ctx.beginPath();
-  ctx.roundRect(px+6,py2+14,20,18,3);
-  ctx.fill();
-
-  // Head
-  ctx.fillStyle='#ffcc80';
-  ctx.beginPath();
-  ctx.arc(px+16,py2+10,9,0,Math.PI*2);
-  ctx.fill();
-
-  // Hair style by avatar
-  ctx.fillStyle=['#5d4037','#e91e63','#ff9800','#1565c0','#6a1b9a','#2e7d32'][av];
-  if(av===1||av===5){
-    ctx.fillRect(px+6,py2+1,20,8);
-    ctx.fillRect(px+4,py2+5,4,10);
-    ctx.fillRect(px+24,py2+5,4,10);
-  } else if(av===4){
-    ctx.beginPath();
-    ctx.arc(px+16,py2+8,10,Math.PI,0);
-    ctx.fill();
-    ctx.fillRect(px+6,py2+1,4,12);
-    ctx.fillRect(px+22,py2+1,4,12);
-  } else {
-    ctx.fillRect(px+7,py2+2,18,7);
-  }
-
-  // Eyes
-  ctx.fillStyle='#333';
-  if(p.direction==='up'){
-    // Back of head
-  } else {
-    ctx.fillRect(px+10,py2+8,3,3);
-    ctx.fillRect(px+19,py2+8,3,3);
-  }
-
-  // Self indicator ring
   if(isSelf){
-    ctx.strokeStyle='#ffd700';
-    ctx.lineWidth=2;
-    ctx.beginPath();
-    ctx.arc(px+16,py2+10,11,0,Math.PI*2);
-    ctx.stroke();
+    gctx.strokeStyle='rgba(93,222,58,0.6)'; gctx.lineWidth=1.5;
+    gctx.beginPath(); gctx.arc(px,py,10,0,Math.PI*2); gctx.stroke();
   }
-
-  // Name tag
   const nm=p.name||'?';
-  ctx.fillStyle='rgba(0,0,0,0.7)';
-  ctx.fillRect(px+16-nm.length*3.5-4, py2-22, nm.length*7+8, 14);
-  ctx.fillStyle=isSelf?'#ffd700':'#fff';
-  ctx.font='10px Sarabun,sans-serif';
-  ctx.textAlign='center';
-  ctx.fillText(nm, px+16, py2-11);
+  const tw=gctx.measureText(nm).width+6;
+  gctx.fillStyle='rgba(0,0,0,0.7)'; gctx.fillRect(px-tw/2,py-22,tw,12);
+  gctx.fillStyle=isSelf?'#5dde3a':'#fff'; gctx.font='9px Sarabun,sans-serif'; gctx.textAlign='center';
+  gctx.fillText(nm,px,py-12);
 
-  // Chat bubble
   const bub=bubbles[p.id||'self'];
-  if(bub && bub.timer>0){
-    const bx=px+16, by=py2-36;
-    const tw=ctx.measureText(bub.text).width+10;
-    ctx.fillStyle='rgba(255,255,255,0.9)';
-    ctx.beginPath();
-    ctx.roundRect(bx-tw/2,by-14,tw,18,5);
-    ctx.fill();
-    ctx.fillStyle='#222';
-    ctx.font='10px Sarabun,sans-serif';
-    ctx.fillText(bub.text.slice(0,20),bx,by);
-    bub.timer--;
+  if(bub&&bub.timer>0){
+    const bt=bub.text.slice(0,16), btw=gctx.measureText(bt).width+8;
+    gctx.fillStyle='rgba(255,255,255,0.9)'; gctx.fillRect(px-btw/2,py-38,btw,13);
+    gctx.fillStyle='#222'; gctx.fillText(bt,px,py-27); bub.timer--;
   }
 }
 
-function drawMinimap(){
-  mmCtx.clearRect(0,0,120,90);
-  mmCtx.fillStyle='rgba(0,0,0,0.7)';
-  mmCtx.fillRect(0,0,120,90);
-  const sw=120/MAP_W, sh=90/MAP_H;
-  for(let y=0;y<MAP_H;y++) for(let x=0;x<MAP_W;x++){
+function renderMinimap(){
+  mmx.fillStyle='rgba(0,0,0,.75)'; mmx.fillRect(0,0,108,76);
+  const sw=108/TW, sh=76/TH;
+  for(let y=0;y<TH;y++) for(let x=0;x<TW;x++){
     const t=mapTiles[y]?.[x];
-    mmCtx.fillStyle=t===2?'#1e3d12':t===1?'#7cb342':'#3d6b28';
-    mmCtx.fillRect(x*sw,y*sh,sw,sh);
+    mmx.fillStyle=t===3?'#2a2a38':t===10||t===11?'#1a3a0a':t===2?'#1565c0':t===1||t===15?'#7cad42':'#2d5a1b';
+    mmx.fillRect(x*sw,y*sh,sw,sh);
   }
-  // NPC dots
-  npcDefs.forEach(n=>{
-    mmCtx.fillStyle=answeredNPCs.has(n.id)?'#4caf50':'#ffd700';
-    mmCtx.fillRect(n.x/TILE*sw-1,n.y/TILE*sh-1,4,4);
-  });
-  // Other players
-  Object.values(players).forEach(p=>{
-    mmCtx.fillStyle='#90caf9';
-    mmCtx.fillRect(p.x/TILE*sw-1,p.y/TILE*sh-1,3,3);
-  });
-  // Self
-  mmCtx.fillStyle='#ffd700';
-  mmCtx.fillRect(me.x/TILE*sw-1,me.y/TILE*sh-1,4,4);
+  npcDefs.forEach(n=>{ mmx.fillStyle=answeredNPCs.has(n.id)?'#4caf50':'#ffd700'; mmx.fillRect(n.x/TILE*sw-1,n.y/TILE*sh-1,3,3); });
+  Object.values(players).forEach(p=>{ mmx.fillStyle='#81d4fa'; mmx.fillRect(p.x/TILE*sw-1,p.y/TILE*sh-1,2,2); });
+  mmx.fillStyle='#5dde3a'; mmx.fillRect(me.x/TILE*sw-2,me.y/TILE*sh-2,4,4);
 }
 
-// ==================== GAME LOOP ====================
-let lastTime=0;
-function gameLoop(ts){
-  const dt=Math.min((ts-lastTime)/1000, 0.05);
-  lastTime=ts;
-  animFrame++;
-
-  update(dt);
-  render();
-
-  requestAnimationFrame(gameLoop);
+// ═══════════════════════════════════════════════════════
+//  GAME LOOP
+// ═══════════════════════════════════════════════════════
+let lastT=0;
+function loop(ts){
+  const dt=Math.min((ts-lastT)/1000,.05); lastT=ts; animF++;
+  update(dt); render();
+  rafId=requestAnimationFrame(loop);
 }
 
 function update(dt){
   if(dialogOpen) return;
+  const spd=110; let vx=0,vy=0;
+  if(keys.ArrowLeft||keys.KeyA) vx=-1;
+  if(keys.ArrowRight||keys.KeyD) vx=1;
+  if(keys.ArrowUp||keys.KeyW) vy=-1;
+  if(keys.ArrowDown||keys.KeyS) vy=1;
+  if(vx&&vy){vx*=.707;vy*=.707;}
+  const nx=me.x+vx*spd*dt, ny=me.y+vy*spd*dt, r=7;
+  if(nx>r&&nx<CW-r && !isSolid(nx-r,me.y)&&!isSolid(nx+r,me.y)&&!isSolid(nx-r,me.y+14)&&!isSolid(nx+r,me.y+14)) me.x=nx;
+  if(ny>r&&ny<CH-r && !isSolid(me.x-r,ny)&&!isSolid(me.x+r,ny)&&!isSolid(me.x-r,ny+14)&&!isSolid(me.x+r,ny+14)) me.y=ny;
+  if(vx<0)me.direction='left'; else if(vx>0)me.direction='right'; else if(vy<0)me.direction='up'; else if(vy>0)me.direction='down';
+  me.moving=vx!==0||vy!==0;
+  if(Date.now()-lastSent>MOVE_SEND){ wsSend('MOVE',{x:me.x,y:me.y,direction:me.direction,moving:me.moving}); lastSent=Date.now(); }
 
-  const speed=120;
-  let vx=0,vy=0;
-  if(keys['ArrowLeft']||keys['KeyA']) vx=-1;
-  if(keys['ArrowRight']||keys['KeyD']) vx=1;
-  if(keys['ArrowUp']||keys['KeyW']) vy=-1;
-  if(keys['ArrowDown']||keys['KeyS']) vy=1;
-
-  if(vx!==0&&vy!==0){vx*=0.707;vy*=0.707;}
-
-  const nx=me.x+vx*speed*dt;
-  const ny=me.y+vy*speed*dt;
-  const r=10;
-
-  // Collision checks
-  let canX=!isSolid(nx-r,me.y)&&!isSolid(nx+r,me.y)&&!isSolid(nx-r,me.y+r*2)&&!isSolid(nx+r,me.y+r*2);
-  let canY=!isSolid(me.x-r,ny)&&!isSolid(me.x+r,ny)&&!isSolid(me.x-r,ny+r*2)&&!isSolid(me.x+r,ny+r*2);
-  let canXY=canX&&canY;
-
-  const margin=r;
-  if(nx>=margin&&nx<=CANVAS_W-margin && canX) me.x=nx;
-  if(ny>=margin&&ny<=CANVAS_H-margin && canY) me.y=ny;
-
-  if(vx<0) me.direction='left';
-  else if(vx>0) me.direction='right';
-  else if(vy<0) me.direction='up';
-  else if(vy>0) me.direction='down';
-
-  me.moving=(vx!==0||vy!==0);
-
-  // Send position
-  if(Date.now()-lastSent>SEND_RATE){
-    wsSend('MOVE',{x:me.x,y:me.y,direction:me.direction,moving:me.moving});
-    lastSent=Date.now();
-  }
-
-  // Camera follow
-  const cw=canvas.width, ch=canvas.height;
-  camX=Math.max(0,Math.min(me.x-cw/2, CANVAS_W-cw));
-  camY=Math.max(0,Math.min(me.y-ch/2, CANVAS_H-ch));
-
-  // NPC proximity check
-  for(const npc of npcDefs){
-    const dist=Math.hypot(me.x-npc.x-16,me.y-npc.y-16);
-    if(dist<NPC_INTERACT_DIST && !answeredNPCs.has(npc.id) && !dialogOpen){
-      if(keys['Space']||keys['KeyE']){
-        keys['Space']=false; keys['KeyE']=false;
-        openDialog(npc);
-        break;
-      }
+  for(const n of npcDefs){
+    if(answeredNPCs.has(n.id)||dialogOpen) continue;
+    if(Math.hypot(me.x-n.x,me.y-n.y)<INTERACT&&(keys.Space||keys.KeyE)){
+      keys.Space=false; keys.KeyE=false; openDialog(n); break;
     }
   }
-
-  // Ping every 5s
-  if(animFrame%300===0){
-    pingStart=Date.now();
-    wsSend('PING',{});
-  }
+  if(animF%300===0){ pingT=Date.now(); wsSend('PING',{}); }
 }
 
-function render(){
-  canvas.width=window.innerWidth;
-  canvas.height=window.innerHeight;
-
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  // Background fill
-  ctx.fillStyle='#2d5a1b';
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  // Tiles
-  const tx0=Math.max(0,(camX/TILE)|0)-1;
-  const ty0=Math.max(0,(camY/TILE)|0)-1;
-  const tx1=Math.min(MAP_W,tx0+Math.ceil(canvas.width/TILE)+3);
-  const ty1=Math.min(MAP_H,ty0+Math.ceil(canvas.height/TILE)+3);
-  for(let y=ty0;y<ty1;y++) for(let x=tx0;x<tx1;x++){
-    drawTile(x,y,mapTiles[y]?.[x]||0);
-  }
-
-  // NPCs
-  npcDefs.forEach(n=>drawNPC(n));
-
-  // Other players (sorted by y)
-  const allPlayers=[...Object.values(players),{...me,id:me.id||'self',isSelf:true}];
-  allPlayers.sort((a,b)=>a.y-b.y);
-  allPlayers.forEach(p=>drawPlayer(p,p.id===me.id||p.isSelf));
-
-  // Minimap
-  drawMinimap();
-}
-
-// ==================== DIALOG / QUIZ ====================
+// ═══════════════════════════════════════════════════════
+//  DIALOG & QUIZ
+// ═══════════════════════════════════════════════════════
 function openDialog(npc){
-  dialogOpen=true;
-  currentNPC=npc;
-  const lv=QUESTIONS[selectedLevel];
-  const q=lv.questions[npc.qIdx];
-  currentQIdx=npc.qIdx;
-
-  document.getElementById('dialog-npc').innerHTML=`${npc.name} 💬`;
-  document.getElementById('dialog-text').textContent=`สวัสดี! ฉันจะถามคำถามเรื่อง "${lv.name}" ให้คุณ`;
+  dialogOpen=true; currentNPC=npc;
+  const q=wavePool[npc.qIdx]; if(!q) return;
+  document.getElementById('dlg-npc').innerHTML=`${npc.emoji} ${npc.name}`;
+  document.getElementById('dlg-sub').textContent=`Wave ${waveNum} · คำถามที่ ${npc.qIdx+1} / ${Math.min(wavePool.length,npcDefs.length)}`;
   document.getElementById('quiz-area').style.display='block';
-  document.getElementById('quiz-q').textContent=`❓ ${q.q}`;
-  document.getElementById('quiz-explain').style.display='none';
-  document.getElementById('quiz-score-pop').style.display='none';
-  document.getElementById('dialog-close').style.display='none';
-
-  const opts=document.getElementById('quiz-opts');
-  opts.innerHTML='';
+  document.getElementById('quiz-q').textContent='❓ '+q.q;
+  document.getElementById('quiz-exp').style.display='none';
+  document.getElementById('quiz-pop').style.display='none';
+  document.getElementById('dlg-close').style.display='none';
+  const opts=document.getElementById('qopts'); opts.innerHTML='';
   q.opts.forEach((o,i)=>{
-    const btn=document.createElement('button');
-    btn.className='opt-btn';
-    btn.textContent=['ก','ข','ค','ง'][i]+') '+o;
-    btn.onclick=()=>selectAnswer(npc,q,i,btn);
-    opts.appendChild(btn);
+    const b=document.createElement('button'); b.className='ob';
+    b.textContent=['ก','ข','ค','ง'][i]+') '+o;
+    b.onclick=()=>selectAns(npc,q,i,b);
+    opts.appendChild(b);
   });
-
   document.getElementById('dialog').classList.add('show');
 }
 
-function selectAnswer(npc,q,idx,btn){
-  document.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
-  const correct=idx===q.ans;
-  btn.className='opt-btn '+(correct?'correct':'wrong');
-  if(!correct){
-    document.querySelectorAll('.opt-btn')[q.ans].className='opt-btn reveal';
-  }
-
-  document.getElementById('quiz-explain').textContent='💡 '+q.explain;
-  document.getElementById('quiz-explain').style.display='block';
-
-  const pts=correct?100:0;
-  if(correct){
-    document.getElementById('quiz-score-pop').textContent='🌟 +100 คะแนน!';
-    document.getElementById('quiz-score-pop').style.display='block';
-    wsSend('SCORE',{delta:pts});
-    answeredNPCs.add(npc.id);
-    checkLevelComplete();
+function selectAns(npc,q,idx,btn){
+  document.querySelectorAll('.ob').forEach(b=>b.disabled=true);
+  const ok=idx===q.ans;
+  btn.className='ob '+(ok?'ok':'no');
+  if(!ok) document.querySelectorAll('.ob')[q.ans].className='ob show-ans';
+  document.getElementById('quiz-exp').textContent='💡 '+q.explain;
+  document.getElementById('quiz-exp').style.display='block';
+  const pop=document.getElementById('quiz-pop');
+  if(ok){
+    pop.textContent='🌟 +100 คะแนน!'; pop.className='pop-ok'; pop.style.display='block';
+    wsSend('SCORE',{delta:100,wave:waveNum});
+    answeredNPCs.add(npc.id); waveAnswered++; updateWBar(); checkWaveClear();
   } else {
-    document.getElementById('quiz-score-pop').textContent='❌ ลองใหม่ในครั้งหน้า';
-    document.getElementById('quiz-score-pop').style.display='block';
+    pop.textContent='❌ ยังไม่ถูก ลองด่านหน้า!'; pop.className='pop-no'; pop.style.display='block';
   }
-
-  document.getElementById('dialog-close').style.display='block';
+  document.getElementById('dlg-close').style.display='block';
 }
 
-function closeDialog(){
-  dialogOpen=false;
-  document.getElementById('dialog').classList.remove('show');
+function closeDialog(){ dialogOpen=false; document.getElementById('dialog').classList.remove('show'); }
+
+function checkWaveClear(){
+  const npcCount=Math.min(wavePool.length,npcDefs.length);
+  if(waveAnswered<npcCount) return;
+  setTimeout(()=>{
+    closeDialog();
+    const lv=QUESTIONS[selLv];
+    document.getElementById('wc-icon').textContent= waveAnswered>=QS_PER_WAVE?'🏆':'🎉';
+    document.getElementById('wc-title').textContent=`Wave ${waveNum} สำเร็จ!`;
+    document.getElementById('wc-sub').textContent=`${lv.name} · ตอบถูกครบ!`;
+    document.getElementById('wc-score').textContent=`⭐ ${myScore} คะแนน`;
+    const nextWave=waveNum+1;
+    document.getElementById('wc-btn').textContent=`▶ Wave ${nextWave}`;
+    document.getElementById('wc-btn').onclick=()=>{
+      document.getElementById('wave-clear').classList.remove('show');
+      wsSend('WAVE_CLEAR',{wave:waveNum});
+      initWave(nextWave);
+    };
+    document.getElementById('wave-clear').classList.add('show');
+  },700);
 }
 
-function checkLevelComplete(){
-  const lv=QUESTIONS[selectedLevel];
-  const total=Math.min(lv.questions.length,npcDefs.length);
-  if(answeredNPCs.size>=total){
-    setTimeout(()=>{
-      document.getElementById('lvl-banner-title').textContent='🎉 ผ่านด่านแล้ว!';
-      document.getElementById('lvl-banner-msg').textContent=
-        `คุณตอบถูกทุกข้อในด่านนี้! รวมคะแนน: ${myScore} คะแนน`;
-      document.getElementById('lvl-banner').classList.add('show');
-    }, 600);
-  }
-}
-
-function closeLevelBanner(){
-  document.getElementById('lvl-banner').classList.remove('show');
-}
-
-// ==================== UI UPDATES ====================
-function updateLeaderboard(lb){
-  const list=document.getElementById('lb-list');
-  list.innerHTML='';
+// ═══════════════════════════════════════════════════════
+//  RESULTS SCREEN
+// ═══════════════════════════════════════════════════════
+function showResults(lb){
+  if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
+  document.getElementById('s-game').classList.add('off');
+  document.getElementById('s-results').classList.remove('off');
+  const tbody=document.getElementById('res-tbody'); tbody.innerHTML='';
+  const medals=['🥇','🥈','🥉'];
   lb.forEach((p,i)=>{
+    const isSelf=p.id===selfId;
+    const tr=document.createElement('tr');
+    if(isSelf) tr.className='res-self';
+    const rankClass=i<3?`rank-${i+1}`:'';
+    tr.innerHTML=`
+      <td class="${rankClass}">${medals[i]||i+1}</td>
+      <td>${AVATARS[p.avatar||0]}</td>
+      <td class="${rankClass}">${p.name}${isSelf?' (คุณ)':''}</td>
+      <td style="text-align:right" class="${rankClass}">${p.score.toLocaleString()}</td>`;
+    tbody.appendChild(tr);
+  });
+  const winner=lb[0];
+  document.getElementById('res-sub').textContent=winner?`🏆 ผู้ชนะ: ${winner.name} · ${winner.score} คะแนน`:'';
+}
+
+function goLobby(){
+  document.getElementById('s-results').classList.add('off');
+  document.getElementById('s-lobby').classList.remove('off');
+  myScore=0; waveNum=1; players={}; answeredNPCs.clear();
+}
+
+// ═══════════════════════════════════════════════════════
+//  UI HELPERS
+// ═══════════════════════════════════════════════════════
+function updateLB(lb){
+  const list=document.getElementById('lb-list'); list.innerHTML='';
+  lb.slice(0,8).forEach((p,i)=>{
     const li=document.createElement('li');
-    const rankClass=i===0?'gold':i===1?'silver':i===2?'bronze':'';
-    const isSelfEl=p.id===selfId?'lb-self':'';
-    li.innerHTML=`<span class="lb-rank ${rankClass}">${i+1}</span>
-                  <span class="lb-name ${isSelfEl}">${p.name}</span>
-                  <span class="lb-score">${p.score}</span>`;
+    const rc=i===0?'g':i===1?'s':i===2?'b':'';
+    li.innerHTML=`<span class="lbr ${rc}">${i+1}</span><span class="lbn ${p.id===selfId?'lb-me':''}">${p.name}</span><span class="lbs">${p.score}</span>`;
     list.appendChild(li);
   });
 }
-
-function updatePlayerCount(){
-  const n=Object.keys(players).length+1;
-  document.getElementById('hud-players').textContent=`👥 ${n}`;
-}
-
-function addChat(text, type='user', name='', isSelf=false){
+function updatePCount(){ document.getElementById('hud-pl').textContent='👥 '+(Object.keys(players).length+1); }
+function addChat(text,type='user',name='',self=false){
   const log=document.getElementById('chat-log');
-  const div=document.createElement('div');
-  div.className='chat-msg'+(type==='sys'?' sys':'');
-  if(type==='sys'){
-    div.textContent=text;
-  } else {
-    div.innerHTML=`<span class="cn">${isSelf?'คุณ':name}:</span> ${text}`;
-  }
-  log.appendChild(div);
-  log.scrollTop=log.scrollHeight;
-  if(log.children.length>50) log.removeChild(log.firstChild);
+  const d=document.createElement('div'); d.className='cm'+(type==='sys'?' sys':'');
+  d.innerHTML=type==='sys'?text:`<span class="cn">${self?'คุณ':name}:</span> ${text}`;
+  log.appendChild(d); log.scrollTop=log.scrollHeight;
+  if(log.children.length>40) log.removeChild(log.firstChild);
 }
+function showBubble(id,text){ bubbles[id]={text,timer:180}; }
+function sendReady(){ wsSend('READY',{}); document.getElementById('btn-ready').textContent='✅ พร้อมแล้ว!'; document.getElementById('btn-ready').disabled=true; }
 
-function showBubble(id,text){
-  bubbles[id]={text,timer:180};
-}
-
-// ==================== INPUT ====================
+// ═══════════════════════════════════════════════════════
+//  INPUT
+// ═══════════════════════════════════════════════════════
 document.addEventListener('keydown',e=>{
   keys[e.code]=true;
   if(e.code==='Enter'){
-    const ci=document.getElementById('chat-in');
-    if(document.activeElement===ci){
-      sendChat();
-    } else {
-      ci.focus();
-    }
+    const ci=document.getElementById('ci');
+    if(document.activeElement===ci) sendChat(); else ci.focus();
     e.preventDefault();
   }
   if(e.code==='Escape') closeDialog();
-  if((e.code==='Space'||e.code==='KeyE')&&dialogOpen){e.preventDefault();}
+  if((e.code==='Space'||e.code==='KeyE')&&dialogOpen) e.preventDefault();
 });
 document.addEventListener('keyup',e=>{ keys[e.code]=false; });
 
 function sendChat(){
-  const ci=document.getElementById('chat-in');
-  const text=ci.value.trim();
-  if(!text) return;
-  ci.value='';
-  wsSend('CHAT',{text});
-  addChat(text,'user','',true);
-  if(me.id) showBubble(me.id,text);
-  ci.blur();
+  const ci=document.getElementById('ci'), t=ci.value.trim(); if(!t) return;
+  ci.value=''; wsSend('CHAT',{text:t}); addChat(t,'user','',true);
+  if(me.id) showBubble(me.id,t); ci.blur();
 }
+document.getElementById('cs').onclick=sendChat;
+document.getElementById('ci').addEventListener('keydown',e=>{ if(e.key==='Enter'){sendChat();e.preventDefault();} e.stopPropagation(); });
 
-document.getElementById('chat-send').onclick=sendChat;
-document.getElementById('chat-in').addEventListener('keydown',e=>{
-  if(e.key==='Enter'){sendChat();e.preventDefault();}
-  e.stopPropagation();
-});
-
-// Mobile joystick
-let joystickActive=false, joyOrigin={x:0,y:0};
-const joyBase=document.getElementById('joystick-base');
-const joyKnob=document.getElementById('joystick-knob');
-
-joyBase.addEventListener('touchstart',e=>{
-  joystickActive=true;
-  const t=e.touches[0];
-  joyOrigin={x:t.clientX,y:t.clientY};
-  e.preventDefault();
-},{passive:false});
-
+// Joystick
+let jOn=false, jO={x:0,y:0};
+document.getElementById('joy-base').addEventListener('touchstart',e=>{ jOn=true; const t=e.touches[0]; jO={x:t.clientX,y:t.clientY}; e.preventDefault(); },{passive:false});
 document.addEventListener('touchmove',e=>{
-  if(!joystickActive) return;
-  const t=e.touches[0];
-  const dx=t.clientX-joyOrigin.x, dy=t.clientY-joyOrigin.y;
-  const len=Math.hypot(dx,dy);
-  const max=36;
-  const cx=dx/Math.max(len,1)*Math.min(len,max);
-  const cy=dy/Math.max(len,1)*Math.min(len,max);
-  joyKnob.style.transform=`translate(calc(-50% + ${cx}px), calc(-50% + ${cy}px))`;
-  if(Math.abs(cx)>8||Math.abs(cy)>8){
-    keys['ArrowLeft']=cx<-8;
-    keys['ArrowRight']=cx>8;
-    keys['ArrowUp']=cy<-8;
-    keys['ArrowDown']=cy>8;
-  }
+  if(!jOn) return;
+  const t=e.touches[0], dx=t.clientX-jO.x, dy=t.clientY-jO.y, len=Math.hypot(dx,dy)||1, max=32;
+  const cx=dx/len*Math.min(len,max), cy=dy/len*Math.min(len,max);
+  document.getElementById('joy-knob').style.transform=`translate(calc(-50% + ${cx}px),calc(-50% + ${cy}px))`;
+  keys.ArrowLeft=cx<-8; keys.ArrowRight=cx>8; keys.ArrowUp=cy<-8; keys.ArrowDown=cy>8;
   e.preventDefault();
 },{passive:false});
+document.addEventListener('touchend',()=>{ jOn=false; document.getElementById('joy-knob').style.transform='translate(-50%,-50%)'; ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].forEach(k=>keys[k]=false); });
 
-document.addEventListener('touchend',()=>{
-  joystickActive=false;
-  joyKnob.style.transform='translate(-50%,-50%)';
-  ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].forEach(k=>keys[k]=false);
-});
-
-// Touch NPC interaction
-canvas.addEventListener('touchstart',e=>{
-  for(const npc of npcDefs){
-    const dist=Math.hypot(me.x-npc.x-16,me.y-npc.y-16);
-    if(dist<NPC_INTERACT_DIST&&!answeredNPCs.has(npc.id)&&!dialogOpen){
-      openDialog(npc);
-      break;
-    }
-  }
-},{passive:true});
-
-// ==================== START GAME ====================
-function startGame(){
+// ═══════════════════════════════════════════════════════
+//  ENTRY POINTS
+// ═══════════════════════════════════════════════════════
+function joinRoom(){
   const name=document.getElementById('inp-name').value.trim()||'นักเรียน';
   const room=document.getElementById('inp-room').value.trim()||'default';
-
-  me.name=name;
-  me.avatar=selectedAvatar;
-  levelData=QUESTIONS[selectedLevel];
-
-  // Generate map
-  generateMap(selectedLevel);
-
-  // Join server
-  const payload={name,avatar:selectedAvatar,roomId:room};
-  if(ws&&ws.readyState===WebSocket.OPEN){
-    wsSend('JOIN',payload);
+  me.name=name; me.avatar=selAv;
+  if(ws&&ws.readyState===1){
+    wsSend('JOIN',{name,avatar:selAv,roomId:room});
   } else {
-    // Offline mode — generate fake self id
-    selfId='local-'+Date.now();
-    me.id=selfId;
+    selfId='local-'+Date.now(); me.id=selfId;
+    startGame(1);
   }
-
-  // Update HUD
-  document.getElementById('hud-av').textContent=AVATARS[selectedAvatar];
-  document.getElementById('hud-name').textContent=name;
-  document.getElementById('hud-level').textContent=levelData.name;
-  document.getElementById('hud-score').textContent='0';
-
-  // Switch screens
-  document.getElementById('lobby').classList.add('hidden');
-  document.getElementById('lobby').style.display='none';
-  document.getElementById('game-area').style.display='block';
-
-  addChat(`ยินดีต้อนรับ ${name} สู่ ${levelData.name}! 🎮`,'sys');
-
-  requestAnimationFrame(gameLoop);
 }
 
-// ==================== INIT ====================
-window.addEventListener('load',()=>{
-  buildLobby();
-  connectWS();
-});
-window.addEventListener('resize',()=>{
-  if(document.getElementById('game-area').style.display!=='none'){
-    canvas.width=window.innerWidth;
-    canvas.height=window.innerHeight;
-  }
-});
+function startGame(wave){
+  inLobby=false;
+  const lv=QUESTIONS[selLv];
+  if(!me.id){ me.id=selfId||'local'; }
+  initWave(wave||1);
+  document.getElementById('hud-av').textContent=AVATARS[selAv];
+  document.getElementById('hud-name').textContent=me.name;
+  document.getElementById('hud-lv').textContent=lv.npcEmoji+' '+lv.name.slice(0,10);
+  document.getElementById('hud-sc').textContent='0';
+  document.getElementById('s-lobby').classList.add('off');
+  document.getElementById('s-game').classList.remove('off');
+  addChat(`🎮 Wave 1 เริ่มแล้ว! หา NPC ${lv.npcEmoji} แล้วกด Space`,'sys');
+  if(rafId) cancelAnimationFrame(rafId);
+  lastT=0; requestAnimationFrame(t=>{ lastT=t; rafId=requestAnimationFrame(loop); });
+}
+
+window.addEventListener('resize',()=>{ if(!document.getElementById('s-game').classList.contains('off')){ gc.width=window.innerWidth; gc.height=window.innerHeight; } });
+window.addEventListener('load',()=>{ buildLobby(); connectWS(); });
 </script>
 </body>
 </html>

@@ -14,47 +14,45 @@ const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
 const MAX_PLAYERS = 30;
-const TICK_RATE = 50; // ms
-
-// Game state
-const rooms = new Map(); // roomId -> room
-const players = new Map(); // ws -> player
+const rooms = new Map();
+const playerWs = new Map(); // ws -> {player, room}
 
 function createRoom(roomId) {
   return {
     id: roomId,
-    players: new Map(),
-    started: false,
+    players: new Map(), // ws -> player
+    state: 'lobby',     // lobby | playing | results
+    wave: 1,
     createdAt: Date.now()
   };
 }
 
-function getOrCreateRoom(roomId) {
-  if (!rooms.has(roomId)) {
-    rooms.set(roomId, createRoom(roomId));
-  }
+function getRoom(roomId) {
+  if (!rooms.has(roomId)) rooms.set(roomId, createRoom(roomId));
   return rooms.get(roomId);
 }
 
 function broadcast(room, msg, excludeWs = null) {
   const data = JSON.stringify(msg);
-  room.players.forEach((player, ws) => {
-    if (ws !== excludeWs && ws.readyState === 1) {
-      ws.send(data);
-    }
+  room.players.forEach((_, ws) => {
+    if (ws !== excludeWs && ws.readyState === 1) ws.send(data);
   });
 }
-
-function broadcastAll(room, msg) {
-  broadcast(room, msg, null);
-}
+function broadcastAll(room, msg) { broadcast(room, msg, null); }
 
 function getLeaderboard(room) {
-  const lb = [];
-  room.players.forEach((p) => {
-    lb.push({ id: p.id, name: p.name, score: p.score, avatar: p.avatar });
-  });
-  return lb.sort((a, b) => b.score - a.score).slice(0, 10);
+  return [...room.players.values()]
+    .sort((a, b) => b.score - a.score)
+    .map((p, i) => ({ id: p.id, name: p.name, score: p.score, avatar: p.avatar, rank: i + 1 }));
+}
+
+function getRoomSnapshot(room) {
+  return {
+    players: [...room.players.values()],
+    state: room.state,
+    wave: room.wave,
+    leaderboard: getLeaderboard(room)
+  };
 }
 
 wss.on('connection', (ws) => {
@@ -62,99 +60,85 @@ wss.on('connection', (ws) => {
   ws.on('pong', () => { ws.isAlive = true; });
 
   ws.on('message', (raw) => {
-    let msg;
-    try { msg = JSON.parse(raw); } catch { return; }
-
+    let msg; try { msg = JSON.parse(raw); } catch { return; }
     const { type, payload } = msg;
 
     if (type === 'JOIN') {
       const { name, avatar, roomId } = payload;
-      const room = getOrCreateRoom(roomId || 'default');
-
+      const room = getRoom(roomId || 'default');
       if (room.players.size >= MAX_PLAYERS) {
-        ws.send(JSON.stringify({ type: 'ERROR', payload: { message: 'ห้องเต็มแล้ว (สูงสุด 30 คน)' } }));
+        ws.send(JSON.stringify({ type: 'ERROR', payload: { message: 'ห้องเต็ม (สูงสุด 30 คน)' } }));
         return;
       }
-
       const player = {
-        id: uuidv4(),
-        name: name || 'ผู้เล่น',
-        avatar: avatar || 0,
-        x: 200 + Math.random() * 100,
-        y: 200 + Math.random() * 100,
-        score: 0,
-        level: 1,
-        direction: 'down',
-        moving: false,
-        roomId: room.id
+        id: uuidv4(), name: name || 'ผู้เล่น', avatar: avatar || 0,
+        x: 400 + Math.random() * 100, y: 300 + Math.random() * 100,
+        score: 0, wave: 1, direction: 'down', moving: false, roomId: room.id, ready: false
       };
-
       room.players.set(ws, player);
-      players.set(ws, { player, room });
+      playerWs.set(ws, { player, room });
 
-      // Send self info
-      ws.send(JSON.stringify({
-        type: 'INIT',
-        payload: {
-          selfId: player.id,
-          players: Array.from(room.players.values()),
-          leaderboard: getLeaderboard(room)
-        }
-      }));
+      ws.send(JSON.stringify({ type: 'INIT', payload: { selfId: player.id, ...getRoomSnapshot(room) } }));
+      broadcast(room, { type: 'PLAYER_JOINED', payload: player }, ws);
+      broadcastAll(room, { type: 'LOBBY_UPDATE', payload: getRoomSnapshot(room) });
+      console.log(`[JOIN] ${player.name} → room:${room.id} (${room.players.size})`);
+    }
 
-      // Notify others
-      broadcast(room, {
-        type: 'PLAYER_JOINED',
-        payload: player
-      }, ws);
+    else if (type === 'READY') {
+      const e = playerWs.get(ws); if (!e) return;
+      const { player, room } = e;
+      player.ready = true;
+      broadcastAll(room, { type: 'LOBBY_UPDATE', payload: getRoomSnapshot(room) });
+      // Auto-start if all ready and ≥1 player
+      const all = [...room.players.values()];
+      if (all.length >= 1 && all.every(p => p.ready) && room.state === 'lobby') {
+        room.state = 'playing'; room.wave = 1;
+        broadcastAll(room, { type: 'GAME_START', payload: { wave: 1 } });
+      }
+    }
 
-      console.log(`[JOIN] ${player.name} (${player.id}) in room ${room.id} | Total: ${room.players.size}`);
+    else if (type === 'START_NOW') { // Host force-start
+      const e = playerWs.get(ws); if (!e) return;
+      const { room } = e;
+      if (room.state !== 'lobby') return;
+      room.state = 'playing'; room.wave = 1;
+      broadcastAll(room, { type: 'GAME_START', payload: { wave: 1 } });
     }
 
     else if (type === 'MOVE') {
-      const entry = players.get(ws);
-      if (!entry) return;
-      const { player, room } = entry;
-      const { x, y, direction, moving } = payload;
-      player.x = x;
-      player.y = y;
-      player.direction = direction;
-      player.moving = moving;
-
-      broadcast(room, {
-        type: 'PLAYER_MOVED',
-        payload: { id: player.id, x, y, direction, moving }
-      }, ws);
+      const e = playerWs.get(ws); if (!e) return;
+      const { player, room } = e;
+      Object.assign(player, { x: payload.x, y: payload.y, direction: payload.direction, moving: payload.moving });
+      broadcast(room, { type: 'PLAYER_MOVED', payload: { id: player.id, x: payload.x, y: payload.y, direction: payload.direction, moving: payload.moving } }, ws);
     }
 
     else if (type === 'SCORE') {
-      const entry = players.get(ws);
-      if (!entry) return;
-      const { player, room } = entry;
-      const { delta } = payload;
-      player.score = Math.max(0, player.score + (delta || 0));
+      const e = playerWs.get(ws); if (!e) return;
+      const { player, room } = e;
+      player.score = Math.max(0, player.score + (payload.delta || 0));
+      player.wave = payload.wave || player.wave;
+      ws.send(JSON.stringify({ type: 'SCORE_UPDATE', payload: { score: player.score } }));
+      broadcastAll(room, { type: 'LEADERBOARD', payload: { leaderboard: getLeaderboard(room) } });
+    }
 
-      broadcastAll(room, {
-        type: 'LEADERBOARD',
-        payload: { leaderboard: getLeaderboard(room) }
-      });
+    else if (type === 'WAVE_CLEAR') {
+      const e = playerWs.get(ws); if (!e) return;
+      const { player, room } = e;
+      player.wave = (payload.wave || 1) + 1;
+    }
 
-      ws.send(JSON.stringify({
-        type: 'SCORE_UPDATE',
-        payload: { score: player.score }
-      }));
+    else if (type === 'GAME_END') {
+      const e = playerWs.get(ws); if (!e) return;
+      const { room } = e;
+      room.state = 'results';
+      broadcastAll(room, { type: 'SHOW_RESULTS', payload: { leaderboard: getLeaderboard(room) } });
     }
 
     else if (type === 'CHAT') {
-      const entry = players.get(ws);
-      if (!entry) return;
-      const { player, room } = entry;
+      const e = playerWs.get(ws); if (!e) return;
+      const { player, room } = e;
       const text = String(payload.text || '').slice(0, 80);
-
-      broadcastAll(room, {
-        type: 'CHAT_MSG',
-        payload: { id: player.id, name: player.name, text, avatar: player.avatar }
-      });
+      broadcastAll(room, { type: 'CHAT_MSG', payload: { id: player.id, name: player.name, text, avatar: player.avatar } });
     }
 
     else if (type === 'PING') {
@@ -163,52 +147,28 @@ wss.on('connection', (ws) => {
   });
 
   ws.on('close', () => {
-    const entry = players.get(ws);
-    if (entry) {
-      const { player, room } = entry;
-      room.players.delete(ws);
-      players.delete(ws);
-
-      broadcast(room, {
-        type: 'PLAYER_LEFT',
-        payload: { id: player.id, name: player.name }
-      });
-
-      console.log(`[LEAVE] ${player.name} | Room ${room.id} players: ${room.players.size}`);
-
-      if (room.players.size === 0) {
-        rooms.delete(room.id);
-        console.log(`[ROOM] Room ${room.id} removed (empty)`);
-      }
-    }
+    const e = playerWs.get(ws); if (!e) return;
+    const { player, room } = e;
+    room.players.delete(ws); playerWs.delete(ws);
+    broadcast(room, { type: 'PLAYER_LEFT', payload: { id: player.id, name: player.name } });
+    broadcastAll(room, { type: 'LOBBY_UPDATE', payload: getRoomSnapshot(room) });
+    if (room.players.size === 0) { rooms.delete(room.id); console.log(`[ROOM] ${room.id} removed`); }
   });
 
-  ws.on('error', (err) => console.error('WS Error:', err.message));
+  ws.on('error', (e) => console.error('WS:', e.message));
 });
 
-// Heartbeat
 setInterval(() => {
-  wss.clients.forEach((ws) => {
+  wss.clients.forEach(ws => {
     if (!ws.isAlive) { ws.terminate(); return; }
-    ws.isAlive = false;
-    ws.ping();
+    ws.isAlive = false; ws.ping();
   });
 }, 30000);
 
-// Stats endpoint
 app.get('/api/stats', (req, res) => {
-  const stats = { rooms: rooms.size, totalPlayers: players.size };
-  rooms.forEach((room, id) => {
-    stats[id] = room.players.size;
-  });
-  res.json(stats);
-});
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/index.html'));
+  const s = { rooms: rooms.size, players: playerWs.size };
+  res.json(s);
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`🎮 CS Quest Server running on port ${PORT}`);
-});
+server.listen(PORT, () => console.log(`🎮 CS Quest on :${PORT}`));
