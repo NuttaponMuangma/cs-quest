@@ -4,92 +4,181 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>CS Quest — Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#0a0e14;--panel:rgba(10,20,10,0.97);--border:#1e3a1e;--green:#5dde3a;--gold:#ffd700;--red:#e53935;--text:#d4e8d4;--muted:#4a6a4a}
-body{background:var(--bg);font-family:'Sarabun',sans-serif;color:var(--text);min-height:100vh;padding:1.5rem}
-h1{font-size:1.6rem;font-weight:800;color:var(--green);margin-bottom:.2rem}
-.sub{color:var(--muted);font-size:.85rem;margin-bottom:1.5rem}
-.back-link{color:var(--muted);font-size:.8rem;text-decoration:none;margin-left:1rem}
+body{background:var(--bg);font-family:'Sarabun',sans-serif;color:var(--text);min-height:100vh}
+
+/* ── LOGIN SCREEN ── */
+#login-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% -10%,#0d280d,#0a0e14 65%);z-index:999}
+.login-box{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:16px;padding:2.2rem 2.5rem;width:360px;text-align:center}
+.login-logo{font-size:2.2rem;font-weight:800;color:var(--green);text-shadow:0 0 24px rgba(93,222,58,.4);margin-bottom:.2rem}
+.login-sub{color:var(--muted);font-size:.85rem;margin-bottom:1.6rem}
+.login-label{display:block;color:var(--muted);font-size:.78rem;text-align:left;margin-bottom:.3rem}
+.login-input-wrap{position:relative;margin-bottom:1rem}
+.login-input{width:100%;padding:.6rem .9rem;border-radius:9px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:#fff;font-size:1rem;font-family:'Sarabun',sans-serif;outline:none;transition:border-color .2s;letter-spacing:.15em}
+.login-input:focus{border-color:var(--green)}
+.toggle-pw{position:absolute;right:.7rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:.85rem;padding:.2rem}
+.toggle-pw:hover{color:var(--green)}
+.login-btn{width:100%;padding:.65rem;border-radius:9px;border:none;background:linear-gradient(135deg,var(--green),#3cb821);color:#0a0e14;font-size:1rem;font-weight:800;font-family:'Sarabun',sans-serif;cursor:pointer;transition:all .18s;margin-bottom:.6rem}
+.login-btn:hover{transform:translateY(-2px);box-shadow:0 4px 18px rgba(93,222,58,.35)}
+.login-error{color:var(--red);font-size:.82rem;margin-bottom:.6rem;min-height:1.1rem;display:none}
+.login-error.show{display:block}
+.login-hint{color:var(--muted);font-size:.72rem;line-height:1.6}
+.login-hint b{color:var(--gold)}
+.login-footer{color:var(--muted);font-size:.7rem;margin-top:1rem}
+.shake{animation:shake .4s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+/* change password modal */
+#change-pw-modal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center}
+#change-pw-modal.show{display:flex}
+.pw-modal-box{background:#0d1a0d;border:1px solid var(--border);border-radius:14px;padding:1.5rem 1.8rem;width:380px;max-width:96vw}
+.pw-modal-box h3{color:var(--green);font-size:1rem;margin-bottom:1rem}
+.pw-field{margin-bottom:.7rem}
+.pw-field label{display:block;color:var(--muted);font-size:.76rem;margin-bottom:.25rem}
+.pw-field input{width:100%;padding:.5rem .75rem;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,.05);color:#fff;font-family:'Sarabun',sans-serif;font-size:.9rem;outline:none}
+.pw-field input:focus{border-color:var(--green)}
+.pw-strength{height:4px;border-radius:2px;margin-top:.35rem;transition:all .3s;background:var(--border)}
+.pw-strength.weak{background:var(--red);width:33%}
+.pw-strength.medium{background:#ff9800;width:66%}
+.pw-strength.strong{background:var(--green);width:100%}
+.pw-modal-btns{display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem}
+.pw-error{color:var(--red);font-size:.78rem;margin-top:.4rem;min-height:1rem}
+
+/* ── ADMIN PAGE ── */
+#admin-page{display:none;padding:1.5rem}
+.admin-page-wrap{max-width:960px;margin:0 auto}
+.admin-header{display:flex;align-items:center;gap:.8rem;margin-bottom:.3rem}
+h1{font-size:1.5rem;font-weight:800;color:var(--green)}
+.sub{color:var(--muted);font-size:.82rem;margin-bottom:1.4rem}
+.header-btns{margin-left:auto;display:flex;gap:.5rem;align-items:center}
+.back-link{color:var(--muted);font-size:.78rem;text-decoration:none}
 .back-link:hover{color:var(--green)}
 
 /* Tabs */
-.tabs{display:flex;gap:.5rem;margin-bottom:1.2rem;flex-wrap:wrap}
-.tab{padding:.45rem 1.1rem;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,0.03);color:var(--muted);font-size:.85rem;cursor:pointer;transition:all .15s;font-family:'Sarabun',sans-serif}
-.tab.on{background:rgba(93,222,58,0.12);border-color:var(--green);color:var(--green);font-weight:700}
+.tabs{display:flex;gap:.45rem;margin-bottom:1.1rem;flex-wrap:wrap}
+.tab{padding:.42rem 1rem;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--muted);font-size:.82rem;cursor:pointer;transition:all .14s;font-family:'Sarabun',sans-serif}
+.tab.on{background:rgba(93,222,58,.12);border-color:var(--green);color:var(--green);font-weight:700}
 .tab-pane{display:none}
 .tab-pane.on{display:block}
 
+/* Stats */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1.4rem}
+.stat-box{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:.75rem;text-align:center}
+.stat-n{font-size:1.75rem;font-weight:800;color:var(--gold)}
+.stat-l{font-size:.72rem;color:var(--muted);margin-top:.18rem}
+
 /* Question cards */
-.q-grid{display:flex;flex-direction:column;gap:.7rem;margin-bottom:1.5rem}
-.q-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem}
-.q-hd{display:flex;align-items:flex-start;gap:.7rem;margin-bottom:.5rem}
-.q-num{color:var(--gold);font-size:.75rem;font-weight:700;min-width:24px}
-.q-text{flex:1;font-size:.88rem;color:#fff;font-weight:600;line-height:1.4}
-.q-btns{display:flex;gap:.4rem;margin-left:auto;flex-shrink:0}
-.opts-row{display:grid;grid-template-columns:1fr 1fr;gap:.3rem .7rem;margin-bottom:.35rem}
-.opt-item{font-size:.78rem;padding:.2rem .4rem;border-radius:5px}
-.opt-item.correct{background:rgba(76,175,80,0.15);color:#a5d6a7;border:1px solid #4caf5066}
+.q-grid{display:flex;flex-direction:column;gap:.65rem;margin-bottom:1.4rem}
+.q-card{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:.85rem .95rem}
+.q-hd{display:flex;align-items:flex-start;gap:.65rem;margin-bottom:.45rem}
+.q-num{color:var(--gold);font-size:.72rem;font-weight:700;min-width:22px;margin-top:.1rem}
+.q-text{flex:1;font-size:.86rem;color:#fff;font-weight:600;line-height:1.4}
+.q-btns{display:flex;gap:.35rem;margin-left:auto;flex-shrink:0}
+.opts-row{display:grid;grid-template-columns:1fr 1fr;gap:.28rem .65rem;margin-bottom:.32rem}
+.opt-item{font-size:.75rem;padding:.18rem .38rem;border-radius:5px}
+.opt-item.correct{background:rgba(76,175,80,.15);color:#a5d6a7;border:1px solid #4caf5055}
 .opt-item.wrong{color:var(--muted)}
-.q-exp{font-size:.73rem;color:var(--muted);line-height:1.4}
+.q-exp{font-size:.7rem;color:var(--muted);line-height:1.4}
 
 /* Buttons */
-.btn{padding:.4rem .9rem;border-radius:7px;border:none;font-family:'Sarabun',sans-serif;font-size:.82rem;cursor:pointer;transition:all .15s;font-weight:600}
-.btn-edit{background:rgba(33,150,243,0.15);color:#64b5f6;border:1px solid rgba(33,150,243,.3)}
+.btn{padding:.38rem .85rem;border-radius:7px;border:none;font-family:'Sarabun',sans-serif;font-size:.8rem;cursor:pointer;transition:all .14s;font-weight:600}
+.btn-edit{background:rgba(33,150,243,.15);color:#64b5f6;border:1px solid rgba(33,150,243,.3)}
 .btn-edit:hover{background:rgba(33,150,243,.25)}
-.btn-del{background:rgba(229,57,53,0.15);color:#ef9a9a;border:1px solid rgba(229,57,53,.3)}
+.btn-del{background:rgba(229,57,53,.15);color:#ef9a9a;border:1px solid rgba(229,57,53,.3)}
 .btn-del:hover{background:rgba(229,57,53,.25)}
-.btn-add{background:linear-gradient(135deg,var(--green),#3cb821);color:#0a0e14;font-weight:800;padding:.55rem 1.4rem;font-size:.9rem}
+.btn-add{background:linear-gradient(135deg,var(--green),#3cb821);color:#0a0e14;font-weight:800;padding:.52rem 1.3rem;font-size:.88rem}
 .btn-add:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(93,222,58,.3)}
-.btn-save{background:linear-gradient(135deg,var(--gold),#ff9800);color:#0a0e14;font-weight:800;padding:.5rem 1.4rem}
-.btn-cancel{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.5rem 1rem}
+.btn-save{background:linear-gradient(135deg,var(--gold),#ff9800);color:#0a0e14;font-weight:800;padding:.48rem 1.3rem}
+.btn-cancel{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.48rem .95rem}
+.btn-pw{background:rgba(255,215,0,.12);color:var(--gold);border:1px solid rgba(255,215,0,.3);font-size:.78rem;padding:.35rem .8rem}
+.btn-pw:hover{background:rgba(255,215,0,.22)}
+.btn-logout{background:rgba(229,57,53,.12);color:#ef9a9a;border:1px solid rgba(229,57,53,.3);font-size:.78rem;padding:.35rem .8rem}
+.btn-logout:hover{background:rgba(229,57,53,.22)}
 
 /* Modal */
 #modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center}
 #modal-overlay.show{display:flex}
-#modal{background:#0d1a0d;border:1px solid var(--border);border-radius:14px;padding:1.4rem 1.6rem;width:560px;max-width:96vw;max-height:90vh;overflow-y:auto}
-#modal h2{color:var(--green);font-size:1.1rem;margin-bottom:1rem}
-.form-row{margin-bottom:.8rem}
-label{display:block;color:var(--muted);font-size:.78rem;margin-bottom:.25rem}
-input,textarea,select{width:100%;padding:.5rem .75rem;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:#fff;font-size:.88rem;font-family:'Sarabun',sans-serif;outline:none;transition:border-color .2s}
-input:focus,textarea:focus,select:focus{border-color:var(--green)}
-textarea{min-height:72px;resize:vertical}
-.opts-form{display:flex;flex-direction:column;gap:.45rem;margin-bottom:.8rem}
-.opt-form-row{display:flex;align-items:center;gap:.5rem}
+#modal{background:#0d1a0d;border:1px solid var(--border);border-radius:14px;padding:1.3rem 1.5rem;width:540px;max-width:96vw;max-height:90vh;overflow-y:auto}
+#modal h2{color:var(--green);font-size:1.05rem;margin-bottom:.9rem}
+.form-row{margin-bottom:.75rem}
+label{display:block;color:var(--muted);font-size:.75rem;margin-bottom:.22rem}
+input[type=text],input[type=password],textarea,select{width:100%;padding:.48rem .72rem;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,.05);color:#fff;font-size:.86rem;font-family:'Sarabun',sans-serif;outline:none;transition:border-color .2s}
+input[type=text]:focus,input[type=password]:focus,textarea:focus,select:focus{border-color:var(--green)}
+textarea{min-height:68px;resize:vertical}
+.opts-form{display:flex;flex-direction:column;gap:.42rem;margin-bottom:.75rem}
+.opt-form-row{display:flex;align-items:center;gap:.45rem}
 .opt-form-row input{flex:1}
-.opt-radio{display:flex;align-items:center;gap:.3rem;min-width:80px;font-size:.78rem;cursor:pointer;color:var(--muted)}
+.opt-radio{display:flex;align-items:center;gap:.28rem;min-width:76px;font-size:.75rem;cursor:pointer;color:var(--muted)}
 .opt-radio input[type=radio]{width:auto;accent-color:var(--green)}
-.modal-btns{display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem}
+.modal-btns{display:flex;gap:.45rem;justify-content:flex-end;margin-top:.9rem}
 
-/* Stats */
-.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;margin-bottom:1.5rem}
-.stat-box{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:.8rem;text-align:center}
-.stat-n{font-size:1.8rem;font-weight:800;color:var(--gold)}
-.stat-l{font-size:.75rem;color:var(--muted);margin-top:.2rem}
+/* Toast */
+#toast{position:fixed;top:1rem;right:1rem;padding:.5rem 1.1rem;border-radius:8px;font-weight:700;z-index:999;font-size:.82rem;opacity:0;transform:translateY(-10px);transition:all .3s;pointer-events:none}
+#toast.show{opacity:1;transform:translateY(0)}
+#toast.success{background:var(--green);color:#0a0e14}
+#toast.error{background:var(--red);color:#fff}
+#toast.info{background:var(--gold);color:#0a0e14}
+
+/* Session badge */
+.session-badge{display:inline-flex;align-items:center;gap:.35rem;background:rgba(93,222,58,.08);border:1px solid var(--border);border-radius:20px;padding:.22rem .7rem;font-size:.7rem;color:var(--muted)}
+.session-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
 </style>
 </head>
 <body>
 
-<div style="display:flex;align-items:baseline;gap:.5rem;margin-bottom:.2rem">
-  <h1>⚙️ Admin — จัดการคำถาม</h1>
-  <a href="/" class="back-link">← กลับเกม</a>
+<!-- ══ LOGIN SCREEN ══ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">🔐 CS Quest</div>
+    <div class="login-sub">Admin Panel — ระบบจัดการคำถาม</div>
+
+    <label class="login-label">รหัสผ่าน Admin</label>
+    <div class="login-input-wrap">
+      <input id="pw-input" class="login-input" type="password" placeholder="••••••••" autocomplete="current-password" maxlength="32"/>
+      <button class="toggle-pw" id="toggle-pw" tabindex="-1">👁</button>
+    </div>
+    <div class="login-error" id="login-error">รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่</div>
+    <button class="login-btn" id="login-btn">เข้าสู่ระบบ Admin →</button>
+
+    <div class="login-hint">
+      รหัสผ่านเริ่มต้น: <b>admin1234</b><br>
+      แนะนำให้เปลี่ยนรหัสผ่านหลังเข้าระบบครั้งแรก
+    </div>
+    <div class="login-footer"><a href="/" style="color:var(--muted);text-decoration:none">← กลับหน้าเกม</a></div>
+  </div>
 </div>
-<div class="sub">เพิ่ม แก้ไข และลบคำถามในแต่ละด่าน (แก้ไข questions.js โดยตรง)</div>
 
-<!-- Stats -->
-<div class="stat-row" id="stat-row"></div>
+<!-- ══ ADMIN PAGE ══ -->
+<div id="admin-page">
+  <div class="admin-page-wrap">
+    <div class="admin-header">
+      <div>
+        <h1>⚙️ Admin — จัดการคำถาม</h1>
+        <div class="sub">เพิ่ม แก้ไข และลบคำถามในแต่ละด่าน</div>
+      </div>
+      <div class="header-btns">
+        <span class="session-badge"><span class="session-dot"></span>เข้าสู่ระบบแล้ว</span>
+        <button class="btn btn-pw" onclick="openChangePw()">🔑 เปลี่ยนรหัสผ่าน</button>
+        <button class="btn btn-logout" onclick="logout()">ออกจากระบบ</button>
+        <a href="/" class="back-link" style="margin-left:.3rem">← เกม</a>
+      </div>
+    </div>
 
-<!-- Tabs -->
-<div class="tabs" id="tabs-row"></div>
+    <!-- Stats -->
+    <div class="stat-row" id="stat-row"></div>
 
-<!-- Panes -->
-<div id="panes"></div>
+    <!-- Tabs -->
+    <div class="tabs" id="tabs-row"></div>
+    <div id="panes"></div>
 
-<!-- Add button -->
-<button class="btn btn-add" id="btn-add-main">+ เพิ่มคำถามใหม่</button>
+    <button class="btn btn-add" id="btn-add-main">+ เพิ่มคำถามใหม่</button>
+  </div>
+</div>
 
-<!-- Modal -->
+<!-- ══ QUESTION MODAL ══ -->
 <div id="modal-overlay">
   <div id="modal">
     <h2 id="modal-title">เพิ่มคำถาม</h2>
@@ -102,10 +191,8 @@ textarea{min-height:72px;resize:vertical}
       <textarea id="f-q" placeholder="พิมพ์คำถาม..."></textarea>
     </div>
     <div class="form-row">
-      <label>ตัวเลือก (เลือกวงกลมด้านหน้าเพื่อกำหนดคำตอบที่ถูก)</label>
-      <div class="opts-form" id="f-opts">
-        <!-- 4 options built by JS -->
-      </div>
+      <label>ตัวเลือก (คลิกวงกลมเพื่อเลือกคำตอบที่ถูกต้อง)</label>
+      <div class="opts-form" id="f-opts"></div>
     </div>
     <div class="form-row">
       <label>คำอธิบายเฉลย</label>
@@ -118,161 +205,425 @@ textarea{min-height:72px;resize:vertical}
   </div>
 </div>
 
+<!-- ══ CHANGE PASSWORD MODAL ══ -->
+<div id="change-pw-modal">
+  <div class="pw-modal-box">
+    <h3>🔑 เปลี่ยนรหัสผ่าน Admin</h3>
+    <div class="pw-field">
+      <label>รหัสผ่านปัจจุบัน</label>
+      <input type="password" id="pw-current" placeholder="รหัสผ่านเดิม..." maxlength="32"/>
+    </div>
+    <div class="pw-field">
+      <label>รหัสผ่านใหม่ (อย่างน้อย 6 ตัวอักษร)</label>
+      <input type="password" id="pw-new" placeholder="รหัสผ่านใหม่..." maxlength="32" oninput="checkPwStrength()"/>
+      <div class="pw-strength" id="pw-strength-bar"></div>
+    </div>
+    <div class="pw-field">
+      <label>ยืนยันรหัสผ่านใหม่</label>
+      <input type="password" id="pw-confirm" placeholder="พิมพ์อีกครั้ง..." maxlength="32"/>
+    </div>
+    <div class="pw-error" id="pw-modal-error"></div>
+    <div class="pw-modal-btns">
+      <button class="btn btn-cancel" onclick="closeChangePw()">ยกเลิก</button>
+      <button class="btn btn-save" onclick="saveNewPassword()">💾 บันทึกรหัสใหม่</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div id="toast"></div>
+
 <script src="questions.js"></script>
 <script>
-// ─── Admin works on an in-memory copy of QUESTIONS ───
-// Changes generate a new questions.js string for download/copy.
-// Since the server serves static files, you replace questions.js
-// on the server via GitHub commit after downloading.
+// ══════════════════════════════════════════════
+//  PASSWORD SYSTEM
+//  เก็บใน localStorage (hash อย่างง่าย)
+// ══════════════════════════════════════════════
 
-let editingLevel=null, editingIdx=null, selLevel=1;
+const DEFAULT_PW = 'admin1234';
+const PW_KEY = 'csquest_admin_pw';
+const SESSION_KEY = 'csquest_admin_session';
+const SESSION_DURATION = 2 * 60 * 60 * 1000; // 2 ชั่วโมง
 
-function buildPage(){
-  // Stats
-  const sr=document.getElementById('stat-row');
-  sr.innerHTML='';
-  let total=0;
-  Object.values(QUESTIONS).forEach(lv=>total+=lv.questions.length);
-  const stats=[
-    {n:Object.keys(QUESTIONS).length,l:'ด่านทั้งหมด'},
-    {n:total,l:'คำถามทั้งหมด'},
-    {n:10,l:'ข้อ/Wave'},
-    {n:30,l:'ผู้เล่น/ห้อง'},
-  ];
-  stats.forEach(s=>{ const d=document.createElement('div'); d.className='stat-box'; d.innerHTML=`<div class="stat-n">${s.n}</div><div class="stat-l">${s.l}</div>`; sr.appendChild(d); });
-
-  // Tabs
-  const tabs=document.getElementById('tabs-row'); tabs.innerHTML='';
-  const panes=document.getElementById('panes'); panes.innerHTML='';
-  Object.entries(QUESTIONS).forEach(([id,lv],idx)=>{
-    const tab=document.createElement('button');
-    tab.className='tab'+(idx===0?' on':'');
-    tab.textContent=`${lv.npcEmoji} ${lv.name} (${lv.questions.length})`;
-    tab.onclick=()=>{ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on')); document.querySelectorAll('.tab-pane').forEach(t=>t.classList.remove('on')); tab.classList.add('on'); document.getElementById('pane-'+id).classList.add('on'); selLevel=parseInt(id); };
-    tabs.appendChild(tab);
-
-    const pane=document.createElement('div');
-    pane.id='pane-'+id; pane.className='tab-pane'+(idx===0?' on':'');
-    pane.innerHTML=buildPane(id,lv);
-    panes.appendChild(pane);
-  });
-
-  // Fill level select in modal
-  const fs=document.getElementById('f-level'); fs.innerHTML='';
-  Object.entries(QUESTIONS).forEach(([id,lv])=>{ const o=document.createElement('option'); o.value=id; o.textContent=`ด่าน ${id}: ${lv.name}`; fs.appendChild(o); });
-
-  // Build opts form
-  buildOptsForm();
-  document.getElementById('btn-add-main').onclick=()=>openModal(null,null);
-  document.getElementById('btn-save-q').onclick=saveQuestion;
+// Simple hash function (ไม่ใช่ crypto-grade แต่เพียงพอสำหรับงานในห้องเรียน)
+function hashPw(pw) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < pw.length; i++) {
+    h ^= pw.charCodeAt(i);
+    h = (h * 0x01000193) >>> 0;
+  }
+  return h.toString(16) + pw.length.toString(16);
 }
 
-function buildPane(id,lv){
-  let html=`<div class="q-grid">`;
-  lv.questions.forEach((q,i)=>{
-    html+=`<div class="q-card">
+function getStoredHash() {
+  return localStorage.getItem(PW_KEY) || hashPw(DEFAULT_PW);
+}
+
+function checkPassword(pw) {
+  return hashPw(pw) === getStoredHash();
+}
+
+function savePassword(newPw) {
+  localStorage.setItem(PW_KEY, hashPw(newPw));
+}
+
+function createSession() {
+  const sess = { ts: Date.now(), exp: Date.now() + SESSION_DURATION };
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(sess));
+}
+
+function isSessionValid() {
+  try {
+    const sess = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null');
+    return sess && Date.now() < sess.exp;
+  } catch { return false; }
+}
+
+function destroySession() {
+  sessionStorage.removeItem(SESSION_KEY);
+}
+
+// ══════════════════════════════════════════════
+//  LOGIN
+// ══════════════════════════════════════════════
+let loginAttempts = 0;
+let lockUntil = 0;
+
+function tryLogin() {
+  // Rate limit: 5 ครั้งแล้วล็อค 30 วินาที
+  if (Date.now() < lockUntil) {
+    const sec = Math.ceil((lockUntil - Date.now()) / 1000);
+    showLoginError(`ลองใหม่ใน ${sec} วินาที...`);
+    return;
+  }
+
+  const pw = document.getElementById('pw-input').value;
+  if (!pw) { showLoginError('กรุณากรอกรหัสผ่าน'); return; }
+
+  if (checkPassword(pw)) {
+    loginAttempts = 0;
+    createSession();
+    enterAdmin();
+  } else {
+    loginAttempts++;
+    if (loginAttempts >= 5) {
+      lockUntil = Date.now() + 30000;
+      loginAttempts = 0;
+      showLoginError('ลองผิดหลายครั้ง — ล็อค 30 วินาที');
+    } else {
+      showLoginError(`รหัสผ่านไม่ถูกต้อง (${loginAttempts}/5)`);
+    }
+    const box = document.querySelector('.login-box');
+    box.classList.remove('shake');
+    void box.offsetWidth;
+    box.classList.add('shake');
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+
+function showLoginError(msg) {
+  const el = document.getElementById('login-error');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+function enterAdmin() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('admin-page').style.display = 'block';
+  buildPage();
+}
+
+function logout() {
+  if (!confirm('ออกจากระบบ Admin ใช่ไหม?')) return;
+  destroySession();
+  document.getElementById('admin-page').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('pw-input').value = '';
+  document.getElementById('login-error').classList.remove('show');
+  showToast('ออกจากระบบแล้ว', 'info');
+}
+
+// Toggle show/hide password
+document.getElementById('toggle-pw').addEventListener('click', () => {
+  const inp = document.getElementById('pw-input');
+  const btn = document.getElementById('toggle-pw');
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁'; }
+});
+
+// Enter key on password input
+document.getElementById('pw-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') tryLogin();
+});
+document.getElementById('login-btn').addEventListener('click', tryLogin);
+
+// ══════════════════════════════════════════════
+//  CHANGE PASSWORD
+// ══════════════════════════════════════════════
+function checkPwStrength() {
+  const pw = document.getElementById('pw-new').value;
+  const bar = document.getElementById('pw-strength-bar');
+  bar.className = 'pw-strength';
+  if (!pw) return;
+  const hasUpper = /[A-Z]/.test(pw);
+  const hasNum = /[0-9]/.test(pw);
+  const hasSpecial = /[^A-Za-z0-9]/.test(pw);
+  const score = (pw.length >= 8 ? 1 : 0) + (hasUpper ? 1 : 0) + (hasNum ? 1 : 0) + (hasSpecial ? 1 : 0);
+  if (score <= 1) bar.className = 'pw-strength weak';
+  else if (score <= 2) bar.className = 'pw-strength medium';
+  else bar.className = 'pw-strength strong';
+}
+
+function openChangePw() {
+  document.getElementById('pw-current').value = '';
+  document.getElementById('pw-new').value = '';
+  document.getElementById('pw-confirm').value = '';
+  document.getElementById('pw-strength-bar').className = 'pw-strength';
+  document.getElementById('pw-modal-error').textContent = '';
+  document.getElementById('change-pw-modal').classList.add('show');
+  setTimeout(() => document.getElementById('pw-current').focus(), 100);
+}
+
+function closeChangePw() {
+  document.getElementById('change-pw-modal').classList.remove('show');
+}
+
+function saveNewPassword() {
+  const cur = document.getElementById('pw-current').value;
+  const nw = document.getElementById('pw-new').value;
+  const cf = document.getElementById('pw-confirm').value;
+  const errEl = document.getElementById('pw-modal-error');
+
+  if (!checkPassword(cur)) { errEl.textContent = '❌ รหัสผ่านปัจจุบันไม่ถูกต้อง'; return; }
+  if (nw.length < 6) { errEl.textContent = '❌ รหัสผ่านใหม่ต้องยาวอย่างน้อย 6 ตัวอักษร'; return; }
+  if (nw !== cf) { errEl.textContent = '❌ รหัสผ่านยืนยันไม่ตรงกัน'; return; }
+  if (nw === DEFAULT_PW) { errEl.textContent = '⚠️ ไม่ควรใช้รหัสผ่านเริ่มต้น กรุณาเปลี่ยน'; return; }
+
+  savePassword(nw);
+  closeChangePw();
+  showToast('✅ เปลี่ยนรหัสผ่านสำเร็จ!', 'success');
+}
+
+document.getElementById('change-pw-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('change-pw-modal')) closeChangePw();
+});
+
+// ══════════════════════════════════════════════
+//  ADMIN PANEL
+// ══════════════════════════════════════════════
+let editingLevel = null, editingIdx = null, selLevel = 1;
+
+function buildPage() {
+  buildStats();
+  buildTabs();
+  buildOptsForm();
+  buildLevelSelect();
+  document.getElementById('btn-add-main').onclick = () => openModal(null, null);
+
+  // Warn if still using default password
+  if (getStoredHash() === hashPw(DEFAULT_PW)) {
+    setTimeout(() => showToast('⚠️ กรุณาเปลี่ยนรหัสผ่านเริ่มต้น!', 'info'), 800);
+  }
+}
+
+function buildStats() {
+  const sr = document.getElementById('stat-row'); sr.innerHTML = '';
+  let total = 0;
+  Object.values(QUESTIONS).forEach(lv => total += lv.questions.length);
+  [
+    { n: Object.keys(QUESTIONS).length, l: 'ด่านทั้งหมด' },
+    { n: total, l: 'คำถามทั้งหมด' },
+    { n: 5, l: 'ข้อ/Wave' },
+    { n: 30, l: 'ผู้เล่น/ห้อง' },
+  ].forEach(s => {
+    const d = document.createElement('div'); d.className = 'stat-box';
+    d.innerHTML = `<div class="stat-n">${s.n}</div><div class="stat-l">${s.l}</div>`;
+    sr.appendChild(d);
+  });
+}
+
+function buildTabs() {
+  const tabs = document.getElementById('tabs-row'); tabs.innerHTML = '';
+  const panes = document.getElementById('panes'); panes.innerHTML = '';
+  Object.entries(QUESTIONS).forEach(([id, lv], idx) => {
+    const tab = document.createElement('button');
+    tab.className = 'tab' + (idx === 0 ? ' on' : '');
+    tab.textContent = `${lv.npcEmoji} ${lv.name} (${lv.questions.length})`;
+    tab.onclick = () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+      document.querySelectorAll('.tab-pane').forEach(t => t.classList.remove('on'));
+      tab.classList.add('on');
+      document.getElementById('pane-' + id).classList.add('on');
+      selLevel = parseInt(id);
+    };
+    tabs.appendChild(tab);
+
+    const pane = document.createElement('div');
+    pane.id = 'pane-' + id;
+    pane.className = 'tab-pane' + (idx === 0 ? ' on' : '');
+    pane.innerHTML = buildPane(id, lv);
+    panes.appendChild(pane);
+  });
+}
+
+function buildPane(id, lv) {
+  if (!lv.questions.length) return `<div style="color:var(--muted);font-size:.82rem;padding:1rem">ยังไม่มีคำถามในด่านนี้ กด "+ เพิ่มคำถามใหม่"</div>`;
+  return `<div class="q-grid">${lv.questions.map((q, i) => `
+    <div class="q-card">
       <div class="q-hd">
         <span class="q-num">ข้อ ${i+1}</span>
-        <span class="q-text">${q.q}</span>
+        <span class="q-text">${escHtml(q.q)}</span>
         <div class="q-btns">
           <button class="btn btn-edit" onclick="openModal(${id},${i})">✏️ แก้ไข</button>
           <button class="btn btn-del" onclick="deleteQ(${id},${i})">🗑️</button>
         </div>
       </div>
       <div class="opts-row">
-        ${q.opts.map((o,oi)=>`<div class="opt-item ${oi===q.ans?'correct':'wrong'}">${['ก','ข','ค','ง'][oi]}) ${o}${oi===q.ans?' ✓':''}</div>`).join('')}
+        ${q.opts.map((o, oi) => `<div class="opt-item ${oi===q.ans?'correct':'wrong'}">${['ก','ข','ค','ง'][oi]}) ${escHtml(o)}${oi===q.ans?' ✓':''}</div>`).join('')}
       </div>
-      <div class="q-exp">💡 ${q.explain}</div>
-    </div>`;
-  });
-  html+=`</div>`;
-  return html;
+      <div class="q-exp">💡 ${escHtml(q.explain)}</div>
+    </div>`).join('')}</div>`;
 }
 
-function buildOptsForm(){
-  const c=document.getElementById('f-opts'); c.innerHTML='';
-  ['ก','ข','ค','ง'].forEach((l,i)=>{
-    const row=document.createElement('div'); row.className='opt-form-row';
-    row.innerHTML=`<label class="opt-radio"><input type="radio" name="ans" value="${i}"> คำตอบที่ถูก</label>
+function buildOptsForm() {
+  const c = document.getElementById('f-opts'); c.innerHTML = '';
+  ['ก', 'ข', 'ค', 'ง'].forEach((l, i) => {
+    const row = document.createElement('div'); row.className = 'opt-form-row';
+    row.innerHTML = `<label class="opt-radio"><input type="radio" name="ans" value="${i}"> คำตอบที่ถูก</label>
       <input type="text" id="fopt-${i}" placeholder="ตัวเลือก ${l}..."/>`;
     c.appendChild(row);
   });
 }
 
-function openModal(lvlId,qIdx){
-  editingLevel=lvlId; editingIdx=qIdx;
-  document.getElementById('modal-title').textContent=qIdx===null?'เพิ่มคำถาม':'แก้ไขคำถาม';
-  document.getElementById('f-level').value=lvlId||selLevel;
-  if(lvlId!==null&&qIdx!==null){
-    const q=QUESTIONS[lvlId].questions[qIdx];
-    document.getElementById('f-q').value=q.q;
-    q.opts.forEach((o,i)=>{ document.getElementById(`fopt-${i}`).value=o; });
-    document.querySelectorAll('input[name=ans]')[q.ans].checked=true;
-    document.getElementById('f-exp').value=q.explain;
-  } else {
-    document.getElementById('f-q').value='';
-    [0,1,2,3].forEach(i=>{ document.getElementById(`fopt-${i}`).value=''; });
-    document.querySelectorAll('input[name=ans]')[0].checked=true;
-    document.getElementById('f-exp').value='';
-  }
-  document.getElementById('modal-overlay').classList.add('show');
+function buildLevelSelect() {
+  const fs = document.getElementById('f-level'); fs.innerHTML = '';
+  Object.entries(QUESTIONS).forEach(([id, lv]) => {
+    const o = document.createElement('option'); o.value = id;
+    o.textContent = `ด่าน ${id}: ${lv.name}`; fs.appendChild(o);
+  });
 }
 
-function closeModal(){ document.getElementById('modal-overlay').classList.remove('show'); }
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
-function saveQuestion(){
-  const q_text=document.getElementById('f-q').value.trim();
-  const opts=[0,1,2,3].map(i=>document.getElementById(`fopt-${i}`).value.trim());
-  const ans=parseInt(document.querySelector('input[name=ans]:checked')?.value||0);
-  const explain=document.getElementById('f-exp').value.trim();
-  const lvl=parseInt(document.getElementById('f-level').value);
+// ── Modal ──
+function openModal(lvlId, qIdx) {
+  editingLevel = lvlId; editingIdx = qIdx;
+  document.getElementById('modal-title').textContent = qIdx === null ? '➕ เพิ่มคำถามใหม่' : '✏️ แก้ไขคำถาม';
+  document.getElementById('f-level').value = lvlId || selLevel;
+  buildOptsForm();
+  if (lvlId !== null && qIdx !== null) {
+    const q = QUESTIONS[lvlId].questions[qIdx];
+    document.getElementById('f-q').value = q.q;
+    q.opts.forEach((o, i) => { document.getElementById(`fopt-${i}`).value = o; });
+    document.querySelectorAll('input[name=ans]')[q.ans].checked = true;
+    document.getElementById('f-exp').value = q.explain;
+  } else {
+    document.getElementById('f-q').value = '';
+    [0,1,2,3].forEach(i => { document.getElementById(`fopt-${i}`).value = ''; });
+    document.querySelectorAll('input[name=ans]')[0].checked = true;
+    document.getElementById('f-exp').value = '';
+  }
+  document.getElementById('modal-overlay').classList.add('show');
+  setTimeout(() => document.getElementById('f-q').focus(), 100);
+}
 
-  if(!q_text||opts.some(o=>!o)||!explain){ alert('กรุณากรอกให้ครบทุกช่อง'); return; }
+function closeModal() { document.getElementById('modal-overlay').classList.remove('show'); }
 
-  const newQ={q:q_text,opts,ans,explain};
-  if(editingLevel!==null&&editingIdx!==null){
-    QUESTIONS[editingLevel].questions[editingIdx]=newQ;
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+});
+
+function saveQuestion() {
+  const q_text = document.getElementById('f-q').value.trim();
+  const opts = [0,1,2,3].map(i => document.getElementById(`fopt-${i}`).value.trim());
+  const ansEl = document.querySelector('input[name=ans]:checked');
+  const ans = parseInt(ansEl?.value ?? 0);
+  const explain = document.getElementById('f-exp').value.trim();
+  const lvl = parseInt(document.getElementById('f-level').value);
+
+  if (!q_text) { showToast('❌ กรุณากรอกคำถาม', 'error'); return; }
+  if (opts.some(o => !o)) { showToast('❌ กรุณากรอกตัวเลือกให้ครบ 4 ข้อ', 'error'); return; }
+  if (!explain) { showToast('❌ กรุณากรอกคำอธิบายเฉลย', 'error'); return; }
+
+  const newQ = { q: q_text, opts, ans, explain };
+  if (editingLevel !== null && editingIdx !== null) {
+    QUESTIONS[editingLevel].questions[editingIdx] = newQ;
+    showToast('✅ แก้ไขคำถามสำเร็จ', 'success');
   } else {
     QUESTIONS[lvl].questions.push(newQ);
+    showToast('✅ เพิ่มคำถามสำเร็จ', 'success');
   }
-
   closeModal();
   buildPage();
   downloadJS();
 }
 
-function deleteQ(lvlId,qIdx){
-  if(!confirm(`ลบคำถามข้อ ${qIdx+1} ใช่ไหม?`)) return;
-  QUESTIONS[lvlId].questions.splice(qIdx,1);
+function deleteQ(lvlId, qIdx) {
+  const q = QUESTIONS[lvlId].questions[qIdx];
+  if (!confirm(`ลบคำถามนี้ใช่ไหม?\n\n"${q.q}"`)) return;
+  QUESTIONS[lvlId].questions.splice(qIdx, 1);
   buildPage();
   downloadJS();
+  showToast('🗑️ ลบคำถามแล้ว', 'info');
 }
 
-function downloadJS(){
-  // Generate new questions.js content
-  let js=`// ===== CS Quest — Question Bank (auto-generated) =====\n\nconst QUESTIONS = `;
-  const obj={};
-  Object.entries(QUESTIONS).forEach(([id,lv])=>{ obj[id]={...lv}; });
-  js+=JSON.stringify(obj,null,2)
-    .replace(/"([^"]+)":/g,'$1:')  // unquote keys
-    .replace(/"/g,"'");            // single quotes
-  js+=`;\n`;
+// ── Download questions.js ──
+function downloadJS() {
+  const lines = ['// ===== CS Quest — Question Bank (auto-generated) =====\n\nconst QUESTIONS = {'];
+  Object.entries(QUESTIONS).forEach(([id, lv], lvIdx) => {
+    lines.push(`  ${id}: {`);
+    lines.push(`    name: '${lv.name.replace(/'/g,"\\'")}',`);
+    lines.push(`    color: '${lv.color}', npcName: '${lv.npcName}', npcEmoji: '${lv.npcEmoji}',`);
+    lines.push(`    questions: [`);
+    lv.questions.forEach((q, qi) => {
+      const opts = q.opts.map(o => `'${o.replace(/'/g,"\\'")}'`).join(', ');
+      lines.push(`      { q:'${q.q.replace(/'/g,"\\'")}', opts:[${opts}], ans:${q.ans}, explain:'${q.explain.replace(/'/g,"\\'")}' },`);
+    });
+    lines.push(`    ]`);
+    lines.push(`  }${lvIdx < Object.keys(QUESTIONS).length-1 ? ',' : ''}`);
+  });
+  lines.push('};');
 
-  const blob=new Blob([js],{type:'text/javascript'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a'); a.href=url; a.download='questions.js'; a.click();
+  const blob = new Blob([lines.join('\n')], { type: 'text/javascript' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'questions.js'; a.click();
   URL.revokeObjectURL(url);
-
-  // Also show copy notification
-  const n=document.createElement('div');
-  n.style.cssText='position:fixed;top:1rem;right:1rem;background:#5dde3a;color:#0a0e14;padding:.5rem 1rem;border-radius:8px;font-weight:700;z-index:999;font-size:.85rem';
-  n.textContent='✅ ดาวน์โหลด questions.js แล้ว — อัพโหลดขึ้น GitHub เพื่ออัพเดทเกม';
-  document.body.appendChild(n);
-  setTimeout(()=>n.remove(),4000);
 }
 
-document.getElementById('modal-overlay').addEventListener('click',e=>{ if(e.target===document.getElementById('modal-overlay')) closeModal(); });
-window.addEventListener('load',buildPage);
+document.getElementById('btn-save-q').onclick = saveQuestion;
+
+// ── Toast ──
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `show ${type}`;
+  clearTimeout(t._tm); t._tm = setTimeout(() => { t.className = type; }, 3000);
+}
+
+// ══════════════════════════════════════════════
+//  INIT — ตรวจ session ก่อน
+// ══════════════════════════════════════════════
+window.addEventListener('load', () => {
+  if (isSessionValid()) {
+    enterAdmin();
+  } else {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('pw-input').focus();
+  }
+});
+
+// Auto-logout เมื่อ session หมดอายุ
+setInterval(() => {
+  if (document.getElementById('admin-page').style.display !== 'none' && !isSessionValid()) {
+    showToast('⏰ Session หมดอายุ กรุณา login ใหม่', 'error');
+    setTimeout(() => {
+      destroySession();
+      window.location.reload();
+    }, 2000);
+  }
+}, 30000);
 </script>
 </body>
 </html>
