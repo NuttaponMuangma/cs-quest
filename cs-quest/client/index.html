@@ -155,7 +155,7 @@ select option{background:#0d1a0d}
 #joy-base{width:80px;height:80px;border-radius:50%;background:rgba(93,222,58,.06);border:1.5px solid rgba(93,222,58,.22);position:relative}
 #joy-knob{width:34px;height:34px;border-radius:50%;background:rgba(93,222,58,.22);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
 canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
-#gc{position:absolute;top:0;left:0}
+#gc{position:absolute;top:0;left:0;width:100%;height:100%;display:block;}
 </style>
 </head>
 <body>
@@ -193,8 +193,8 @@ canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
 </div>
 
 <!-- GAME -->
-<div id="s-game" class="screen off" style="align-items:flex-start;justify-content:flex-start;padding:0">
-  <div style="position:relative;width:100vw;height:100vh">
+<div id="s-game" class="screen off" style="align-items:flex-start;justify-content:flex-start;padding:0;z-index:10">
+  <div style="position:relative;width:100vw;height:100vh;overflow:hidden">
     <canvas id="gc"></canvas>
     <div id="hud">
       <div id="hud-av"><canvas width="24" height="36" id="hud-av-c"></canvas></div>
@@ -312,7 +312,9 @@ function buildLobby(){
 }
 
 function updateAvPreview(av){
+  if(typeof SPR==='undefined'||!SPR.getPlayer)return;
   const c=document.getElementById('av-preview-c');
+  if(!c)return;
   const ctx=c.getContext('2d'); ctx.clearRect(0,0,24,36);
   const sp=SPR.getPlayer(av,'down',0,false);
   ctx.drawImage(sp,0,0);
@@ -535,9 +537,19 @@ function renderMinimap(){
   mmx.fillStyle='#5dde3a'; mmx.fillRect(me.x/TILE*sw-2,me.y/TILE*sh-2,5,5);
 }
 
-function render(){
+function resizeCanvas(){
   const W=window.innerWidth,H=window.innerHeight;
-  gc.width=W; gc.height=H;
+  if(gc.width!==W||gc.height!==H){gc.width=W;gc.height=H;}
+}
+
+function render(){
+  const W=gc.width||window.innerWidth,H=gc.height||window.innerHeight;
+  // clear canvas แทนการ reset ขนาด
+  gctx.clearRect(0,0,W,H);
+  // วาด background สีพื้น
+  gctx.fillStyle='#1a2a1a';
+  gctx.fillRect(0,0,W,H);
+  if(!mapTiles||!mapTiles.length)return;
   camX=Math.max(0,Math.min(me.x-W/2,CW-W));
   camY=Math.max(0,Math.min(me.y-H/2,CH-H));
   const T=TILE;
@@ -570,8 +582,9 @@ function render(){
 
 // ══════ GAME LOOP ══════
 function loop(ts){
+  if(!rafId&&rafId!==0)return; // ถูก cancel แล้ว
   const dt=Math.min((ts-lastT)/1000,.05); lastT=ts; animF++;
-  update(dt); render();
+  try{update(dt); render();}catch(e){console.error('loop error:',e);}
   rafId=requestAnimationFrame(loop);
 }
 
@@ -744,12 +757,23 @@ function joinRoom(){
   const name=document.getElementById('inp-name').value.trim()||'นักเรียน';
   const room=document.getElementById('inp-room').value.trim()||'default';
   me.name=name; me.avatar=selAv;
-  if(ws&&ws.readyState===1)wsSend('JOIN',{name,avatar:selAv,roomId:room});
-  else{selfId='local-'+Date.now();me.id=selfId;startGame(1);}
+  if(!selfId){selfId='local-'+Date.now(); me.id=selfId;}
+  if(ws&&ws.readyState===1){
+    wsSend('JOIN',{name,avatar:selAv,roomId:room});
+    // แสดงปุ่มพร้อม/เริ่ม สำหรับ offline fallback
+    document.getElementById('btn-ready').style.display='block';
+    document.getElementById('btn-start-now').style.display='block';
+    isHost=true;
+  }else{
+    // ไม่มี server — เริ่มเกม offline ได้เลย
+    me.id=selfId;
+    startGame(1);
+  }
 }
 
 function startGame(wave){
   if(!me.id)me.id=selfId||('local-'+Date.now());
+  resizeCanvas();
   initWave(wave||1);
   const lv=QUESTIONS[selLv];
   document.getElementById('hud-name').textContent=me.name;
@@ -763,7 +787,7 @@ function startGame(wave){
 }
 
 window.addEventListener('load',()=>{buildLobby();connectWS();});
-window.addEventListener('resize',()=>{if(!document.getElementById('s-game').classList.contains('off')){gc.width=window.innerWidth;gc.height=window.innerHeight;}});
+window.addEventListener('resize',()=>{if(!document.getElementById('s-game').classList.contains('off')){resizeCanvas();}});
 </script>
 </body>
 </html>
