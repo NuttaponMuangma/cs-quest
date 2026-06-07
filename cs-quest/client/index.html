@@ -223,7 +223,7 @@ canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
       <div id="chat-log"></div>
       <div id="chat-row"><input id="ci" type="text" maxlength="60" placeholder="ข้อความ..."/><button id="cs">ส่ง</button></div>
     </div>
-    <canvas id="mm" width="112" height="80"></canvas>
+    <canvas id="mm" width="150" height="100"></canvas>
     <div id="wave-clear">
       <div class="wc-icon" id="wc-icon">🎉</div>
       <div class="wc-title" id="wc-title"></div>
@@ -262,7 +262,7 @@ const WS_URL=(()=>{
   return(h==='localhost'||h==='127.0.0.1')?`ws://${h}:${pt||3000}`:`${p}//${h}${pt?':'+pt:''}`;
 })();
 
-const TILE=32, TW=28, TH=21;
+const TILE=32, TW=50, TH=34;   // ขนาดแผนที่ 1600×1088px — ใหญ่กว่าจอ scroll ได้
 const CW=TW*TILE, CH=TH*TILE;
 const AVATARS=['🧑','👧','🧒','👮','🧙','👩‍🎓'];
 const INTERACT=68, MOVE_MS=50, QS_PER_WAVE=5;
@@ -279,6 +279,7 @@ const THEME_KEYS=['school','forest','town','stadium'];
 let ws=null,selfId=null,players={},myScore=0;
 let selLv=1,selAv=0,dialogOpen=false;
 let answeredNPCs=new Set();
+let usedQuestions=new Set(); // ติดตามคำถามที่ใช้ไปแล้วทุก wave
 let waveNum=1,wavePool=[],waveAnswered=0,waveCorrect=0;
 let mapTheme='school',camX=0,camY=0;
 let pingT=0,pingMs=0,lastSent=0,animF=0;
@@ -377,19 +378,26 @@ function generateMap(lvl,wave){
   const rnd=seededRnd(lvl*999+wave*137);
   mapTiles=[];
   for(let y=0;y<TH;y++){mapTiles[y]=[];for(let x=0;x<TW;x++)mapTiles[y][x]=0;}
+  // กำแพงรอบนอก
   for(let x=0;x<TW;x++){mapTiles[0][x]=3;mapTiles[TH-1][x]=3;}
   for(let y=0;y<TH;y++){mapTiles[y][0]=3;mapTiles[y][TW-1]=3;}
   const cx=TW>>1,cy=TH>>1;
+  // ถนนแนวนอน-แนวตั้งหลัก
   for(let x=1;x<TW-1;x++){mapTiles[cy][x]=1;mapTiles[cy+1][x]=1;}
   for(let y=1;y<TH-1;y++){mapTiles[y][cx]=1;mapTiles[y][cx+1]=1;}
+  // ถนนรอบนอก
   for(let x=2;x<TW-2;x++){mapTiles[2][x]=1;mapTiles[TH-3][x]=1;}
   for(let y=2;y<TH-2;y++){mapTiles[y][2]=1;mapTiles[y][TW-3]=1;}
-  [[cx/2|0,2,cx/2|0,cy],[cx+cx/2|0,cy,cx+cx/2|0,TH-3],[2,cy/2|0,cx,cy/2|0],[cx,cy+cy/2|0,TW-3,cy+cy/2|0]].forEach(([x1,y1,x2,y2])=>{
-    for(let y=Math.min(y1,y2);y<=Math.max(y1,y2);y++)for(let x=Math.min(x1,x2);x<=Math.max(x1,x2);x++)if(mapTiles[y]&&mapTiles[y][x]===0)mapTiles[y][x]=1;
-  });
-  for(let p=0;p<2;p++){
-    const wx=3+Math.floor(rnd()*(TW-10)),wy=3+Math.floor(rnd()*(TH-10));
-    for(let y=wy;y<wy+2&&y<TH-2;y++)for(let x=wx;x<wx+3&&x<TW-2;x++)if(mapTiles[y][x]===0)mapTiles[y][x]=2;
+  // ถนนเพิ่ม — แบ่ง quadrant
+  const qx=cx>>1, qy=cy>>1;
+  for(let x=1;x<cx;x++){mapTiles[qy][x]=1;mapTiles[cy+cy/2|0][x]=1;}
+  for(let x=cx+2;x<TW-1;x++){mapTiles[qy][x]=1;mapTiles[cy+cy/2|0][x]=1;}
+  for(let y=1;y<cy;y++){mapTiles[y][qx]=1;mapTiles[y][cx+cx/2|0]=1;}
+  for(let y=cy+2;y<TH-1;y++){mapTiles[y][qx]=1;mapTiles[y][cx+cx/2|0]=1;}
+  // บึงน้ำ 3 แห่ง
+  for(let p=0;p<3;p++){
+    const wx=4+Math.floor(rnd()*(TW-14)),wy=4+Math.floor(rnd()*(TH-12));
+    for(let y=wy;y<wy+3&&y<TH-2;y++)for(let x=wx;x<wx+4&&x<TW-2;x++)if(mapTiles[y][x]===0)mapTiles[y][x]=2;
   }
   // Theme decorations
   const themeDecos={school:[19,19,16,12,10],forest:[10,10,10,11,11,12,13],town:[18,18,18,16,11,12],stadium:[20,20,16,12,13]};
@@ -400,24 +408,28 @@ function generateMap(lvl,wave){
     if(r<0.11)mapTiles[y][x]=decoSet[Math.floor(rnd()*decoSet.length)];
     else if(r<0.15)mapTiles[y][x]=12;
     else if(r<0.165)mapTiles[y][x]=16;
-    else if(r<0.175)mapTiles[y][x]=21;// lamp
+    else if(r<0.175)mapTiles[y][x]=21;
   }
-  for(let y=1;y<TH-1;y++)for(let x=1;x<TW-1;x++)if(mapTiles[y][x]===1&&rnd()<0.022)mapTiles[y][x]=15;
-  // NPC spots
+  for(let y=1;y<TH-1;y++)for(let x=1;x<TW-1;x++)if(mapTiles[y][x]===1&&rnd()<0.018)mapTiles[y][x]=15;
+  // NPC spots — 5 จุดกระจาย 4 มุม + กลาง
   const spots=[
-    {x:(cx+1)*TILE+16,y:3*TILE+16},{x:3*TILE+16,y:(cy+1)*TILE+16},
-    {x:(TW-4)*TILE+16,y:(cy+1)*TILE+16},{x:(cx+1)*TILE+16,y:(TH-4)*TILE+16},
-    {x:(cx/2|0)*TILE+16,y:(cy/2|0)*TILE+16},
+    {x:qx*TILE+16,        y:qy*TILE+16},            // มุมซ้ายบน
+    {x:(cx+cx/2|0)*TILE+16, y:qy*TILE+16},           // มุมขวาบน
+    {x:qx*TILE+16,        y:(cy+cy/2|0)*TILE+16},    // มุมซ้ายล่าง
+    {x:(cx+cx/2|0)*TILE+16, y:(cy+cy/2|0)*TILE+16}, // มุมขวาล่าง
+    {x:(cx+1)*TILE+16,    y:(cy+1)*TILE+16},          // กลางแผนที่
   ];
   npcDefs=[];
   const lv=QUESTIONS[selLv];
   const nCount=Math.min(wavePool.length,spots.length);
   for(let i=0;i<nCount;i++){
     const tx=Math.round(spots[i].x/TILE),ty=Math.round(spots[i].y/TILE);
+    // เคลียร์พื้นที่รอบ NPC
     for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){const nx=tx+dx,ny=ty+dy;if(nx>0&&nx<TW-1&&ny>0&&ny<TH-1)mapTiles[ny][nx]=1;}
     if(tx+2<TW-1)mapTiles[ty][tx+2]=14;
     npcDefs.push({id:i,x:spots[i].x,y:spots[i].y,name:lv.npcName,emoji:lv.npcEmoji,qIdx:i,color:lv.color,lvNum:selLv});
   }
+  // spawn ผู้เล่นที่กลางแผนที่
   me.x=(cx+1)*TILE+16; me.y=(cy+1)*TILE+16;
 }
 
@@ -432,9 +444,26 @@ function isSolid(wx,wy){
 function initWave(wave){
   waveNum=wave; waveAnswered=0; waveCorrect=0; answeredNPCs.clear();
   SPR.clearCache();
-  const lv=QUESTIONS[selLv],all=[...lv.questions];
-  for(let i=all.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[all[i],all[j]]=[all[j],all[i]];}
-  wavePool=all.slice(0,Math.min(QS_PER_WAVE,all.length));
+  const lv=QUESTIONS[selLv];
+  // กรองเฉพาะคำถามที่ยังไม่เคยถาม
+  let available=lv.questions.filter((_,i)=>!usedQuestions.has(i));
+  // ถ้าหมดแล้ว reset (วนรอบใหม่)
+  if(available.length<QS_PER_WAVE){
+    usedQuestions.clear();
+    available=[...lv.questions];
+  }
+  // สุ่มลำดับ
+  for(let i=available.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [available[i],available[j]]=[available[j],available[i]];
+  }
+  // เลือก QS_PER_WAVE ข้อ และบันทึก index จริงไว้
+  wavePool=[];
+  for(let i=0;i<Math.min(QS_PER_WAVE,available.length);i++){
+    const realIdx=lv.questions.indexOf(available[i]);
+    usedQuestions.add(realIdx);
+    wavePool.push(available[i]);
+  }
   generateMap(selLv,wave);
   document.getElementById('hud-wave').textContent=`Wave ${wave}`;
   updateWBar();
@@ -525,8 +554,9 @@ function renderPlayer(p,isSelf){
 }
 
 function renderMinimap(){
-  mmx.fillStyle='rgba(0,0,0,.78)'; mmx.fillRect(0,0,112,80);
-  const sw=112/TW,sh=80/TH;
+  const MW=150,MH=100;
+  mmx.fillStyle='rgba(0,0,0,.78)'; mmx.fillRect(0,0,MW,MH);
+  const sw=MW/TW,sh=MH/TH;
   for(let y=0;y<TH;y++)for(let x=0;x<TW;x++){
     const t=mapTiles[y]?.[x];
     mmx.fillStyle=t===3?'#2a2a38':t>=10?'#1a3a0a':t===2?'#1565c0':t===1||t===15?'#7cad42':'#2d5a1b';
@@ -535,6 +565,11 @@ function renderMinimap(){
   npcDefs.forEach(n=>{mmx.fillStyle=answeredNPCs.has(n.id)?'#4caf50':'#ffd700';mmx.fillRect(n.x/TILE*sw-2,n.y/TILE*sh-2,4,4);});
   Object.values(players).forEach(p=>{mmx.fillStyle='#81d4fa';mmx.fillRect(p.x/TILE*sw-1,p.y/TILE*sh-1,3,3);});
   mmx.fillStyle='#5dde3a'; mmx.fillRect(me.x/TILE*sw-2,me.y/TILE*sh-2,5,5);
+  // แสดง viewport บน minimap
+  const vx=(camX/CW)*MW,vy=(camY/CH)*MH;
+  const vw=(gc.width/CW)*MW,vh=(gc.height/CH)*MH;
+  mmx.strokeStyle='rgba(255,255,255,0.3)'; mmx.lineWidth=1;
+  mmx.strokeRect(vx,vy,Math.min(vw,MW),Math.min(vh,MH));
 }
 
 function resizeCanvas(){
@@ -546,12 +581,15 @@ function render(){
   const W=gc.width||window.innerWidth,H=gc.height||window.innerHeight;
   // clear canvas แทนการ reset ขนาด
   gctx.clearRect(0,0,W,H);
-  // วาด background สีพื้น
-  gctx.fillStyle='#1a2a1a';
+  // วาด background ทั้งหน้าจอก่อน (รับรองไม่มีพื้นที่ดำ)
+  gctx.fillStyle='#0a140a';
   gctx.fillRect(0,0,W,H);
   if(!mapTiles||!mapTiles.length)return;
   camX=Math.max(0,Math.min(me.x-W/2,CW-W));
   camY=Math.max(0,Math.min(me.y-H/2,CH-H));
+  // ถ้าแผนที่เล็กกว่าจอ ให้ center และ fill ขอบ
+  if(CW<W){ camX=-(W-CW)/2; }
+  if(CH<H){ camY=-(H-CH)/2; }
   const T=TILE;
   const tx0=Math.max(0,(camX/T|0)-1),ty0=Math.max(0,(camY/T|0)-1);
   const tx1=Math.min(TW,tx0+Math.ceil(W/T)+2),ty1=Math.min(TH,ty0+Math.ceil(H/T)+2);
@@ -700,7 +738,7 @@ function doShowResults(lb){
 function goLobby(){
   document.getElementById('s-results').classList.add('off');
   document.getElementById('s-lobby').classList.remove('off');
-  myScore=0;waveNum=1;players={};answeredNPCs.clear();
+  myScore=0;waveNum=1;players={};answeredNPCs.clear();usedQuestions.clear();
   document.getElementById('hud-sc').textContent='0';
 }
 
