@@ -30,12 +30,12 @@ select option{background:#0d1a0d}
 .av-btn{width:42px;height:42px;border-radius:8px;border:2px solid transparent;background:rgba(255,255,255,.06);cursor:pointer;font-size:1.28rem;display:flex;align-items:center;justify-content:center;transition:all .14s}
 .av-btn:hover{background:rgba(255,255,255,.12)}
 .av-btn.on{border-color:var(--green);background:rgba(93,222,58,.12)}
-/* avatar preview */
 .av-preview{width:64px;height:80px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.04);overflow:hidden;position:relative;float:right;margin-left:.5rem}
 .av-preview canvas{image-rendering:pixelated;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(2.5)}
 .lv-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:.5rem;clear:both}
-.lv-card{border-radius:8px;border:1px solid rgba(255,255,255,.07);padding:.45rem .6rem;cursor:pointer;transition:all .14s}
+.lv-card{border-radius:8px;border:1px solid rgba(255,255,255,.07);padding:.45rem .6rem;cursor:pointer;transition:all .14s;position:relative}
 .lv-card.on{outline:2px solid var(--green)}
+.lv-card.wave-mode::after{content:'🌊';position:absolute;top:4px;right:6px;font-size:.65rem}
 .lv-name{font-size:.72rem;font-weight:700;color:#fff}
 .lv-sub{font-size:.66rem;color:rgba(255,255,255,.42);margin-top:1px}
 .btn{width:100%;padding:.58rem;border-radius:8px;border:none;font-size:.92rem;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;transition:all .16s}
@@ -58,6 +58,31 @@ select option{background:#0d1a0d}
 .lobby-info{color:var(--muted);font-size:.72rem;text-align:center;margin-top:.65rem;line-height:1.5}
 .admin-link{color:var(--muted);font-size:.66rem;text-decoration:none;display:inline-block;margin-top:.32rem}
 .admin-link:hover{color:var(--green)}
+
+/* WAVE SELECT SCREEN */
+#s-wave-select{background:radial-gradient(ellipse at 50% -10%,#0d1f2d,#0a0e14 65%);overflow-y:auto}
+.ws-wrap{width:720px;max-width:97vw;padding:1.5rem 0}
+.ws-title{color:#2196F3;font-size:1.5rem;font-weight:800;text-align:center;margin-bottom:.25rem;text-shadow:0 0 20px rgba(33,150,243,.4)}
+.ws-sub{color:var(--muted);text-align:center;font-size:.8rem;margin-bottom:1.2rem}
+.ws-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.65rem;margin-bottom:1.2rem}
+.wv-card{border-radius:12px;border:1px solid rgba(255,255,255,.08);padding:.75rem .9rem;cursor:pointer;transition:all .18s;position:relative;overflow:hidden}
+.wv-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .18s}
+.wv-card:hover{transform:translateY(-2px)}
+.wv-card:hover::before{opacity:1}
+.wv-card.locked{opacity:.38;cursor:not-allowed;filter:grayscale(.6)}
+.wv-card.locked:hover{transform:none}
+.wv-card.cleared{border-color:rgba(93,222,58,.35)}
+.wv-num{font-size:.65rem;color:rgba(255,255,255,.35);margin-bottom:.18rem}
+.wv-emoji{font-size:1.65rem;margin-bottom:.3rem}
+.wv-name{font-size:.82rem;font-weight:700;color:#fff;margin-bottom:.12rem}
+.wv-sub{font-size:.68rem;color:rgba(255,255,255,.42)}
+.wv-badge{position:absolute;top:7px;right:8px;font-size:.65rem;padding:1px 6px;border-radius:10px;font-weight:700}
+.wv-badge.open{background:rgba(93,222,58,.18);color:var(--green);border:1px solid rgba(93,222,58,.3)}
+.wv-badge.locked{background:rgba(255,255,255,.06);color:#556;border:1px solid rgba(255,255,255,.08)}
+.wv-badge.cleared{background:rgba(93,222,58,.2);color:var(--green)}
+.ws-back{display:flex;justify-content:center}
+.btn-back{background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Sarabun',sans-serif;padding:.46rem 1.4rem;border-radius:8px;cursor:pointer;font-size:.82rem;transition:all .14s}
+.btn-back:hover{border-color:var(--green);color:var(--green)}
 
 /* HUD */
 #hud{position:fixed;top:0;left:0;right:0;height:44px;background:rgba(6,12,6,.96);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 .75rem;gap:.55rem;z-index:100;backdrop-filter:blur(6px)}
@@ -118,6 +143,20 @@ select option{background:#0d1a0d}
 .wc-btn-end{background:rgba(255,255,255,.08);color:var(--text);border:1px solid var(--border)}
 .wc-btn-end:hover{background:rgba(255,255,255,.15);transform:translateY(-1px)}
 
+/* WAVE WAITING (รอเพื่อน) */
+#wave-waiting{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:rgba(6,12,6,.98);border:2px solid #2196F3;border-radius:16px;padding:1.5rem 2.2rem;text-align:center;z-index:185;transition:transform .3s cubic-bezier(.34,1.56,.64,1);min-width:280px}
+#wave-waiting.show{transform:translate(-50%,-50%) scale(1)}
+.ww-icon{font-size:2.2rem;margin-bottom:.3rem}
+.ww-title{color:#2196F3;font-size:1.15rem;font-weight:800;margin-bottom:.28rem}
+.ww-prog{font-size:.88rem;color:var(--muted);margin-bottom:.75rem}
+.ww-bar-wrap{width:180px;height:8px;background:rgba(255,255,255,.06);border-radius:4px;margin:.5rem auto .9rem;overflow:hidden}
+.ww-bar{height:100%;background:linear-gradient(90deg,#2196F3,#00BCD4);border-radius:4px;transition:width .4s}
+.ww-lb{list-style:none;display:flex;flex-direction:column;gap:3px;text-align:left;min-width:200px;margin-bottom:.5rem}
+.ww-lb li{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:.72rem;border-bottom:1px solid rgba(255,255,255,.04)}
+.ww-lb li:last-child{border:none}
+.ww-done{color:var(--green);font-size:.75rem}
+.ww-wait{color:var(--muted);font-size:.75rem}
+
 /* RESULTS */
 #s-results{background:rgba(6,12,6,.97)}
 .res-box{width:560px;max-width:96vw;text-align:center}
@@ -159,6 +198,7 @@ canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
 </style>
 </head>
 <body>
+
 <!-- LOBBY -->
 <div id="s-lobby" class="screen">
   <div class="lb-wrap">
@@ -189,6 +229,16 @@ canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
         <button class="btn btn-outline" id="btn-start-now" style="display:none">▶ เริ่มเลย (ครู)</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- WAVE SELECT (สำหรับ Python mode) -->
+<div id="s-wave-select" class="screen off">
+  <div class="ws-wrap">
+    <div class="ws-title">👨‍💻 การเขียนโปรแกรมเบื้องต้น (Python)</div>
+    <div class="ws-sub">เลือก Wave ที่ต้องการเล่น · ต้องผ่าน Wave ก่อนหน้าถึงจะปลดล็อค Wave ถัดไป</div>
+    <div class="ws-grid" id="ws-grid"></div>
+    <div class="ws-back"><button class="btn-back" id="btn-ws-back">← กลับ</button></div>
   </div>
 </div>
 
@@ -223,16 +273,24 @@ canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
       <div id="chat-log"></div>
       <div id="chat-row"><input id="ci" type="text" maxlength="60" placeholder="ข้อความ..."/><button id="cs">ส่ง</button></div>
     </div>
-    <canvas id="mm" width="150" height="100"></canvas>
+    <canvas id="mm" width="112" height="80"></canvas>
     <div id="wave-clear">
       <div class="wc-icon" id="wc-icon">🎉</div>
       <div class="wc-title" id="wc-title"></div>
       <div class="wc-sub" id="wc-sub"></div>
       <div class="wc-score" id="wc-score"></div>
-      <div class="wc-btns">
+      <div class="wc-btns" id="wc-btns">
         <button class="wc-btn" id="wc-next">Wave ต่อไป →</button>
         <button class="wc-btn wc-btn-end" id="wc-end">🏆 จบ &amp; ดูผล</button>
       </div>
+    </div>
+    <!-- WAVE WAITING: รอเพื่อน -->
+    <div id="wave-waiting">
+      <div class="ww-icon">⏳</div>
+      <div class="ww-title">รอเพื่อนให้ครบ...</div>
+      <div class="ww-prog" id="ww-prog">0 / 0 คน เสร็จแล้ว</div>
+      <div class="ww-bar-wrap"><div class="ww-bar" id="ww-bar" style="width:0%"></div></div>
+      <ul class="ww-lb" id="ww-lb"></ul>
     </div>
     <div id="joy-wrap"><div id="joy-base"><div id="joy-knob"></div></div></div>
   </div>
@@ -262,16 +320,16 @@ const WS_URL=(()=>{
   return(h==='localhost'||h==='127.0.0.1')?`ws://${h}:${pt||3000}`:`${p}//${h}${pt?':'+pt:''}`;
 })();
 
-const TILE=32, TW=50, TH=34;   // ขนาดแผนที่ 1600×1088px — ใหญ่กว่าจอ scroll ได้
-const CW=TW*TILE, CH=TH*TILE;
+const TILE=32,TW=28,TH=21;
+const CW=TW*TILE,CH=TH*TILE;
 const AVATARS=['🧑','👧','🧒','👮','🧙','👩‍🎓'];
-const INTERACT=68, MOVE_MS=50, QS_PER_WAVE=5;
+const INTERACT=68,MOVE_MS=50,QS_PER_WAVE=5;
 
 const MAP_THEMES={
-  school:{name:'🏫 โรงเรียน', npcIdx:0},
-  forest:{name:'🌲 ป่า',       npcIdx:0},
-  town:  {name:'🏘️ ชุมชน',     npcIdx:0},
-  stadium:{name:'🏟️ สนามกีฬา', npcIdx:0},
+  school:{name:'🏫 โรงเรียน',npcIdx:0},
+  forest:{name:'🌲 ป่า',npcIdx:0},
+  town:  {name:'🏘️ ชุมชน',npcIdx:0},
+  stadium:{name:'🏟️ สนามกีฬา',npcIdx:0},
 };
 const THEME_KEYS=['school','forest','town','stadium'];
 
@@ -279,7 +337,6 @@ const THEME_KEYS=['school','forest','town','stadium'];
 let ws=null,selfId=null,players={},myScore=0;
 let selLv=1,selAv=0,dialogOpen=false;
 let answeredNPCs=new Set();
-let usedQuestions=new Set(); // ติดตามคำถามที่ใช้ไปแล้วทุก wave
 let waveNum=1,wavePool=[],waveAnswered=0,waveCorrect=0;
 let mapTheme='school',camX=0,camY=0;
 let pingT=0,pingMs=0,lastSent=0,animF=0;
@@ -287,10 +344,28 @@ let mapTiles=[],npcDefs=[];
 let isHost=false;
 const keys={},bubbles={};
 let me={id:null,name:'',avatar:0,x:CW/2,y:CH/2,score:0,wave:1,direction:'down',moving:false};
-let rafId=null, lastT=0;
+let rafId=null,lastT=0;
+
+// Python wave-select state
+let selPyWave=1;          // wave ที่เลือกจาก wave-select screen
+let pyWavesCleared=[];    // รายการ wave ที่ผ่านแล้ว (เก็บใน localStorage)
+let isWaveSelectMode=false; // กำลังเล่นโหมด wave-select
+
+// Wave waiting state
+let waveWaiting=false;
+
+// ── โหลด progress Python จาก localStorage ──
+function loadPyProgress(){
+  try{ pyWavesCleared=JSON.parse(localStorage.getItem('pyWavesCleared')||'[]'); }catch{ pyWavesCleared=[]; }
+}
+function savePyProgress(waveId){
+  if(!pyWavesCleared.includes(waveId))pyWavesCleared.push(waveId);
+  try{ localStorage.setItem('pyWavesCleared',JSON.stringify(pyWavesCleared)); }catch{}
+}
 
 // ══════ LOBBY ══════
 function buildLobby(){
+  loadPyProgress();
   updateAvPreview(0);
   const ar=document.getElementById('av-row'); ar.innerHTML='';
   AVATARS.forEach((a,i)=>{
@@ -300,9 +375,12 @@ function buildLobby(){
   });
   const lg=document.getElementById('lv-grid'); lg.innerHTML='';
   Object.entries(QUESTIONS).forEach(([id,lv],idx)=>{
-    const d=document.createElement('div'); d.className='lv-card'+(idx===0?' on':'');
+    const isWM=lv.mode==='wave-select';
+    const qCount=isWM?(lv.waves||[]).reduce((s,w)=>s+w.questions.length,0):lv.questions.length;
+    const d=document.createElement('div');
+    d.className='lv-card'+(idx===0?' on':'')+(isWM?' wave-mode':'');
     d.style.cssText=`background:linear-gradient(135deg,${lv.color}18,${lv.color}28);border-color:${lv.color}44`;
-    d.innerHTML=`<div class="lv-name" style="color:${lv.color}">${lv.npcEmoji} ${lv.name}</div><div class="lv-sub">${lv.questions.length} คำถาม</div>`;
+    d.innerHTML=`<div class="lv-name" style="color:${lv.color}">${lv.npcEmoji} ${lv.name}</div><div class="lv-sub">${isWM?`🌊 ${(lv.waves||[]).length} Waves`:`${qCount} คำถาม`}</div>`;
     d.onclick=()=>{ document.querySelectorAll('.lv-card').forEach(c=>c.classList.remove('on')); d.classList.add('on'); selLv=parseInt(id); };
     lg.appendChild(d);
   });
@@ -314,11 +392,45 @@ function buildLobby(){
 
 function updateAvPreview(av){
   if(typeof SPR==='undefined'||!SPR.getPlayer)return;
-  const c=document.getElementById('av-preview-c');
-  if(!c)return;
+  const c=document.getElementById('av-preview-c'); if(!c)return;
   const ctx=c.getContext('2d'); ctx.clearRect(0,0,24,36);
-  const sp=SPR.getPlayer(av,'down',0,false);
-  ctx.drawImage(sp,0,0);
+  ctx.drawImage(SPR.getPlayer(av,'down',0,false),0,0);
+}
+
+// ══════ WAVE SELECT SCREEN ══════
+function showWaveSelect(){
+  loadPyProgress();
+  const lv=QUESTIONS[selLv];
+  const grid=document.getElementById('ws-grid'); grid.innerHTML='';
+  (lv.waves||[]).forEach((w,idx)=>{
+    const isCleared=pyWavesCleared.includes(w.id);
+    const isLocked=w.id>1&&!pyWavesCleared.includes(w.id-1);
+    const card=document.createElement('div');
+    card.className='wv-card'+(isLocked?' locked':'')+(isCleared?' cleared':'');
+    card.style.cssText=`background:linear-gradient(135deg,${w.color}14,${w.color}22);border-color:${w.color}${isCleared?'55':'22'}`;
+    const badgeClass=isCleared?'cleared':isLocked?'locked':'open';
+    const badgeText=isCleared?'✓ ผ่านแล้ว':isLocked?'🔒 ล็อค':'▶ เล่นได้';
+    card.innerHTML=`
+      <div class="wv-num">Wave ${w.id}</div>
+      <div class="wv-emoji">${w.emoji}</div>
+      <div class="wv-name" style="color:${w.color}">${w.name}</div>
+      <div class="wv-sub">${w.subtitle}</div>
+      <div class="wv-badge ${badgeClass}">${badgeText}</div>`;
+    if(!isLocked){
+      card.onclick=()=>{
+        selPyWave=w.id;
+        document.getElementById('s-wave-select').classList.add('off');
+        doStartGame(w.id);
+      };
+    }
+    grid.appendChild(card);
+  });
+  document.getElementById('s-lobby').classList.add('off');
+  document.getElementById('s-wave-select').classList.remove('off');
+  document.getElementById('btn-ws-back').onclick=()=>{
+    document.getElementById('s-wave-select').classList.add('off');
+    document.getElementById('s-lobby').classList.remove('off');
+  };
 }
 
 // ══════ WEBSOCKET ══════
@@ -337,17 +449,117 @@ function wsSend(t,p){if(ws&&ws.readyState===1)ws.send(JSON.stringify({type:t,pay
 
 function handleMsg(msg){
   const{type:t,payload:p}=msg;
-  if(t==='INIT'){selfId=p.selfId;me.id=selfId;p.players.forEach(x=>{if(x.id!==selfId)players[x.id]=x;});isHost=(p.players[0]?.id===selfId||p.players.length===1);updateLobbyPanel(p);updateLB(p.leaderboard);}
-  else if(t==='LOBBY_UPDATE'){p.players.forEach(x=>{if(x.id!==selfId)players[x.id]={...players[x.id],...x};});updateLobbyPanel(p);}
-  else if(t==='PLAYER_JOINED'){if(p.id!==selfId)players[p.id]=p;updatePCount();}
-  else if(t==='PLAYER_LEFT'){delete players[p.id];addChat(`${p.name} ออกจากเกม`,'sys');updatePCount();}
-  else if(t==='GAME_START'){startGame(p.wave||1);}
-  else if(t==='PLAYER_MOVED'){if(p.id!==selfId&&players[p.id]){const q=players[p.id];q.x=p.x;q.y=p.y;q.direction=p.direction;q.moving=p.moving;}}
-  else if(t==='SCORE_UPDATE'){myScore=p.score;me.score=myScore;document.getElementById('hud-sc').textContent=myScore;}
+  if(t==='INIT'){
+    selfId=p.selfId; me.id=selfId;
+    p.players.forEach(x=>{if(x.id!==selfId)players[x.id]=x;});
+    isHost=(p.players[0]?.id===selfId||p.players.length===1);
+    updateLobbyPanel(p); updateLB(p.leaderboard);
+  }
+  else if(t==='LOBBY_UPDATE'){
+    p.players.forEach(x=>{if(x.id!==selfId)players[x.id]={...players[x.id],...x};});
+    updateLobbyPanel(p);
+  }
+  else if(t==='PLAYER_JOINED'){if(p.id!==selfId)players[p.id]=p; updatePCount();}
+  else if(t==='PLAYER_LEFT'){delete players[p.id]; addChat(`${p.name} ออกจากเกม`,'sys'); updatePCount();}
+  else if(t==='GAME_START'){
+    // ถ้าเป็น wave-select mode → ไปหน้าเลือก wave ก่อน
+    if(QUESTIONS[selLv].mode==='wave-select'){
+      showWaveSelect();
+    }else{
+      startGame(p.wave||1);
+    }
+  }
+  else if(t==='PLAYER_MOVED'){
+    if(p.id!==selfId&&players[p.id]){
+      const q=players[p.id]; q.x=p.x; q.y=p.y; q.direction=p.direction; q.moving=p.moving;
+    }
+  }
+  else if(t==='SCORE_UPDATE'){myScore=p.score; me.score=myScore; document.getElementById('hud-sc').textContent=myScore;}
   else if(t==='LEADERBOARD'){updateLB(p.leaderboard);}
-  else if(t==='CHAT_MSG'){addChat(p.text,'user',p.name,p.id===selfId);showBubble(p.id,p.text);}
+  else if(t==='CHAT_MSG'){addChat(p.text,'user',p.name,p.id===selfId); showBubble(p.id,p.text);}
   else if(t==='SHOW_RESULTS'){doShowResults(p.leaderboard);}
-  else if(t==='PONG'){pingMs=Date.now()-pingT;document.getElementById('hud-ms').textContent=pingMs+'ms';}
+  else if(t==='PONG'){pingMs=Date.now()-pingT; document.getElementById('hud-ms').textContent=pingMs+'ms';}
+
+  // ─ WAVE_WAITING: อัพเดตหน้ารอ ─
+  else if(t==='WAVE_WAITING'){
+    updateWaveWaiting(p.done, p.total, p.leaderboard);
+  }
+  // ─ WAVE_RESULTS: ทุกคน done แล้ว แสดงผล ─
+  else if(t==='WAVE_RESULTS'){
+    hideWaveWaiting();
+    // แสดง wave clear popup พร้อมปุ่ม wave ถัดไป
+    showWaveClearFromServer(p.wave, p.nextWave, p.leaderboard);
+  }
+}
+
+// ── Wave Waiting UI ──
+function showWaveWaiting(){
+  waveWaiting=true;
+  document.getElementById('wave-waiting').classList.add('show');
+}
+function hideWaveWaiting(){
+  waveWaiting=false;
+  document.getElementById('wave-waiting').classList.remove('show');
+}
+function updateWaveWaiting(done, total, lb){
+  showWaveWaiting();
+  document.getElementById('ww-prog').textContent=`${done} / ${total} คน เสร็จแล้ว`;
+  const pct=total>0?(done/total)*100:0;
+  document.getElementById('ww-bar').style.width=pct+'%';
+  // แสดง leaderboard ขณะรอ
+  const ul=document.getElementById('ww-lb'); ul.innerHTML='';
+  (lb||[]).slice(0,6).forEach((p,i)=>{
+    const li=document.createElement('li');
+    const isSelf=p.id===selfId;
+    li.innerHTML=`<span style="color:${i===0?'var(--gold)':i===1?'#c0c0c0':i===2?'#cd7f32':'#556'};width:16px;text-align:center">${i+1}</span>
+      <span style="flex:1;${isSelf?'color:var(--green);font-weight:700':''}">${p.name}${isSelf?' 👈':''}</span>
+      <span style="color:var(--gold);font-weight:700">${p.score}</span>`;
+    ul.appendChild(li);
+  });
+}
+function showWaveClearFromServer(wave, nextWave, lb){
+  updateLB(lb);
+  const n=Math.min(wavePool.length,npcDefs.length);
+  document.getElementById('wc-icon').textContent=waveCorrect>=n?'🏆':'🎉';
+  document.getElementById('wc-title').textContent=`Wave ${wave} สำเร็จ! ทุกคนเสร็จแล้ว`;
+  document.getElementById('wc-sub').textContent=`${MAP_THEMES[mapTheme].name} · ถูก ${waveCorrect}/${n} ข้อ`;
+  document.getElementById('wc-score').textContent=`⭐ ${myScore} คะแนน`;
+
+  const lv=QUESTIONS[selLv];
+  const isLastWave=lv.mode==='wave-select'
+    ? selPyWave>=(lv.waves||[]).length
+    : false;
+
+  const btns=document.getElementById('wc-btns');
+  btns.innerHTML='';
+  if(!isLastWave){
+    const btnNext=document.createElement('button');
+    btnNext.className='wc-btn'; btnNext.textContent='Wave ต่อไป →';
+    btnNext.onclick=()=>{
+      document.getElementById('wave-clear').classList.remove('show');
+      if(lv.mode==='wave-select'){
+        savePyProgress(selPyWave);
+        // ไปหน้า wave select อัพเดต หรือเล่น wave ถัดไปตรงๆ
+        selPyWave=nextWave;
+        document.getElementById('s-game').classList.add('off');
+        showWaveSelect();
+      }else{
+        initWave(nextWave);
+      }
+    };
+    btns.appendChild(btnNext);
+  }
+  const btnEnd=document.createElement('button');
+  btnEnd.className='wc-btn wc-btn-end'; btnEnd.textContent='🏆 จบ & ดูผล';
+  btnEnd.onclick=()=>{
+    document.getElementById('wave-clear').classList.remove('show');
+    if(lv.mode==='wave-select') savePyProgress(selPyWave);
+    wsSend('GAME_END',{});
+    doShowResults(buildLocalLB());
+  };
+  btns.appendChild(btnEnd);
+
+  setTimeout(()=>document.getElementById('wave-clear').classList.add('show'),200);
 }
 
 function updateLobbyPanel(snap){
@@ -378,28 +590,20 @@ function generateMap(lvl,wave){
   const rnd=seededRnd(lvl*999+wave*137);
   mapTiles=[];
   for(let y=0;y<TH;y++){mapTiles[y]=[];for(let x=0;x<TW;x++)mapTiles[y][x]=0;}
-  // กำแพงรอบนอก
   for(let x=0;x<TW;x++){mapTiles[0][x]=3;mapTiles[TH-1][x]=3;}
   for(let y=0;y<TH;y++){mapTiles[y][0]=3;mapTiles[y][TW-1]=3;}
   const cx=TW>>1,cy=TH>>1;
-  // ถนนแนวนอน-แนวตั้งหลัก
   for(let x=1;x<TW-1;x++){mapTiles[cy][x]=1;mapTiles[cy+1][x]=1;}
   for(let y=1;y<TH-1;y++){mapTiles[y][cx]=1;mapTiles[y][cx+1]=1;}
-  // ถนนรอบนอก
   for(let x=2;x<TW-2;x++){mapTiles[2][x]=1;mapTiles[TH-3][x]=1;}
   for(let y=2;y<TH-2;y++){mapTiles[y][2]=1;mapTiles[y][TW-3]=1;}
-  // ถนนเพิ่ม — แบ่ง quadrant
-  const qx=cx>>1, qy=cy>>1;
-  for(let x=1;x<cx;x++){mapTiles[qy][x]=1;mapTiles[cy+cy/2|0][x]=1;}
-  for(let x=cx+2;x<TW-1;x++){mapTiles[qy][x]=1;mapTiles[cy+cy/2|0][x]=1;}
-  for(let y=1;y<cy;y++){mapTiles[y][qx]=1;mapTiles[y][cx+cx/2|0]=1;}
-  for(let y=cy+2;y<TH-1;y++){mapTiles[y][qx]=1;mapTiles[y][cx+cx/2|0]=1;}
-  // บึงน้ำ 3 แห่ง
-  for(let p=0;p<3;p++){
-    const wx=4+Math.floor(rnd()*(TW-14)),wy=4+Math.floor(rnd()*(TH-12));
-    for(let y=wy;y<wy+3&&y<TH-2;y++)for(let x=wx;x<wx+4&&x<TW-2;x++)if(mapTiles[y][x]===0)mapTiles[y][x]=2;
+  [[cx/2|0,2,cx/2|0,cy],[cx+cx/2|0,cy,cx+cx/2|0,TH-3],[2,cy/2|0,cx,cy/2|0],[cx,cy+cy/2|0,TW-3,cy+cy/2|0]].forEach(([x1,y1,x2,y2])=>{
+    for(let y=Math.min(y1,y2);y<=Math.max(y1,y2);y++)for(let x=Math.min(x1,x2);x<=Math.max(x1,x2);x++)if(mapTiles[y]&&mapTiles[y][x]===0)mapTiles[y][x]=1;
+  });
+  for(let p=0;p<2;p++){
+    const wx=3+Math.floor(rnd()*(TW-10)),wy=3+Math.floor(rnd()*(TH-10));
+    for(let y=wy;y<wy+2&&y<TH-2;y++)for(let x=wx;x<wx+3&&x<TW-2;x++)if(mapTiles[y][x]===0)mapTiles[y][x]=2;
   }
-  // Theme decorations
   const themeDecos={school:[19,19,16,12,10],forest:[10,10,10,11,11,12,13],town:[18,18,18,16,11,12],stadium:[20,20,16,12,13]};
   const decoSet=themeDecos[mapTheme]||themeDecos.forest;
   for(let y=1;y<TH-1;y++)for(let x=1;x<TW-1;x++){
@@ -410,26 +614,27 @@ function generateMap(lvl,wave){
     else if(r<0.165)mapTiles[y][x]=16;
     else if(r<0.175)mapTiles[y][x]=21;
   }
-  for(let y=1;y<TH-1;y++)for(let x=1;x<TW-1;x++)if(mapTiles[y][x]===1&&rnd()<0.018)mapTiles[y][x]=15;
-  // NPC spots — 5 จุดกระจาย 4 มุม + กลาง
+  for(let y=1;y<TH-1;y++)for(let x=1;x<TW-1;x++)if(mapTiles[y][x]===1&&rnd()<0.022)mapTiles[y][x]=15;
   const spots=[
-    {x:qx*TILE+16,        y:qy*TILE+16},            // มุมซ้ายบน
-    {x:(cx+cx/2|0)*TILE+16, y:qy*TILE+16},           // มุมขวาบน
-    {x:qx*TILE+16,        y:(cy+cy/2|0)*TILE+16},    // มุมซ้ายล่าง
-    {x:(cx+cx/2|0)*TILE+16, y:(cy+cy/2|0)*TILE+16}, // มุมขวาล่าง
-    {x:(cx+1)*TILE+16,    y:(cy+1)*TILE+16},          // กลางแผนที่
+    {x:(cx+1)*TILE+16,y:3*TILE+16},{x:3*TILE+16,y:(cy+1)*TILE+16},
+    {x:(TW-4)*TILE+16,y:(cy+1)*TILE+16},{x:(cx+1)*TILE+16,y:(TH-4)*TILE+16},
+    {x:(cx/2|0)*TILE+16,y:(cy/2|0)*TILE+16},
   ];
   npcDefs=[];
   const lv=QUESTIONS[selLv];
   const nCount=Math.min(wavePool.length,spots.length);
   for(let i=0;i<nCount;i++){
     const tx=Math.round(spots[i].x/TILE),ty=Math.round(spots[i].y/TILE);
-    // เคลียร์พื้นที่รอบ NPC
     for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){const nx=tx+dx,ny=ty+dy;if(nx>0&&nx<TW-1&&ny>0&&ny<TH-1)mapTiles[ny][nx]=1;}
     if(tx+2<TW-1)mapTiles[ty][tx+2]=14;
-    npcDefs.push({id:i,x:spots[i].x,y:spots[i].y,name:lv.npcName,emoji:lv.npcEmoji,qIdx:i,color:lv.color,lvNum:selLv});
+    // สำหรับ wave-select mode ใช้ชื่อ/emoji จาก wave นั้น
+    let npcName=lv.npcName,npcEmoji=lv.npcEmoji,npcColor=lv.color;
+    if(lv.mode==='wave-select'&&lv.waves){
+      const wvData=lv.waves.find(w=>w.id===selPyWave);
+      if(wvData){npcName=wvData.name; npcEmoji=wvData.emoji; npcColor=wvData.color;}
+    }
+    npcDefs.push({id:i,x:spots[i].x,y:spots[i].y,name:npcName,emoji:npcEmoji,qIdx:i,color:npcColor,lvNum:selLv});
   }
-  // spawn ผู้เล่นที่กลางแผนที่
   me.x=(cx+1)*TILE+16; me.y=(cy+1)*TILE+16;
 }
 
@@ -443,33 +648,48 @@ function isSolid(wx,wy){
 // ══════ WAVE SYSTEM ══════
 function initWave(wave){
   waveNum=wave; waveAnswered=0; waveCorrect=0; answeredNPCs.clear();
+  waveWaiting=false;
+  document.getElementById('wave-waiting').classList.remove('show');
   SPR.clearCache();
   const lv=QUESTIONS[selLv];
-  // กรองเฉพาะคำถามที่ยังไม่เคยถาม
-  let available=lv.questions.filter((_,i)=>!usedQuestions.has(i));
-  // ถ้าหมดแล้ว reset (วนรอบใหม่)
-  if(available.length<QS_PER_WAVE){
-    usedQuestions.clear();
-    available=[...lv.questions];
+
+  // ──────────────────────────────────────────
+  // เลือก question pool ตาม mode
+  // ──────────────────────────────────────────
+  let questionSrc=[];
+  if(lv.mode==='wave-select'&&lv.waves){
+    // ใช้คำถามจาก wave ที่เลือก (selPyWave)
+    const wvData=lv.waves.find(w=>w.id===selPyWave);
+    questionSrc=wvData?[...wvData.questions]:[];
+  }else{
+    questionSrc=[...(lv.questions||[])];
   }
-  // สุ่มลำดับ
-  for(let i=available.length-1;i>0;i--){
+
+  // ป้องกัน: ถ้าไม่มีคำถามเลยก็ไม่สร้าง NPC
+  if(questionSrc.length===0){
+    wavePool=[];
+    generateMap(selLv,wave);
+    document.getElementById('hud-wave').textContent=`Wave ${wave}`;
+    updateWBar();
+    return;
+  }
+
+  // สุ่มไม่ซ้ำ
+  for(let i=questionSrc.length-1;i>0;i--){
     const j=Math.floor(Math.random()*(i+1));
-    [available[i],available[j]]=[available[j],available[i]];
+    [questionSrc[i],questionSrc[j]]=[questionSrc[j],questionSrc[i]];
   }
-  // เลือก QS_PER_WAVE ข้อ และบันทึก index จริงไว้
-  wavePool=[];
-  for(let i=0;i<Math.min(QS_PER_WAVE,available.length);i++){
-    const realIdx=lv.questions.indexOf(available[i]);
-    usedQuestions.add(realIdx);
-    wavePool.push(available[i]);
-  }
+  wavePool=questionSrc.slice(0,Math.min(QS_PER_WAVE,questionSrc.length));
+
   generateMap(selLv,wave);
   document.getElementById('hud-wave').textContent=`Wave ${wave}`;
   updateWBar();
   const badge=document.getElementById('map-badge');
-  badge.textContent=MAP_THEMES[mapTheme].name; badge.style.opacity='1';
-  clearTimeout(badge._t); badge._t=setTimeout(()=>badge.style.opacity='0',2500);
+  const waveLabel=lv.mode==='wave-select'&&lv.waves
+    ? (lv.waves.find(w=>w.id===selPyWave)?.name||`Wave ${selPyWave}`)
+    : MAP_THEMES[mapTheme].name;
+  badge.textContent=waveLabel; badge.style.opacity='1';
+  clearTimeout(badge._t); badge._t=setTimeout(()=>badge.style.opacity='0',2800);
 }
 
 function updateWBar(){
@@ -484,18 +704,11 @@ const gc=document.getElementById('gc'),gctx=gc.getContext('2d');
 const mmc=document.getElementById('mm'),mmx=mmc.getContext('2d');
 
 function drawGroundTile(tx,ty,tile,px,py){
-  const T=TILE;
-  if(tile===1){
-    const s=SPR.pathTile(mapTheme,tx,ty); gctx.drawImage(s,px,py);
-  }else if(tile===2){
-    const s=SPR.waterTile(animF,tx,ty); gctx.drawImage(s,px,py);
-  }else if(tile===3){
-    const s=SPR.wallTile(mapTheme,tx,ty); gctx.drawImage(s,px,py);
-  }else{
-    const s=SPR.groundTile(mapTheme,tx,ty); gctx.drawImage(s,px,py);
-  }
+  if(tile===1){gctx.drawImage(SPR.pathTile(mapTheme,tx,ty),px,py);}
+  else if(tile===2){gctx.drawImage(SPR.waterTile(animF,tx,ty),px,py);}
+  else if(tile===3){gctx.drawImage(SPR.wallTile(mapTheme,tx,ty),px,py);}
+  else{gctx.drawImage(SPR.groundTile(mapTheme,tx,ty),px,py);}
 }
-
 function drawDecoTile(tx,ty,tile,px,py){
   const T=TILE; let sp=null;
   if(tile===10)sp=SPR.tree((tx*3+ty)%3);
@@ -511,7 +724,6 @@ function drawDecoTile(tx,ty,tile,px,py){
   else if(tile===21)sp=SPR.lamp();
   if(sp)gctx.drawImage(sp,px+(T-sp.width)/2,py+T-sp.height,sp.width,sp.height);
 }
-
 function renderNPC(npc){
   const px=npc.x-camX|0,py=npc.y-camY|0;
   if(px<-60||py<-60||px>gc.width+60||py>gc.height+60)return;
@@ -534,7 +746,6 @@ function renderNPC(npc){
   gctx.fillStyle='#ffd700'; gctx.font='10px Sarabun,sans-serif'; gctx.textAlign='center';
   gctx.fillText(nm,px,py-sp.height-8);
 }
-
 function renderPlayer(p,isSelf){
   const px=p.x-camX|0,py=p.y-camY|0;
   if(px<-60||py<-60||px>gc.width+60||py>gc.height+60)return;
@@ -552,11 +763,9 @@ function renderPlayer(p,isSelf){
     gctx.fillStyle='#222'; gctx.fillText(bt,px,py-sp.height-12); bub.timer--;
   }
 }
-
 function renderMinimap(){
-  const MW=150,MH=100;
-  mmx.fillStyle='rgba(0,0,0,.78)'; mmx.fillRect(0,0,MW,MH);
-  const sw=MW/TW,sh=MH/TH;
+  mmx.fillStyle='rgba(0,0,0,.78)'; mmx.fillRect(0,0,112,80);
+  const sw=112/TW,sh=80/TH;
   for(let y=0;y<TH;y++)for(let x=0;x<TW;x++){
     const t=mapTiles[y]?.[x];
     mmx.fillStyle=t===3?'#2a2a38':t>=10?'#1a3a0a':t===2?'#1565c0':t===1||t===15?'#7cad42':'#2d5a1b';
@@ -565,54 +774,36 @@ function renderMinimap(){
   npcDefs.forEach(n=>{mmx.fillStyle=answeredNPCs.has(n.id)?'#4caf50':'#ffd700';mmx.fillRect(n.x/TILE*sw-2,n.y/TILE*sh-2,4,4);});
   Object.values(players).forEach(p=>{mmx.fillStyle='#81d4fa';mmx.fillRect(p.x/TILE*sw-1,p.y/TILE*sh-1,3,3);});
   mmx.fillStyle='#5dde3a'; mmx.fillRect(me.x/TILE*sw-2,me.y/TILE*sh-2,5,5);
-  // แสดง viewport บน minimap
-  const vx=(camX/CW)*MW,vy=(camY/CH)*MH;
-  const vw=(gc.width/CW)*MW,vh=(gc.height/CH)*MH;
-  mmx.strokeStyle='rgba(255,255,255,0.3)'; mmx.lineWidth=1;
-  mmx.strokeRect(vx,vy,Math.min(vw,MW),Math.min(vh,MH));
 }
-
 function resizeCanvas(){
   const W=window.innerWidth,H=window.innerHeight;
   if(gc.width!==W||gc.height!==H){gc.width=W;gc.height=H;}
 }
-
 function render(){
   const W=gc.width||window.innerWidth,H=gc.height||window.innerHeight;
-  // clear canvas แทนการ reset ขนาด
   gctx.clearRect(0,0,W,H);
-  // วาด background ทั้งหน้าจอก่อน (รับรองไม่มีพื้นที่ดำ)
-  gctx.fillStyle='#0a140a';
-  gctx.fillRect(0,0,W,H);
+  gctx.fillStyle='#1a2a1a'; gctx.fillRect(0,0,W,H);
   if(!mapTiles||!mapTiles.length)return;
   camX=Math.max(0,Math.min(me.x-W/2,CW-W));
   camY=Math.max(0,Math.min(me.y-H/2,CH-H));
-  // ถ้าแผนที่เล็กกว่าจอ ให้ center และ fill ขอบ
-  if(CW<W){ camX=-(W-CW)/2; }
-  if(CH<H){ camY=-(H-CH)/2; }
   const T=TILE;
   const tx0=Math.max(0,(camX/T|0)-1),ty0=Math.max(0,(camY/T|0)-1);
   const tx1=Math.min(TW,tx0+Math.ceil(W/T)+2),ty1=Math.min(TH,ty0+Math.ceil(H/T)+2);
-  // Ground
   for(let ty=ty0;ty<ty1;ty++)for(let tx=tx0;tx<tx1;tx++){
     const tile=mapTiles[ty]?.[tx]||0;
     const px=tx*T-camX|0,py=ty*T-camY|0;
     if(tile<10)drawGroundTile(tx,ty,tile,px,py);
     else{gctx.drawImage(SPR.groundTile(mapTheme,tx,ty),px,py);}
   }
-  // Decos sorted Y
   const decos=[];
   for(let ty=ty0;ty<ty1;ty++)for(let tx=tx0;tx<tx1;tx++)if((mapTiles[ty]?.[tx]||0)>=10)decos.push({tx,ty,t:mapTiles[ty][tx]});
   decos.sort((a,b)=>a.ty-b.ty);
   decos.forEach(d=>drawDecoTile(d.tx,d.ty,d.t,d.tx*T-camX|0,d.ty*T-camY|0));
-  // NPCs
   npcDefs.forEach(n=>renderNPC(n));
-  // Players
   const allP=[...Object.values(players),{...me,isSelf:true}];
   allP.sort((a,b)=>a.y-b.y);
   allP.forEach(p=>renderPlayer(p,p.isSelf||(p.id===me.id)));
   renderMinimap();
-  // Update HUD avatar
   const hudAc=document.getElementById('hud-av-c');
   const hudAx=hudAc.getContext('2d'); hudAx.clearRect(0,0,24,36);
   hudAx.drawImage(SPR.getPlayer(selAv,me.direction||'down',animF,me.moving),0,0);
@@ -620,14 +811,13 @@ function render(){
 
 // ══════ GAME LOOP ══════
 function loop(ts){
-  if(!rafId&&rafId!==0)return; // ถูก cancel แล้ว
+  if(!rafId&&rafId!==0)return;
   const dt=Math.min((ts-lastT)/1000,.05); lastT=ts; animF++;
   try{update(dt); render();}catch(e){console.error('loop error:',e);}
   rafId=requestAnimationFrame(loop);
 }
-
 function update(dt){
-  if(dialogOpen)return;
+  if(dialogOpen||waveWaiting)return;
   const spd=128; let vx=0,vy=0;
   if(keys.ArrowLeft||keys.KeyA)vx=-1; if(keys.ArrowRight||keys.KeyD)vx=1;
   if(keys.ArrowUp||keys.KeyW)vy=-1; if(keys.ArrowDown||keys.KeyS)vy=1;
@@ -645,10 +835,16 @@ function update(dt){
   if(animF%300===0){pingT=Date.now();wsSend('PING',{});}
 }
 
-// ══════ DIALOG/QUIZ ══════
+// ══════ DIALOG / QUIZ ══════
 function openDialog(npc){
   dialogOpen=true;
-  const q=wavePool[npc.qIdx]; if(!q)return;
+  // ── guard: ถ้า wavePool ว่างหรือ qIdx เกิน ไม่เปิด dialog ──
+  const q=wavePool[npc.qIdx];
+  if(!q){
+    // NPC นี้ไม่มีคำถาม (pool ว่าง) ให้ปิด
+    dialogOpen=false;
+    return;
+  }
   document.getElementById('dlg-npc').innerHTML=`${npc.emoji} ${npc.name}`;
   document.getElementById('dlg-sub').textContent=`Wave ${waveNum} · คำถามที่ ${npc.qIdx+1}/${Math.min(wavePool.length,npcDefs.length)}`;
   document.getElementById('quiz-area').style.display='block';
@@ -665,7 +861,6 @@ function openDialog(npc){
   });
   document.getElementById('dialog').classList.add('show');
 }
-
 function selectAns(npc,q,idx,btn){
   document.querySelectorAll('.ob').forEach(b=>b.disabled=true);
   const ok=idx===q.ans;
@@ -681,7 +876,6 @@ function selectAns(npc,q,idx,btn){
   document.getElementById('dlg-close').style.display='block';
   checkWaveClear();
 }
-
 function closeDialog(){dialogOpen=false;document.getElementById('dialog').classList.remove('show');}
 
 function checkWaveClear(){
@@ -689,22 +883,62 @@ function checkWaveClear(){
   if(waveAnswered<n)return;
   setTimeout(()=>{
     closeDialog();
-    document.getElementById('wc-icon').textContent=waveCorrect>=n?'🏆':'🎉';
-    document.getElementById('wc-title').textContent=`Wave ${waveNum} สำเร็จ!`;
-    document.getElementById('wc-sub').textContent=`${MAP_THEMES[mapTheme].name} · ถูก ${waveCorrect}/${n} ข้อ`;
-    document.getElementById('wc-score').textContent=`⭐ ${myScore} คะแนน`;
-    document.getElementById('wc-next').onclick=()=>{
+    // แจ้ง server ว่าเราเสร็จ wave นี้แล้ว → รอเพื่อน
+    if(ws&&ws.readyState===1){
+      wsSend('WAVE_DONE',{wave:waveNum});
+      // แสดงหน้า waiting ชั่วคราว (server จะตอบ WAVE_WAITING)
+      showWaveWaiting();
+    }else{
+      // Offline mode: แสดง wave-clear ทันที
+      showWaveClearOffline();
+    }
+  },550);
+}
+
+function showWaveClearOffline(){
+  const n=Math.min(wavePool.length,npcDefs.length);
+  const lv=QUESTIONS[selLv];
+  document.getElementById('wc-icon').textContent=waveCorrect>=n?'🏆':'🎉';
+  document.getElementById('wc-title').textContent=`Wave ${waveNum} สำเร็จ!`;
+  document.getElementById('wc-sub').textContent=`${MAP_THEMES[mapTheme].name} · ถูก ${waveCorrect}/${n} ข้อ`;
+  document.getElementById('wc-score').textContent=`⭐ ${myScore} คะแนน`;
+
+  const isLastWave=lv.mode==='wave-select'
+    ? selPyWave>=(lv.waves||[]).length
+    : false;
+
+  const btns=document.getElementById('wc-btns'); btns.innerHTML='';
+  if(!isLastWave){
+    const btnNext=document.createElement('button');
+    btnNext.className='wc-btn'; btnNext.textContent='Wave ต่อไป →';
+    btnNext.onclick=()=>{
       document.getElementById('wave-clear').classList.remove('show');
       wsSend('WAVE_CLEAR',{wave:waveNum});
-      initWave(waveNum+1);
+      if(lv.mode==='wave-select'){
+        savePyProgress(selPyWave);
+        const nextId=selPyWave+1;
+        const nextWave=lv.waves?.find(w=>w.id===nextId);
+        if(nextWave){
+          selPyWave=nextId;
+          document.getElementById('s-game').classList.add('off');
+          showWaveSelect();
+        }else initWave(waveNum+1);
+      }else{
+        initWave(waveNum+1);
+      }
     };
-    document.getElementById('wc-end').onclick=()=>{
-      document.getElementById('wave-clear').classList.remove('show');
-      wsSend('GAME_END',{});
-      doShowResults(buildLocalLB());
-    };
-    document.getElementById('wave-clear').classList.add('show');
-  },550);
+    btns.appendChild(btnNext);
+  }
+  const btnEnd=document.createElement('button');
+  btnEnd.className='wc-btn wc-btn-end'; btnEnd.textContent='🏆 จบ & ดูผล';
+  btnEnd.onclick=()=>{
+    document.getElementById('wave-clear').classList.remove('show');
+    if(lv.mode==='wave-select') savePyProgress(selPyWave);
+    wsSend('GAME_END',{});
+    doShowResults(buildLocalLB());
+  };
+  btns.appendChild(btnEnd);
+  document.getElementById('wave-clear').classList.add('show');
 }
 
 // ══════ RESULTS ══════
@@ -712,10 +946,10 @@ function buildLocalLB(){
   const all=[{id:me.id||selfId,name:me.name,score:myScore,avatar:selAv,wave:waveNum},...Object.values(players)];
   return all.sort((a,b)=>b.score-a.score).map((p,i)=>({...p,rank:i+1}));
 }
-
 function doShowResults(lb){
   if(rafId){cancelAnimationFrame(rafId);rafId=null;}
   document.getElementById('s-game').classList.add('off');
+  document.getElementById('s-wave-select').classList.add('off');
   document.getElementById('s-results').classList.remove('off');
   const tbody=document.getElementById('res-tbody'); tbody.innerHTML='';
   const medals=['🥇','🥈','🥉'];
@@ -723,7 +957,6 @@ function doShowResults(lb){
     const isSelf=p.id===selfId;
     const tr=document.createElement('tr'); if(isSelf)tr.className='res-self';
     const rc=i<3?`rank-${i+1}`:'';
-    // Avatar cell with pixel art
     const avC=document.createElement('canvas'); avC.width=24; avC.height=36;
     avC.getContext('2d').drawImage(SPR.getPlayer(p.avatar||0,'down',0,false),0,0);
     const avWrap=document.createElement('div'); avWrap.className='res-av'; avWrap.appendChild(avC);
@@ -732,13 +965,12 @@ function doShowResults(lb){
     tbody.appendChild(tr);
   });
   const w=lb[0];
-  document.getElementById('res-sub').textContent=w?`🏆 ผู้ชนะ: ${w.name} · ${(w.score||0).toLocaleString()} คะแนน · ${waveNum} Wave`:'';
+  document.getElementById('res-sub').textContent=w?`🏆 ผู้ชนะ: ${w.name} · ${(w.score||0).toLocaleString()} คะแนน · Wave ${w.wave||waveNum}`:'';
 }
-
 function goLobby(){
   document.getElementById('s-results').classList.add('off');
   document.getElementById('s-lobby').classList.remove('off');
-  myScore=0;waveNum=1;players={};answeredNPCs.clear();usedQuestions.clear();
+  myScore=0; waveNum=1; players={}; answeredNPCs.clear(); waveWaiting=false;
   document.getElementById('hud-sc').textContent='0';
 }
 
@@ -761,7 +993,7 @@ function addChat(text,type='user',name='',self=false){
   if(log.children.length>40)log.removeChild(log.firstChild);
 }
 function showBubble(id,text){bubbles[id]={text,timer:180};}
-function sendReady(){wsSend('READY',{});document.getElementById('btn-ready').textContent='✅ พร้อมแล้ว!';document.getElementById('btn-ready').disabled=true;}
+function sendReady(){wsSend('READY',{}); document.getElementById('btn-ready').textContent='✅ พร้อมแล้ว!'; document.getElementById('btn-ready').disabled=true;}
 
 // ══════ INPUT ══════
 document.addEventListener('keydown',e=>{
@@ -798,20 +1030,43 @@ function joinRoom(){
   if(!selfId){selfId='local-'+Date.now(); me.id=selfId;}
   if(ws&&ws.readyState===1){
     wsSend('JOIN',{name,avatar:selAv,roomId:room});
-    // แสดงปุ่มพร้อม/เริ่ม สำหรับ offline fallback
     document.getElementById('btn-ready').style.display='block';
     document.getElementById('btn-start-now').style.display='block';
     isHost=true;
   }else{
-    // ไม่มี server — เริ่มเกม offline ได้เลย
     me.id=selfId;
-    startGame(1);
+    const lv=QUESTIONS[selLv];
+    if(lv.mode==='wave-select'){
+      showWaveSelect();
+    }else{
+      startGame(1);
+    }
   }
+}
+
+function doStartGame(pyWaveId){
+  // เรียกจาก wave-select หรือ GAME_START
+  if(!me.id)me.id=selfId||('local-'+Date.now());
+  resizeCanvas();
+  isWaveSelectMode=true;
+  selPyWave=pyWaveId||selPyWave;
+  initWave(1);
+  const lv=QUESTIONS[selLv];
+  const wvData=lv.waves?.find(w=>w.id===selPyWave);
+  document.getElementById('hud-name').textContent=me.name;
+  document.getElementById('hud-lv').textContent=(wvData?wvData.emoji:lv.npcEmoji)+' W'+selPyWave;
+  document.getElementById('hud-sc').textContent=myScore;
+  document.getElementById('s-wave-select').classList.add('off');
+  document.getElementById('s-game').classList.remove('off');
+  addChat(`🎮 Wave ${selPyWave}: ${wvData?wvData.name:'Python'}  เริ่ม!`,'sys');
+  if(rafId)cancelAnimationFrame(rafId);
+  lastT=0; rafId=requestAnimationFrame(t=>{lastT=t;loop(t);});
 }
 
 function startGame(wave){
   if(!me.id)me.id=selfId||('local-'+Date.now());
   resizeCanvas();
+  isWaveSelectMode=false;
   initWave(wave||1);
   const lv=QUESTIONS[selLv];
   document.getElementById('hud-name').textContent=me.name;
