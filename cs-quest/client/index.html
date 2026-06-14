@@ -30,8 +30,8 @@ select option{background:#0d1a2e}
 .av-btn{width:42px;height:42px;border-radius:8px;border:2px solid transparent;background:rgba(255,255,255,.06);cursor:pointer;font-size:1.28rem;display:flex;align-items:center;justify-content:center;transition:all .14s}
 .av-btn:hover{background:rgba(255,255,255,.12)}
 .av-btn.on{border-color:var(--blue);background:rgba(33,150,243,.15)}
-.av-preview{width:64px;height:80px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.04);overflow:hidden;position:relative;float:right;margin-left:.5rem}
-.av-preview canvas{image-rendering:pixelated;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(2.5)}
+.av-preview{width:72px;height:96px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.04);overflow:hidden;position:relative;float:right;margin-left:.5rem}
+.av-preview canvas{image-rendering:pixelated;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
 .lv-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:.5rem;clear:both}
 .lv-card{border-radius:8px;border:1px solid rgba(255,255,255,.07);padding:.45rem .6rem;cursor:pointer;transition:all .14s;position:relative}
 .lv-card.on{outline:2px solid var(--blue)}
@@ -381,13 +381,32 @@ function savePyProgress(waveId){
 // ══════ LOBBY UI ══════
 function buildLobby(){
   loadPyProgress();
-  updateAvPreview(0);
+  // ── build avatar buttons (pixel canvas แทน emoji) ──
   const ar=document.getElementById('av-row'); ar.innerHTML='';
   AVATARS.forEach((a,i)=>{
-    const b=document.createElement('button'); b.className='av-btn'+(i===0?' on':''); b.textContent=a; b.dataset.i=i;
-    b.onclick=()=>{ document.querySelectorAll('.av-btn').forEach(x=>x.classList.remove('on')); b.classList.add('on'); selAv=i; updateAvPreview(i); };
+    const b=document.createElement('button');
+    b.className='av-btn'+(i===0?' on':'');
+    b.dataset.i=i;
+    b.style.cssText='width:48px;height:52px;padding:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px';
+    // mini pixel canvas
+    const mc=document.createElement('canvas'); mc.width=24; mc.height=36;
+    mc.style.cssText='image-rendering:pixelated;width:24px;height:36px;display:block';
+    // draw after sprites ready
+    setTimeout(()=>{
+      try{
+        const sp=SPR.getPlayer(i,'down',0,false);
+        mc.getContext('2d').drawImage(sp,0,0);
+      }catch(e){}
+    },50);
+    b.appendChild(mc);
+    b.onclick=()=>{
+      document.querySelectorAll('.av-btn').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on'); selAv=i; updateAvPreview(i);
+    };
     ar.appendChild(b);
   });
+  // render preview after short delay (sprites need DOM ready)
+  setTimeout(()=>updateAvPreview(0), 80);
   const lg=document.getElementById('lv-grid'); lg.innerHTML='';
   Object.entries(QUESTIONS).forEach(([id,lv],idx)=>{
     const isWM=lv.mode==='wave-select';
@@ -409,8 +428,53 @@ function buildLobby(){
 function updateAvPreview(av){
   if(typeof SPR==='undefined'||!SPR.getPlayer)return;
   const c=document.getElementById('av-preview-c'); if(!c)return;
-  const ctx=c.getContext('2d'); ctx.clearRect(0,0,24,36);
-  ctx.drawImage(SPR.getPlayer(av,'down',0,false),0,0);
+  // ปรับขนาด canvas ให้พอดีกับ preview box
+  c.width=60; c.height=72;
+  c.style.cssText='image-rendering:pixelated;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)';
+  const ctx=c.getContext('2d');
+  ctx.clearRect(0,0,60,72);
+  ctx.imageSmoothingEnabled=false;
+  try{
+    const sp=SPR.getPlayer(av,'down',0,false);
+    // scale 2.5x: 24→60, 36→90 แต่ crop ที่ 72 เพื่อให้พอดี box
+    ctx.drawImage(sp,0,0,24,36,0,0,60,90);
+  }catch(e){}
+}
+
+// lobby avatar animation loop (เล่น idle animation ในหน้า lobby)
+let lobbyAnimF=0, lobbyRaf=null;
+function startLobbyAnim(){
+  if(lobbyRaf)return;
+  function tick(){
+    lobbyAnimF++;
+    // update all avatar buttons
+    document.querySelectorAll('#av-row .av-btn').forEach((b,i)=>{
+      const mc=b.querySelector('canvas'); if(!mc)return;
+      try{
+        const sp=SPR.getPlayer(i,'down',lobbyAnimF,false);
+        const ctx=mc.getContext('2d');
+        ctx.clearRect(0,0,24,36);
+        ctx.imageSmoothingEnabled=false;
+        ctx.drawImage(sp,0,0);
+      }catch(e){}
+    });
+    // update preview
+    const prev=document.getElementById('av-preview-c');
+    if(prev){
+      const ctx=prev.getContext('2d');
+      ctx.clearRect(0,0,prev.width,prev.height);
+      ctx.imageSmoothingEnabled=false;
+      try{
+        const sp=SPR.getPlayer(selAv,'down',lobbyAnimF,false);
+        ctx.drawImage(sp,0,0,24,36,0,0,prev.width,prev.width*1.5);
+      }catch(e){}
+    }
+    lobbyRaf=requestAnimationFrame(tick);
+  }
+  lobbyRaf=requestAnimationFrame(tick);
+}
+function stopLobbyAnim(){
+  if(lobbyRaf){cancelAnimationFrame(lobbyRaf);lobbyRaf=null;}
 }
 
 // ══════ WAVE SELECT ══════
@@ -513,6 +577,7 @@ function handleMsg(msg){
 
 // ═══════ LOBBY GATE SYSTEM ═══════
 function enterMapLobbyPhase(){
+  stopLobbyAnim();
   // เข้าแผนที่แต่อยู่ในโซน lobby (ก่อนไม้กั้นเปิด)
   inLobbyPhase=true;
   lobbyGateOpen=false;
@@ -1081,6 +1146,8 @@ function goLobby(){
   myScore=0; waveNum=1; players={}; answeredNPCs.clear(); waveWaiting=false;
   inLobbyPhase=true; lobbyGateOpen=false;
   document.getElementById('hud-sc').textContent='0';
+  // restart lobby idle animation
+  setTimeout(startLobbyAnim, 50);
 }
 
 // ══════ UI HELPERS ══════
@@ -1178,6 +1245,7 @@ function joinRoom(){
 }
 
 function doStartGame(pyWaveId){
+  stopLobbyAnim();
   if(!me.id)me.id=selfId||('local-'+Date.now());
   resizeCanvas();
   isWaveSelectMode=true;
@@ -1199,6 +1267,7 @@ function doStartGame(pyWaveId){
 }
 
 function startGame(wave){
+  stopLobbyAnim();
   if(!me.id)me.id=selfId||('local-'+Date.now());
   resizeCanvas();
   isWaveSelectMode=false;
@@ -1217,7 +1286,12 @@ function startGame(wave){
   lastT=0; rafId=requestAnimationFrame(t=>{lastT=t;loop(t);});
 }
 
-window.addEventListener('load',()=>{buildLobby();connectWS();});
+window.addEventListener('load',()=>{
+  buildLobby();
+  connectWS();
+  // start lobby idle animation after sprites loaded
+  setTimeout(startLobbyAnim, 100);
+});
 window.addEventListener('resize',resizeCanvas);
 </script>
 </body>
