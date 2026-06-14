@@ -15,15 +15,16 @@ const wss = new WebSocketServer({ server });
 
 const MAX_PLAYERS = 30;
 const rooms = new Map();
-const playerWs = new Map(); // ws -> {player, room}
+const playerWs = new Map();
 
 function createRoom(roomId) {
   return {
     id: roomId,
-    players: new Map(), // ws -> player
-    state: 'lobby',     // lobby | playing | wave_waiting | results
+    players: new Map(),
+    state: 'lobby',     // lobby | in_map | playing | wave_waiting | results
     wave: 1,
-    waveDoneCount: 0,   // จำนวนคนที่ finish wave นี้แล้ว
+    waveDoneCount: 0,
+    gateOpen: false,    // ไม้กั้น: ปิด = false, เปิด = true
     createdAt: Date.now()
   };
 }
@@ -52,6 +53,7 @@ function getRoomSnapshot(room) {
     players: [...room.players.values()],
     state: room.state,
     wave: room.wave,
+    gateOpen: room.gateOpen,
     leaderboard: getLeaderboard(room)
   };
 }
@@ -64,6 +66,7 @@ wss.on('connection', (ws) => {
     let msg; try { msg = JSON.parse(raw); } catch { return; }
     const { type, payload } = msg;
 
+    // ── JOIN ──
     if (type === 'JOIN') {
       const { name, avatar, roomId } = payload;
       const room = getRoom(roomId || 'default');
@@ -83,9 +86,18 @@ wss.on('connection', (ws) => {
       ws.send(JSON.stringify({ type: 'INIT', payload: { selfId: player.id, ...getRoomSnapshot(room) } }));
       broadcast(room, { type: 'PLAYER_JOINED', payload: player }, ws);
       broadcastAll(room, { type: 'LOBBY_UPDATE', payload: getRoomSnapshot(room) });
+
+      // ถ้าห้องอยู่ใน state in_map แล้ว → นักเรียนที่เข้ามาทีหลังก็เข้าแผนที่เลย
+      if (room.state === 'in_map' || room.state === 'playing') {
+        ws.send(JSON.stringify({ type: 'ENTER_MAP', payload: {} }));
+        if (room.gateOpen) {
+          ws.send(JSON.stringify({ type: 'GATE_OPEN', payload: {} }));
+        }
+      }
       console.log(`[JOIN] ${player.name} → room:${room.id} (${room.players.size})`);
     }
 
+    // ── READY ──
     else if (type === 'READY') {
       const e = playerWs.get(ws); if (!e) return;
       const { player, room } = e;
@@ -93,19 +105,33 @@ wss.on('connection', (ws) => {
       broadcastAll(room, { type: 'LOBBY_UPDATE', payload: getRoomSnapshot(room) });
       const all = [...room.players.values()];
       if (all.length >= 1 && all.every(p => p.ready) && room.state === 'lobby') {
-        room.state = 'playing'; room.wave = 1;
-        broadcastAll(room, { type: 'GAME_START', payload: { wave: 1 } });
+        room.state = 'in_map';
+        broadcastAll(room, { type: 'ENTER_MAP', payload: {} });
       }
     }
 
+    // ── START_NOW (ครูกด) → เข้าแผนที่ทันที ──
     else if (type === 'START_NOW') {
       const e = playerWs.get(ws); if (!e) return;
       const { room } = e;
       if (room.state !== 'lobby') return;
-      room.state = 'playing'; room.wave = 1;
-      broadcastAll(room, { type: 'GAME_START', payload: { wave: 1 } });
+      room.state = 'in_map';
+      broadcastAll(room, { type: 'ENTER_MAP', payload: {} });
     }
 
+    // ── LIFT_GATE (ครูกด) → ยกไม้กั้น ──
+    else if (type === 'LIFT_GATE') {
+      const e = playerWs.get(ws); if (!e) return;
+      const { room } = e;
+      room.gateOpen = true;
+      room.state = 'playing';
+      room.wave = 1;
+      broadcastAll(room, { type: 'GATE_OPEN', payload: {} });
+      broadcastAll(room, { type: 'GAME_START', payload: { wave: 1 } });
+      console.log(`[GATE] room:${room.id} gate opened`);
+    }
+
+    // ── MOVE ──
     else if (type === 'MOVE') {
       const e = playerWs.get(ws); if (!e) return;
       const { player, room } = e;
@@ -113,6 +139,7 @@ wss.on('connection', (ws) => {
       broadcast(room, { type: 'PLAYER_MOVED', payload: { id: player.id, x: payload.x, y: payload.y, direction: payload.direction, moving: payload.moving } }, ws);
     }
 
+    // ── SCORE ──
     else if (type === 'SCORE') {
       const e = playerWs.get(ws); if (!e) return;
       const { player, room } = e;
@@ -122,13 +149,12 @@ wss.on('connection', (ws) => {
       broadcastAll(room, { type: 'LEADERBOARD', payload: { leaderboard: getLeaderboard(room) } });
     }
 
-    // WAVE_DONE: ผู้เล่นคนนี้ finish wave แล้ว รอคนอื่น
+    // ── WAVE_DONE ──
     else if (type === 'WAVE_DONE') {
       const e = playerWs.get(ws); if (!e) return;
       const { player, room } = e;
       const waveNum = payload.wave || room.wave;
 
-      // ถ้าผู้เล่นยังไม่ได้ mark wave นี้
       if (!player.waveDone) {
         player.waveDone = true;
         player.wave = waveNum;
@@ -138,7 +164,6 @@ wss.on('connection', (ws) => {
       const totalPlayers = room.players.size;
       const donePlayers = [...room.players.values()].filter(p => p.waveDone).length;
 
-      // แจ้งทุกคนว่าตอนนี้มีกี่คน done แล้ว
       broadcastAll(room, {
         type: 'WAVE_WAITING',
         payload: {
@@ -149,12 +174,12 @@ wss.on('connection', (ws) => {
         }
       });
 
-      // ถ้าทุกคน done แล้ว → ส่ง WAVE_RESULTS
       if (donePlayers >= totalPlayers) {
-        // reset waveDone flag สำหรับ wave ถัดไป
         room.players.forEach(p => { p.waveDone = false; });
         room.waveDoneCount = 0;
         room.wave = waveNum + 1;
+        // reset gate for next wave
+        room.gateOpen = false;
 
         setTimeout(() => {
           broadcastAll(room, {
@@ -169,13 +194,14 @@ wss.on('connection', (ws) => {
       }
     }
 
+    // ── WAVE_CLEAR (legacy) ──
     else if (type === 'WAVE_CLEAR') {
-      // legacy compat
       const e = playerWs.get(ws); if (!e) return;
       const { player } = e;
       player.wave = (payload.wave || 1) + 1;
     }
 
+    // ── GAME_END ──
     else if (type === 'GAME_END') {
       const e = playerWs.get(ws); if (!e) return;
       const { room } = e;
@@ -183,6 +209,7 @@ wss.on('connection', (ws) => {
       broadcastAll(room, { type: 'SHOW_RESULTS', payload: { leaderboard: getLeaderboard(room) } });
     }
 
+    // ── CHAT ──
     else if (type === 'CHAT') {
       const e = playerWs.get(ws); if (!e) return;
       const { player, room } = e;
@@ -190,6 +217,7 @@ wss.on('connection', (ws) => {
       broadcastAll(room, { type: 'CHAT_MSG', payload: { id: player.id, name: player.name, text, avatar: player.avatar } });
     }
 
+    // ── PING ──
     else if (type === 'PING') {
       ws.send(JSON.stringify({ type: 'PONG', payload: { ts: Date.now() } }));
     }
@@ -202,7 +230,6 @@ wss.on('connection', (ws) => {
     broadcast(room, { type: 'PLAYER_LEFT', payload: { id: player.id, name: player.name } });
     broadcastAll(room, { type: 'LOBBY_UPDATE', payload: getRoomSnapshot(room) });
 
-    // ถ้าคนที่ออกยัง waveDone อยู่แล้ว ตรวจว่าทุกคน done หรือเปล่า
     if (player.waveDone && room.players.size > 0) {
       const donePlayers = [...room.players.values()].filter(p => p.waveDone).length;
       const totalPlayers = room.players.size;
@@ -211,6 +238,7 @@ wss.on('connection', (ws) => {
         room.waveDoneCount = 0;
         const waveNum = room.wave;
         room.wave = waveNum + 1;
+        room.gateOpen = false;
         setTimeout(() => {
           broadcastAll(room, {
             type: 'WAVE_RESULTS',
@@ -238,4 +266,4 @@ app.get('/api/stats', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🎮 CS Quest on :${PORT}`));
+server.listen(PORT, () => console.log(`🤖 CS Quest AI Agent on :${PORT}`));
