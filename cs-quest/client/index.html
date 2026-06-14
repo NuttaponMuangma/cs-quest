@@ -7,43 +7,43 @@
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;overflow:hidden;touch-action:none}
-:root{--bg:#0a0e14;--panel:rgba(8,16,8,0.97);--border:#1e3a1e;--green:#5dde3a;--gold:#ffd700;--red:#e53935;--text:#d4e8d4;--muted:#4a6a4a}
+html,body{width:100%;height:100%;overflow:hidden;touch-action:none;background:#0a0e1a}
+:root{--bg:#0a0e1a;--panel:rgba(8,14,26,0.97);--border:#1e2a4e;--green:#5dde3a;--blue:#2196F3;--gold:#ffd700;--red:#e53935;--text:#d4dff8;--muted:#3a5080;--purple:#9c27b0;--cyan:#00bcd4}
 body{background:var(--bg);font-family:'Sarabun',sans-serif;color:var(--text)}
 .screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:200}
 .screen.off{display:none!important}
 
-/* LOBBY */
-#s-lobby{background:radial-gradient(ellipse at 50% -10%,#0d280d,#0a0e14 65%)}
+/* ══ LOBBY ══ */
+#s-lobby{background:radial-gradient(ellipse at 50% -10%,#0d1a3a,#0a0e1a 65%)}
 .lb-wrap{display:flex;gap:1.4rem;width:840px;max-width:97vw;align-items:flex-start}
 .lb-left{flex:0 0 310px}
 .lb-right{flex:1;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;padding:1rem;min-height:260px}
-.logo{font-size:1.8rem;font-weight:800;color:var(--green);text-shadow:0 0 24px rgba(93,222,58,.4);margin-bottom:.12rem}
+.logo{font-size:1.8rem;font-weight:800;color:var(--blue);text-shadow:0 0 24px rgba(33,150,243,.5);margin-bottom:.12rem}
 .logo-sub{color:var(--muted);font-size:.8rem;margin-bottom:1rem}
 .panel{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:13px;padding:1rem 1.1rem;margin-bottom:.75rem}
 .fl{color:var(--muted);font-size:.74rem;margin-bottom:.2rem;display:block}
 input,select{width:100%;padding:.45rem .7rem;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,.05);color:#fff;font-size:.88rem;font-family:'Sarabun',sans-serif;outline:none;transition:border-color .2s}
-input:focus,select:focus{border-color:var(--green)}
-select option{background:#0d1a0d}
+input:focus,select:focus{border-color:var(--blue)}
+select option{background:#0d1a2e}
 .mb{margin-bottom:.55rem}
 .av-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.5rem}
 .av-btn{width:42px;height:42px;border-radius:8px;border:2px solid transparent;background:rgba(255,255,255,.06);cursor:pointer;font-size:1.28rem;display:flex;align-items:center;justify-content:center;transition:all .14s}
 .av-btn:hover{background:rgba(255,255,255,.12)}
-.av-btn.on{border-color:var(--green);background:rgba(93,222,58,.12)}
+.av-btn.on{border-color:var(--blue);background:rgba(33,150,243,.15)}
 .av-preview{width:64px;height:80px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.04);overflow:hidden;position:relative;float:right;margin-left:.5rem}
 .av-preview canvas{image-rendering:pixelated;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(2.5)}
 .lv-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:.5rem;clear:both}
 .lv-card{border-radius:8px;border:1px solid rgba(255,255,255,.07);padding:.45rem .6rem;cursor:pointer;transition:all .14s;position:relative}
-.lv-card.on{outline:2px solid var(--green)}
+.lv-card.on{outline:2px solid var(--blue)}
 .lv-card.wave-mode::after{content:'🌊';position:absolute;top:4px;right:6px;font-size:.65rem}
 .lv-name{font-size:.72rem;font-weight:700;color:#fff}
 .lv-sub{font-size:.66rem;color:rgba(255,255,255,.42);margin-top:1px}
 .btn{width:100%;padding:.58rem;border-radius:8px;border:none;font-size:.92rem;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;transition:all .16s}
-.btn-green{background:linear-gradient(135deg,var(--green),#3cb821);color:#0a0e14}
-.btn-green:hover{transform:translateY(-2px);box-shadow:0 4px 18px rgba(93,222,58,.35)}
+.btn-green{background:linear-gradient(135deg,#2196F3,#1565c0);color:#fff}
+.btn-green:hover{transform:translateY(-2px);box-shadow:0 4px 18px rgba(33,150,243,.4)}
 .btn-green:disabled{opacity:.4;cursor:default;transform:none}
 .btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted);font-size:.8rem;padding:.4rem;margin-top:.32rem}
-.btn-outline:hover{border-color:var(--green);color:var(--green)}
+.btn-outline:hover{border-color:var(--blue);color:var(--blue)}
 .conn-row{display:flex;align-items:center;gap:4px;font-size:.68rem;color:var(--muted);margin-top:.4rem}
 #cdot{width:7px;height:7px;border-radius:50%;background:var(--muted)}
 #cdot.on{background:var(--green)}#cdot.wait{background:#ff9800}
@@ -57,18 +57,16 @@ select option{background:#0d1a0d}
 .ready-no{color:var(--muted);font-size:.68rem}
 .lobby-info{color:var(--muted);font-size:.72rem;text-align:center;margin-top:.65rem;line-height:1.5}
 .admin-link{color:var(--muted);font-size:.66rem;text-decoration:none;display:inline-block;margin-top:.32rem}
-.admin-link:hover{color:var(--green)}
+.admin-link:hover{color:var(--blue)}
 
-/* WAVE SELECT SCREEN */
-#s-wave-select{background:radial-gradient(ellipse at 50% -10%,#0d1f2d,#0a0e14 65%);overflow-y:auto}
+/* ══ WAVE SELECT ══ */
+#s-wave-select{background:radial-gradient(ellipse at 50% -10%,#0d1f3d,#0a0e1a 65%);overflow-y:auto}
 .ws-wrap{width:720px;max-width:97vw;padding:1.5rem 0}
-.ws-title{color:#2196F3;font-size:1.5rem;font-weight:800;text-align:center;margin-bottom:.25rem;text-shadow:0 0 20px rgba(33,150,243,.4)}
+.ws-title{color:var(--blue);font-size:1.5rem;font-weight:800;text-align:center;margin-bottom:.25rem;text-shadow:0 0 20px rgba(33,150,243,.5)}
 .ws-sub{color:var(--muted);text-align:center;font-size:.8rem;margin-bottom:1.2rem}
 .ws-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.65rem;margin-bottom:1.2rem}
 .wv-card{border-radius:12px;border:1px solid rgba(255,255,255,.08);padding:.75rem .9rem;cursor:pointer;transition:all .18s;position:relative;overflow:hidden}
-.wv-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .18s}
 .wv-card:hover{transform:translateY(-2px)}
-.wv-card:hover::before{opacity:1}
 .wv-card.locked{opacity:.38;cursor:not-allowed;filter:grayscale(.6)}
 .wv-card.locked:hover{transform:none}
 .wv-card.cleared{border-color:rgba(93,222,58,.35)}
@@ -77,29 +75,34 @@ select option{background:#0d1a0d}
 .wv-name{font-size:.82rem;font-weight:700;color:#fff;margin-bottom:.12rem}
 .wv-sub{font-size:.68rem;color:rgba(255,255,255,.42)}
 .wv-badge{position:absolute;top:7px;right:8px;font-size:.65rem;padding:1px 6px;border-radius:10px;font-weight:700}
-.wv-badge.open{background:rgba(93,222,58,.18);color:var(--green);border:1px solid rgba(93,222,58,.3)}
+.wv-badge.open{background:rgba(33,150,243,.18);color:var(--blue);border:1px solid rgba(33,150,243,.3)}
 .wv-badge.locked{background:rgba(255,255,255,.06);color:#556;border:1px solid rgba(255,255,255,.08)}
 .wv-badge.cleared{background:rgba(93,222,58,.2);color:var(--green)}
 .ws-back{display:flex;justify-content:center}
 .btn-back{background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Sarabun',sans-serif;padding:.46rem 1.4rem;border-radius:8px;cursor:pointer;font-size:.82rem;transition:all .14s}
-.btn-back:hover{border-color:var(--green);color:var(--green)}
+.btn-back:hover{border-color:var(--blue);color:var(--blue)}
 
-/* HUD */
-#hud{position:fixed;top:0;left:0;right:0;height:44px;background:rgba(6,12,6,.96);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 .75rem;gap:.55rem;z-index:100;backdrop-filter:blur(6px)}
+/* ══ HUD ══ */
+#hud{position:fixed;top:0;left:0;right:0;height:44px;background:rgba(6,10,22,.96);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 .75rem;gap:.55rem;z-index:100;backdrop-filter:blur(8px)}
 .hs{width:1px;height:16px;background:rgba(255,255,255,.12)}
 #hud-av{width:24px;height:30px;overflow:hidden;position:relative;flex-shrink:0}
 #hud-av canvas{image-rendering:pixelated;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(1.2)}
-#hud-name{color:var(--green);font-weight:700;font-size:.84rem;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#hud-name{color:var(--blue);font-weight:700;font-size:.84rem;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #hud-lv{color:var(--muted);font-size:.72rem}
 #hud-wave{color:var(--gold);font-size:.76rem;font-weight:700}
 #hud-sc{color:#fff;font-size:.86rem;font-weight:700}
 #hud-prog{color:#aad;font-size:.7rem}
-#hud-pl{color:var(--green);font-size:.7rem;margin-left:auto}
-#hud-ms{color:#3a5a3a;font-size:.65rem}
-#wbar-wrap{position:fixed;top:44px;left:0;right:0;height:5px;background:rgba(255,255,255,.04);z-index:100}
-#wbar{height:100%;background:linear-gradient(90deg,var(--green),var(--gold));transition:width .4s}
+#hud-pl{color:var(--blue);font-size:.7rem;margin-left:auto}
+#hud-ms{color:#3a5070;font-size:.65rem}
 
-/* LB */
+/* ── LOBBY GATE BANNER ── */
+#lobby-gate-banner{position:fixed;top:44px;left:50%;transform:translateX(-50%);background:rgba(255,165,0,.12);border:1px solid rgba(255,165,0,.4);border-radius:20px;padding:.28rem 1.1rem;font-size:.72rem;color:#ffb74d;z-index:90;transition:opacity .6s;display:none}
+#lobby-gate-banner.show{display:block}
+
+#wbar-wrap{position:fixed;top:44px;left:0;right:0;height:5px;background:rgba(255,255,255,.04);z-index:100}
+#wbar{height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));transition:width .4s}
+
+/* ══ LEADERBOARD HUD ══ */
 #lb-hud{position:fixed;top:59px;right:6px;width:168px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:.52rem;z-index:90}
 #lb-hud h4{color:var(--gold);font-size:.7rem;text-align:center;margin-bottom:.38rem}
 #lb-list{list-style:none;display:flex;flex-direction:column;gap:2px}
@@ -109,56 +112,56 @@ select option{background:#0d1a0d}
 .lbr.g{color:var(--gold)}.lbr.s{color:#c0c0c0}.lbr.b{color:#cd7f32}
 .lbn{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lbs{color:var(--gold);font-weight:700;font-size:.68rem}
-.lb-me{color:var(--green)!important;font-weight:700}
+.lb-me{color:var(--blue)!important;font-weight:700}
 
-/* DIALOG */
-#dialog{position:fixed;bottom:0;left:0;right:0;background:rgba(6,12,6,.98);border-top:2px solid var(--border);padding:.75rem .95rem;z-index:150;transform:translateY(100%);transition:transform .22s ease;max-height:58vh;overflow-y:auto}
+/* ══ DIALOG ══ */
+#dialog{position:fixed;bottom:0;left:0;right:0;background:rgba(6,10,22,.98);border-top:2px solid var(--border);padding:.75rem .95rem;z-index:150;transform:translateY(100%);transition:transform .22s ease;max-height:58vh;overflow-y:auto}
 #dialog.show{transform:translateY(0)}
-#dlg-npc{color:var(--green);font-weight:700;font-size:.86rem;margin-bottom:.2rem}
+#dlg-npc{color:var(--blue);font-weight:700;font-size:.86rem;margin-bottom:.2rem}
 #dlg-sub{color:var(--muted);font-size:.74rem;margin-bottom:.5rem}
 #quiz-area{display:none}
 #quiz-q{color:#fff;font-size:.88rem;font-weight:700;margin-bottom:.5rem;line-height:1.5}
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:.35rem}
 .ob{padding:.46rem .62rem;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--text);font-family:'Sarabun',sans-serif;font-size:.78rem;cursor:pointer;text-align:left;line-height:1.4;transition:all .12s}
-.ob:hover:not(:disabled){background:rgba(93,222,58,.1);border-color:var(--green)}
+.ob:hover:not(:disabled){background:rgba(33,150,243,.12);border-color:var(--blue)}
 .ob.ok{background:rgba(76,175,80,.2);border-color:#4caf50;color:#a5d6a7}
 .ob.no{background:rgba(229,57,53,.2);border-color:#e53935;color:#ef9a9a}
 .ob.show-ans{background:rgba(76,175,80,.12);border-color:#4caf50}
-#quiz-exp{color:#6a9a6a;font-size:.74rem;margin-top:.4rem;display:none;line-height:1.5}
+#quiz-exp{color:#6a9aaa;font-size:.74rem;margin-top:.4rem;display:none;line-height:1.5}
 #quiz-pop{font-weight:700;font-size:.9rem;display:none;margin-top:.35rem}
 .pop-ok{color:var(--gold)}.pop-no{color:var(--red)}
 #dlg-close{padding:.36rem 1rem;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Sarabun',sans-serif;cursor:pointer;font-size:.78rem;margin-top:.36rem;display:none}
-#dlg-close:hover{border-color:var(--green);color:var(--green)}
+#dlg-close:hover{border-color:var(--blue);color:var(--blue)}
 
-/* WAVE CLEAR */
-#wave-clear{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:rgba(6,12,6,.98);border:2px solid var(--green);border-radius:16px;padding:1.4rem 2rem;text-align:center;z-index:180;transition:transform .3s cubic-bezier(.34,1.56,.64,1);min-width:265px}
+/* ══ WAVE CLEAR ══ */
+#wave-clear{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:rgba(6,10,22,.98);border:2px solid var(--blue);border-radius:16px;padding:1.4rem 2rem;text-align:center;z-index:180;transition:transform .3s cubic-bezier(.34,1.56,.64,1);min-width:265px}
 #wave-clear.show{transform:translate(-50%,-50%) scale(1)}
 .wc-icon{font-size:2.5rem;margin-bottom:.22rem}
-.wc-title{color:var(--green);font-size:1.35rem;font-weight:800;margin-bottom:.16rem}
+.wc-title{color:var(--blue);font-size:1.35rem;font-weight:800;margin-bottom:.16rem}
 .wc-sub{color:var(--muted);font-size:.8rem;margin-bottom:.32rem}
 .wc-score{color:var(--gold);font-size:1.9rem;font-weight:800;margin-bottom:.85rem}
 .wc-btns{display:flex;gap:.45rem;justify-content:center}
-.wc-btn{padding:.47rem 1.4rem;border-radius:8px;border:none;background:var(--green);color:#0a0e14;font-weight:800;font-family:'Sarabun',sans-serif;cursor:pointer;font-size:.88rem;transition:all .13s}
-.wc-btn:hover{background:#3cb821;transform:translateY(-1px)}
+.wc-btn{padding:.47rem 1.4rem;border-radius:8px;border:none;background:var(--blue);color:#fff;font-weight:800;font-family:'Sarabun',sans-serif;cursor:pointer;font-size:.88rem;transition:all .13s}
+.wc-btn:hover{background:#1565c0;transform:translateY(-1px)}
 .wc-btn-end{background:rgba(255,255,255,.08);color:var(--text);border:1px solid var(--border)}
 .wc-btn-end:hover{background:rgba(255,255,255,.15);transform:translateY(-1px)}
 
-/* WAVE WAITING (รอเพื่อน) */
-#wave-waiting{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:rgba(6,12,6,.98);border:2px solid #2196F3;border-radius:16px;padding:1.5rem 2.2rem;text-align:center;z-index:185;transition:transform .3s cubic-bezier(.34,1.56,.64,1);min-width:280px}
+/* ══ WAVE WAITING ══ */
+#wave-waiting{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:rgba(6,10,22,.98);border:2px solid var(--blue);border-radius:16px;padding:1.5rem 2.2rem;text-align:center;z-index:185;transition:transform .3s cubic-bezier(.34,1.56,.64,1);min-width:280px}
 #wave-waiting.show{transform:translate(-50%,-50%) scale(1)}
 .ww-icon{font-size:2.2rem;margin-bottom:.3rem}
-.ww-title{color:#2196F3;font-size:1.15rem;font-weight:800;margin-bottom:.28rem}
+.ww-title{color:var(--blue);font-size:1.15rem;font-weight:800;margin-bottom:.28rem}
 .ww-prog{font-size:.88rem;color:var(--muted);margin-bottom:.75rem}
 .ww-bar-wrap{width:180px;height:8px;background:rgba(255,255,255,.06);border-radius:4px;margin:.5rem auto .9rem;overflow:hidden}
-.ww-bar{height:100%;background:linear-gradient(90deg,#2196F3,#00BCD4);border-radius:4px;transition:width .4s}
+.ww-bar{height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));border-radius:4px;transition:width .4s}
 .ww-lb{list-style:none;display:flex;flex-direction:column;gap:3px;text-align:left;min-width:200px;margin-bottom:.5rem}
 .ww-lb li{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:.72rem;border-bottom:1px solid rgba(255,255,255,.04)}
 .ww-lb li:last-child{border:none}
 .ww-done{color:var(--green);font-size:.75rem}
 .ww-wait{color:var(--muted);font-size:.75rem}
 
-/* RESULTS */
-#s-results{background:rgba(6,12,6,.97)}
+/* ══ RESULTS ══ */
+#s-results{background:rgba(6,10,22,.97)}
 .res-box{width:560px;max-width:96vw;text-align:center}
 .res-title{font-size:1.85rem;font-weight:800;color:var(--gold);margin-bottom:.22rem;text-shadow:0 0 20px rgba(255,215,0,.4)}
 .res-sub{color:var(--muted);margin-bottom:1.2rem;font-size:.85rem}
@@ -169,32 +172,35 @@ select option{background:#0d1a0d}
 .rank-1{color:var(--gold);font-weight:800;font-size:.98rem}
 .rank-2{color:#c0c0c0;font-weight:700}
 .rank-3{color:#cd7f32;font-weight:700}
-.res-self{background:rgba(93,222,58,.08)!important}
-.res-self td{color:var(--green)!important}
+.res-self{background:rgba(33,150,243,.08)!important}
+.res-self td{color:var(--blue)!important}
 .res-btn-row{display:flex;gap:.5rem;justify-content:center}
 .btn-sm{padding:.46rem 1.25rem;border-radius:8px;font-size:.84rem}
 .res-av{width:24px;height:32px;overflow:hidden;position:relative;display:inline-block;vertical-align:middle}
 .res-av canvas{image-rendering:pixelated;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(1.4)}
 
-/* CHAT */
+/* ══ CHAT ══ */
 #chat-wrap{position:fixed;bottom:0;left:6px;width:225px;z-index:90}
 #chat-log{background:rgba(0,0,0,.38);border-radius:8px 8px 0 0;padding:.3rem;max-height:82px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
-.cm{font-size:.64rem;color:#8a9a8a;line-height:1.3}
-.cm .cn{color:var(--green);font-weight:700}
-.cm.sys{color:#4a7a4a;font-style:italic}
+.cm{font-size:.64rem;color:#6a8aaa;line-height:1.3}
+.cm .cn{color:var(--blue);font-weight:700}
+.cm.sys{color:#3a5a80;font-style:italic}
 #chat-row{display:flex}
 #ci{flex:1;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:0 0 0 8px;color:#fff;font-family:'Sarabun',sans-serif;font-size:.68rem;padding:.25rem .4rem;outline:none}
-#cs{padding:.25rem .48rem;background:var(--border);border:none;color:var(--green);border-radius:0 0 8px 0;cursor:pointer;font-size:.66rem}
+#cs{padding:.25rem .48rem;background:var(--border);border:none;color:var(--blue);border-radius:0 0 8px 0;cursor:pointer;font-size:.66rem}
 #mm{position:fixed;bottom:6px;right:6px;z-index:90;border-radius:7px;border:1px solid var(--border);image-rendering:pixelated}
 #ctrl-hint{position:fixed;top:59px;left:6px;color:rgba(255,255,255,.2);font-size:.61rem;line-height:1.8;z-index:90;pointer-events:none}
 #map-badge{position:fixed;top:59px;left:50%;transform:translateX(-50%);background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:.2rem .85rem;font-size:.7rem;color:var(--gold);z-index:90;transition:opacity 1.2s}
 #map-badge.fade{opacity:0}
 #joy-wrap{display:none;position:fixed;bottom:65px;left:14px;z-index:90}
 @media(max-width:768px){#joy-wrap{display:block}}
-#joy-base{width:80px;height:80px;border-radius:50%;background:rgba(93,222,58,.06);border:1.5px solid rgba(93,222,58,.22);position:relative}
-#joy-knob{width:34px;height:34px;border-radius:50%;background:rgba(93,222,58,.22);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+#joy-base{width:80px;height:80px;border-radius:50%;background:rgba(33,150,243,.06);border:1.5px solid rgba(33,150,243,.22);position:relative}
+#joy-knob{width:34px;height:34px;border-radius:50%;background:rgba(33,150,243,.22);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
 canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
-#gc{position:absolute;top:0;left:0;width:100%;height:100%;display:block;}
+/* FULLSCREEN game canvas */
+#s-game{align-items:flex-start;justify-content:flex-start;padding:0}
+#game-wrap{position:relative;width:100vw;height:100vh;overflow:hidden}
+#gc{position:absolute;top:0;left:0;width:100%;height:100%;display:block}
 </style>
 </head>
 <body>
@@ -203,48 +209,49 @@ canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
 <div id="s-lobby" class="screen">
   <div class="lb-wrap">
     <div class="lb-left">
-      <div class="logo">⚔️ CS Quest</div>
-      <div class="logo-sub">วิทยาการคำนวณ ม.1 — Pixel RPG Multiplayer</div>
+      <div class="logo">🤖 CS Quest</div>
+      <div class="logo-sub">วิทยาการคำนวณ ม.1 — AI Agent Pixel RPG</div>
       <div class="panel">
         <label class="fl">ชื่อผู้เล่น</label>
         <input id="inp-name" class="mb" type="text" maxlength="16" placeholder="กรอกชื่อ..."/>
         <label class="fl">เลือกตัวละคร</label>
         <div class="av-preview"><canvas id="av-preview-c" width="24" height="36"></canvas></div>
         <div class="av-row" id="av-row"></div>
-        <label class="fl">เลือกด่านการเรียนรู้</label>
+        <label class="fl">เลือกหน่วยการเรียนรู้</label>
         <div class="lv-grid" id="lv-grid"></div>
         <label class="fl" style="margin-bottom:.2rem">รหัสห้อง</label>
         <input id="inp-room" class="mb" type="text" maxlength="12" placeholder="เช่น m1-101"/>
-        <button class="btn btn-green mb" id="btn-join">เข้าห้องรอ 🚪</button>
+        <button class="btn btn-green mb" id="btn-join">เข้าห้อง 🚪</button>
         <div class="conn-row"><span id="cdot"></span><span id="ctxt">กำลังเชื่อมต่อ...</span></div>
-        <div style="text-align:center"><a class="admin-link" href="/admin.html">⚙️ จัดการคำถาม</a></div>
+        <div style="text-align:center"><a class="admin-link" href="/admin.html">⚙️ จัดการคำถาม (ครู)</a></div>
       </div>
     </div>
     <div class="lb-right">
-      <h3>🏠 ห้องรอ</h3>
+      <h3>🏠 ห้องรอ (Lobby)</h3>
       <div id="lobby-players"><div style="color:var(--muted);font-size:.76rem;text-align:center;padding:.75rem">เข้าห้องก่อนเพื่อดูผู้เล่น</div></div>
-      <div class="lobby-info" id="lobby-info">กรอกชื่อและกด "เข้าห้องรอ"</div>
+      <div class="lobby-info" id="lobby-info">กรอกชื่อและกด "เข้าห้อง"</div>
       <div style="margin-top:.65rem;display:flex;flex-direction:column;gap:.32rem">
         <button class="btn btn-green" id="btn-ready" style="display:none">✅ พร้อมแล้ว!</button>
-        <button class="btn btn-outline" id="btn-start-now" style="display:none">▶ เริ่มเลย (ครู)</button>
+        <button class="btn btn-outline" id="btn-lift-gate" style="display:none">🚧 ยกไม้กั้น (ครู)</button>
+        <button class="btn btn-outline" id="btn-start-now" style="display:none">▶ เริ่มเกม (ครู)</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- WAVE SELECT (สำหรับ Python mode) -->
+<!-- WAVE SELECT -->
 <div id="s-wave-select" class="screen off">
   <div class="ws-wrap">
     <div class="ws-title">👨‍💻 การเขียนโปรแกรมเบื้องต้น (Python)</div>
-    <div class="ws-sub">เลือก Wave ที่ต้องการเล่น · ต้องผ่าน Wave ก่อนหน้าถึงจะปลดล็อค Wave ถัดไป</div>
+    <div class="ws-sub">เลือก Wave ที่ต้องการเล่น · ต้องผ่าน Wave ก่อนหน้าถึงจะปลดล็อค</div>
     <div class="ws-grid" id="ws-grid"></div>
     <div class="ws-back"><button class="btn-back" id="btn-ws-back">← กลับ</button></div>
   </div>
 </div>
 
-<!-- GAME -->
-<div id="s-game" class="screen off" style="align-items:flex-start;justify-content:flex-start;padding:0;z-index:10">
-  <div style="position:relative;width:100vw;height:100vh;overflow:hidden">
+<!-- GAME (fullscreen) -->
+<div id="s-game" class="screen off">
+  <div id="game-wrap">
     <canvas id="gc"></canvas>
     <div id="hud">
       <div id="hud-av"><canvas width="24" height="36" id="hud-av-c"></canvas></div>
@@ -257,6 +264,8 @@ canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
       <div class="hs"></div><span id="hud-ms">—ms</span>
     </div>
     <div id="wbar-wrap"><div id="wbar" style="width:0%"></div></div>
+    <!-- Lobby gate banner -->
+    <div id="lobby-gate-banner">🚧 รอเพื่อนมาให้ครบ — ครูจะยกไม้กั้นให้</div>
     <div id="map-badge"></div>
     <div id="lb-hud"><h4>🏆 อันดับ</h4><ul id="lb-list"></ul></div>
     <div id="ctrl-hint">WASD/ลูกศร=เดิน<br>Space/E=คุย NPC</div>
@@ -284,7 +293,6 @@ canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
         <button class="wc-btn wc-btn-end" id="wc-end">🏆 จบ &amp; ดูผล</button>
       </div>
     </div>
-    <!-- WAVE WAITING: รอเพื่อน -->
     <div id="wave-waiting">
       <div class="ww-icon">⏳</div>
       <div class="ww-title">รอเพื่อนให้ครบ...</div>
@@ -322,14 +330,16 @@ const WS_URL=(()=>{
 
 const TILE=32,TW=28,TH=21;
 const CW=TW*TILE,CH=TH*TILE;
-const AVATARS=['🧑','👧','🧒','👮','🧙','👩‍🎓'];
+// Avatar labels (แสดงใน lobby)
+const AVATARS=['💼','🎒','🎧','🥼','🔮','🎓'];
 const INTERACT=68,MOVE_MS=50,QS_PER_WAVE=5;
 
+// ── Office/School Map Themes ──
 const MAP_THEMES={
-  school:{name:'🏫 โรงเรียน',npcIdx:0},
-  forest:{name:'🌲 ป่า',npcIdx:0},
-  town:  {name:'🏘️ ชุมชน',npcIdx:0},
-  stadium:{name:'🏟️ สนามกีฬา',npcIdx:0},
+  school:{name:'🏢 ออฟฟิศ A',npcIdx:0},
+  forest:{name:'🖥️ Server Room',npcIdx:0},
+  town:  {name:'📊 ห้องประชุม',npcIdx:0},
+  stadium:{name:'☕ Cafeteria',npcIdx:0},
 };
 const THEME_KEYS=['school','forest','town','stadium'];
 
@@ -347,14 +357,19 @@ let me={id:null,name:'',avatar:0,x:CW/2,y:CH/2,score:0,wave:1,direction:'down',m
 let rafId=null,lastT=0;
 
 // Python wave-select state
-let selPyWave=1;          // wave ที่เลือกจาก wave-select screen
-let pyWavesCleared=[];    // รายการ wave ที่ผ่านแล้ว (เก็บใน localStorage)
-let isWaveSelectMode=false; // กำลังเล่นโหมด wave-select
+let selPyWave=1;
+let pyWavesCleared=[];
+let isWaveSelectMode=false;
 
 // Wave waiting state
 let waveWaiting=false;
 
-// ── โหลด progress Python จาก localStorage ──
+// ── LOBBY GATE STATE ──
+let lobbyGateOpen=false;    // ไม้กั้นยกขึ้นหรือเปล่า
+let inLobbyPhase=true;      // ยังอยู่ช่วงรอ lobby gate หรือเปล่า
+let lobbyBoundary=null;     // {x,y,w,h} ขอบเขต lobby zone
+
+// ──────────────────────────────────────────
 function loadPyProgress(){
   try{ pyWavesCleared=JSON.parse(localStorage.getItem('pyWavesCleared')||'[]'); }catch{ pyWavesCleared=[]; }
 }
@@ -363,7 +378,7 @@ function savePyProgress(waveId){
   try{ localStorage.setItem('pyWavesCleared',JSON.stringify(pyWavesCleared)); }catch{}
 }
 
-// ══════ LOBBY ══════
+// ══════ LOBBY UI ══════
 function buildLobby(){
   loadPyProgress();
   updateAvPreview(0);
@@ -376,7 +391,7 @@ function buildLobby(){
   const lg=document.getElementById('lv-grid'); lg.innerHTML='';
   Object.entries(QUESTIONS).forEach(([id,lv],idx)=>{
     const isWM=lv.mode==='wave-select';
-    const qCount=isWM?(lv.waves||[]).reduce((s,w)=>s+w.questions.length,0):lv.questions.length;
+    const qCount=isWM?(lv.waves||[]).reduce((s,w)=>s+w.questions.length,0):(lv.questions||[]).length;
     const d=document.createElement('div');
     d.className='lv-card'+(idx===0?' on':'')+(isWM?' wave-mode':'');
     d.style.cssText=`background:linear-gradient(135deg,${lv.color}18,${lv.color}28);border-color:${lv.color}44`;
@@ -387,6 +402,7 @@ function buildLobby(){
   document.getElementById('btn-join').onclick=joinRoom;
   document.getElementById('btn-ready').onclick=sendReady;
   document.getElementById('btn-start-now').onclick=()=>wsSend('START_NOW',{});
+  document.getElementById('btn-lift-gate').onclick=()=>wsSend('LIFT_GATE',{});
   document.getElementById('inp-name').addEventListener('keydown',e=>{if(e.key==='Enter')joinRoom();});
 }
 
@@ -397,7 +413,7 @@ function updateAvPreview(av){
   ctx.drawImage(SPR.getPlayer(av,'down',0,false),0,0);
 }
 
-// ══════ WAVE SELECT SCREEN ══════
+// ══════ WAVE SELECT ══════
 function showWaveSelect(){
   loadPyProgress();
   const lv=QUESTIONS[selLv];
@@ -462,12 +478,21 @@ function handleMsg(msg){
   else if(t==='PLAYER_JOINED'){if(p.id!==selfId)players[p.id]=p; updatePCount();}
   else if(t==='PLAYER_LEFT'){delete players[p.id]; addChat(`${p.name} ออกจากเกม`,'sys'); updatePCount();}
   else if(t==='GAME_START'){
-    // ถ้าเป็น wave-select mode → ไปหน้าเลือก wave ก่อน
     if(QUESTIONS[selLv].mode==='wave-select'){
       showWaveSelect();
     }else{
       startGame(p.wave||1);
     }
+  }
+  // ── เข้าแผนที่ทันที (lobby gate mode) ──
+  else if(t==='ENTER_MAP'){
+    // ครูกดปุ่ม → นักเรียนทุกคนเข้าแผนที่ในโหมด lobby gate
+    enterMapLobbyPhase();
+  }
+  // ── ครูยกไม้กั้น ──
+  else if(t==='GATE_OPEN'){
+    openLobbyGate();
+    addChat('🚧 ไม้กั้นเปิดแล้ว! เดินหา NPC ได้เลย','sys');
   }
   else if(t==='PLAYER_MOVED'){
     if(p.id!==selfId&&players[p.id]){
@@ -479,113 +504,69 @@ function handleMsg(msg){
   else if(t==='CHAT_MSG'){addChat(p.text,'user',p.name,p.id===selfId); showBubble(p.id,p.text);}
   else if(t==='SHOW_RESULTS'){doShowResults(p.leaderboard);}
   else if(t==='PONG'){pingMs=Date.now()-pingT; document.getElementById('hud-ms').textContent=pingMs+'ms';}
-
-  // ─ WAVE_WAITING: อัพเดตหน้ารอ ─
-  else if(t==='WAVE_WAITING'){
-    updateWaveWaiting(p.done, p.total, p.leaderboard);
-  }
-  // ─ WAVE_RESULTS: ทุกคน done แล้ว แสดงผล ─
+  else if(t==='WAVE_WAITING'){updateWaveWaiting(p.done, p.total, p.leaderboard);}
   else if(t==='WAVE_RESULTS'){
     hideWaveWaiting();
-    // แสดง wave clear popup พร้อมปุ่ม wave ถัดไป
     showWaveClearFromServer(p.wave, p.nextWave, p.leaderboard);
   }
 }
 
-// ── Wave Waiting UI ──
-function showWaveWaiting(){
-  waveWaiting=true;
-  document.getElementById('wave-waiting').classList.add('show');
-}
-function hideWaveWaiting(){
-  waveWaiting=false;
-  document.getElementById('wave-waiting').classList.remove('show');
-}
-function updateWaveWaiting(done, total, lb){
-  showWaveWaiting();
-  document.getElementById('ww-prog').textContent=`${done} / ${total} คน เสร็จแล้ว`;
-  const pct=total>0?(done/total)*100:0;
-  document.getElementById('ww-bar').style.width=pct+'%';
-  // แสดง leaderboard ขณะรอ
-  const ul=document.getElementById('ww-lb'); ul.innerHTML='';
-  (lb||[]).slice(0,6).forEach((p,i)=>{
-    const li=document.createElement('li');
-    const isSelf=p.id===selfId;
-    li.innerHTML=`<span style="color:${i===0?'var(--gold)':i===1?'#c0c0c0':i===2?'#cd7f32':'#556'};width:16px;text-align:center">${i+1}</span>
-      <span style="flex:1;${isSelf?'color:var(--green);font-weight:700':''}">${p.name}${isSelf?' 👈':''}</span>
-      <span style="color:var(--gold);font-weight:700">${p.score}</span>`;
-    ul.appendChild(li);
-  });
-}
-function showWaveClearFromServer(wave, nextWave, lb){
-  updateLB(lb);
-  const n=Math.min(wavePool.length,npcDefs.length);
-  document.getElementById('wc-icon').textContent=waveCorrect>=n?'🏆':'🎉';
-  document.getElementById('wc-title').textContent=`Wave ${wave} สำเร็จ! ทุกคนเสร็จแล้ว`;
-  document.getElementById('wc-sub').textContent=`${MAP_THEMES[mapTheme].name} · ถูก ${waveCorrect}/${n} ข้อ`;
-  document.getElementById('wc-score').textContent=`⭐ ${myScore} คะแนน`;
-
+// ═══════ LOBBY GATE SYSTEM ═══════
+function enterMapLobbyPhase(){
+  // เข้าแผนที่แต่อยู่ในโซน lobby (ก่อนไม้กั้นเปิด)
+  inLobbyPhase=true;
+  lobbyGateOpen=false;
+  if(!me.id)me.id=selfId||('local-'+Date.now());
+  resizeCanvas();
   const lv=QUESTIONS[selLv];
-  const isLastWave=lv.mode==='wave-select'
-    ? selPyWave>=(lv.waves||[]).length
-    : false;
+  isWaveSelectMode=(lv.mode==='wave-select');
 
-  const btns=document.getElementById('wc-btns');
-  btns.innerHTML='';
-  if(!isLastWave){
-    const btnNext=document.createElement('button');
-    btnNext.className='wc-btn'; btnNext.textContent='Wave ต่อไป →';
-    btnNext.onclick=()=>{
-      document.getElementById('wave-clear').classList.remove('show');
-      if(lv.mode==='wave-select'){
-        savePyProgress(selPyWave);
-        // ไปหน้า wave select อัพเดต หรือเล่น wave ถัดไปตรงๆ
-        selPyWave=nextWave;
-        document.getElementById('s-game').classList.add('off');
-        showWaveSelect();
-      }else{
-        initWave(nextWave);
-      }
-    };
-    btns.appendChild(btnNext);
-  }
-  const btnEnd=document.createElement('button');
-  btnEnd.className='wc-btn wc-btn-end'; btnEnd.textContent='🏆 จบ & ดูผล';
-  btnEnd.onclick=()=>{
-    document.getElementById('wave-clear').classList.remove('show');
-    if(lv.mode==='wave-select') savePyProgress(selPyWave);
-    wsSend('GAME_END',{});
-    doShowResults(buildLocalLB());
-  };
-  btns.appendChild(btnEnd);
+  // init wave แต่ยังไม่นับ NPC interaction
+  initWave(1);
 
-  setTimeout(()=>document.getElementById('wave-clear').classList.add('show'),200);
+  document.getElementById('hud-name').textContent=me.name;
+  document.getElementById('hud-lv').textContent=lv.npcEmoji+' '+lv.name.split(' ')[0];
+  document.getElementById('hud-sc').textContent='0';
+  document.getElementById('s-lobby').classList.add('off');
+  document.getElementById('s-game').classList.remove('off');
+
+  // แสดง banner รอ
+  document.getElementById('lobby-gate-banner').classList.add('show');
+
+  addChat('🏢 เข้าแผนที่แล้ว! รอครูยกไม้กั้น...','sys');
+  if(rafId)cancelAnimationFrame(rafId);
+  lastT=0; rafId=requestAnimationFrame(t=>{lastT=t;loop(t);});
+
+  // วาง spawn ใน lobby zone (ครึ่งล่าง)
+  const cx=TW>>1, cy=TH>>1;
+  me.x=(cx+1)*TILE+16+(Math.random()-0.5)*80;
+  me.y=(cy+4)*TILE+16;
 }
 
-function updateLobbyPanel(snap){
-  const con=document.getElementById('lobby-players'); con.innerHTML='';
-  const all=snap.players||[];
-  if(!all.length){con.innerHTML='<div style="color:var(--muted);font-size:.76rem;text-align:center;padding:.75rem">ยังไม่มีผู้เล่น...</div>';return;}
-  all.forEach((p,i)=>{
-    const div=document.createElement('div'); div.className='lp-row';
-    const isSelf=p.id===selfId;
-    const avC=document.createElement('canvas'); avC.width=24; avC.height=36;
-    const avCtx=avC.getContext('2d'); avCtx.drawImage(SPR.getPlayer(p.avatar||0,'down',0,false),0,0);
-    const avWrap=document.createElement('div'); avWrap.className='lp-av-c'; avWrap.appendChild(avC);
-    div.appendChild(avWrap);
-    div.innerHTML+=`<span class="lp-name" style="${isSelf?'color:var(--green)':''}">${p.name}${i===0?' 👑':''}</span><span class="${p.ready?'ready-yes':'ready-no'}">${p.ready?'✅ พร้อม':'⏳ รอ...'}</span>`;
-    con.appendChild(div);
-  });
-  const rdy=all.filter(p=>p.ready).length;
-  document.getElementById('lobby-info').textContent=`ผู้เล่น ${all.length} คน · พร้อม ${rdy}/${all.length}`;
-  document.getElementById('btn-ready').style.display='block';
-  if(isHost||all.length===1)document.getElementById('btn-start-now').style.display='block';
+function openLobbyGate(){
+  lobbyGateOpen=true;
+  inLobbyPhase=false;
+  document.getElementById('lobby-gate-banner').classList.remove('show');
+  // reset answered / start proper game
+  answeredNPCs.clear(); waveAnswered=0; waveCorrect=0;
+  addChat('🎮 เกมเริ่มแล้ว!','sys');
+}
+
+// ── Gate boundary check ──
+// Lobby zone = ครึ่งล่างของแผนที่ (y > cy*TILE+GATE_Y)
+// ไม้กั้นอยู่ที่แนว y ≈ cy*TILE (กลางแผนที่)
+function isBlockedByGate(nx, ny){
+  if(!inLobbyPhase||lobbyGateOpen) return false;
+  const cy=TH>>1;
+  const gateY=cy*TILE; // y ของไม้กั้น
+  return ny < gateY+TILE; // ถ้าจะขึ้นเหนือ gate line
 }
 
 // ══════ MAP GENERATION ══════
 function seededRnd(s){let x=s|0;return()=>{x=(x*1664525+1013904223)&0x7fffffff;return x/0x7fffffff;};}
 
 function generateMap(lvl,wave){
+  // แผนที่เปลี่ยน theme ตาม wave
   mapTheme=THEME_KEYS[(wave-1)%4];
   const rnd=seededRnd(lvl*999+wave*137);
   mapTiles=[];
@@ -593,6 +574,7 @@ function generateMap(lvl,wave){
   for(let x=0;x<TW;x++){mapTiles[0][x]=3;mapTiles[TH-1][x]=3;}
   for(let y=0;y<TH;y++){mapTiles[y][0]=3;mapTiles[y][TW-1]=3;}
   const cx=TW>>1,cy=TH>>1;
+  // main corridors (office style)
   for(let x=1;x<TW-1;x++){mapTiles[cy][x]=1;mapTiles[cy+1][x]=1;}
   for(let y=1;y<TH-1;y++){mapTiles[y][cx]=1;mapTiles[y][cx+1]=1;}
   for(let x=2;x<TW-2;x++){mapTiles[2][x]=1;mapTiles[TH-3][x]=1;}
@@ -600,21 +582,29 @@ function generateMap(lvl,wave){
   [[cx/2|0,2,cx/2|0,cy],[cx+cx/2|0,cy,cx+cx/2|0,TH-3],[2,cy/2|0,cx,cy/2|0],[cx,cy+cy/2|0,TW-3,cy+cy/2|0]].forEach(([x1,y1,x2,y2])=>{
     for(let y=Math.min(y1,y2);y<=Math.max(y1,y2);y++)for(let x=Math.min(x1,x2);x<=Math.max(x1,x2);x++)if(mapTiles[y]&&mapTiles[y][x]===0)mapTiles[y][x]=1;
   });
+  // water/energy pools
   for(let p=0;p<2;p++){
     const wx=3+Math.floor(rnd()*(TW-10)),wy=3+Math.floor(rnd()*(TH-10));
     for(let y=wy;y<wy+2&&y<TH-2;y++)for(let x=wx;x<wx+3&&x<TW-2;x++)if(mapTiles[y][x]===0)mapTiles[y][x]=2;
   }
-  const themeDecos={school:[19,19,16,12,10],forest:[10,10,10,11,11,12,13],town:[18,18,18,16,11,12],stadium:[20,20,16,12,13]};
-  const decoSet=themeDecos[mapTheme]||themeDecos.forest;
+  // office-themed decorations
+  const themeDecos={
+    school:[19,22,21,12,21,22],   // office building, computer desk, lamp
+    forest:[20,22,13,13,12,21],   // server rack, terminal
+    town:  [19,19,21,18,12,21],   // meeting room, sofa
+    stadium:[18,18,12,21,11,13],  // cafeteria
+  };
+  const decoSet=themeDecos[mapTheme]||themeDecos.school;
   for(let y=1;y<TH-1;y++)for(let x=1;x<TW-1;x++){
     if(mapTiles[y][x]!==0)continue;
     const r=rnd();
-    if(r<0.11)mapTiles[y][x]=decoSet[Math.floor(rnd()*decoSet.length)];
-    else if(r<0.15)mapTiles[y][x]=12;
-    else if(r<0.165)mapTiles[y][x]=16;
-    else if(r<0.175)mapTiles[y][x]=21;
+    if(r<0.10)mapTiles[y][x]=decoSet[Math.floor(rnd()*decoSet.length)];
+    else if(r<0.14)mapTiles[y][x]=12;  // flower/hub
+    else if(r<0.16)mapTiles[y][x]=16;  // fence/partition
+    else if(r<0.17)mapTiles[y][x]=21;  // lamp
   }
-  for(let y=1;y<TH-1;y++)for(let x=1;x<TW-1;x++)if(mapTiles[y][x]===1&&rnd()<0.022)mapTiles[y][x]=15;
+  for(let y=1;y<TH-1;y++)for(let x=1;x<TW-1;x++)if(mapTiles[y][x]===1&&rnd()<0.018)mapTiles[y][x]=15;
+  // NPC spots
   const spots=[
     {x:(cx+1)*TILE+16,y:3*TILE+16},{x:3*TILE+16,y:(cy+1)*TILE+16},
     {x:(TW-4)*TILE+16,y:(cy+1)*TILE+16},{x:(cx+1)*TILE+16,y:(TH-4)*TILE+16},
@@ -627,7 +617,6 @@ function generateMap(lvl,wave){
     const tx=Math.round(spots[i].x/TILE),ty=Math.round(spots[i].y/TILE);
     for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){const nx=tx+dx,ny=ty+dy;if(nx>0&&nx<TW-1&&ny>0&&ny<TH-1)mapTiles[ny][nx]=1;}
     if(tx+2<TW-1)mapTiles[ty][tx+2]=14;
-    // สำหรับ wave-select mode ใช้ชื่อ/emoji จาก wave นั้น
     let npcName=lv.npcName,npcEmoji=lv.npcEmoji,npcColor=lv.color;
     if(lv.mode==='wave-select'&&lv.waves){
       const wvData=lv.waves.find(w=>w.id===selPyWave);
@@ -635,13 +624,24 @@ function generateMap(lvl,wave){
     }
     npcDefs.push({id:i,x:spots[i].x,y:spots[i].y,name:npcName,emoji:npcEmoji,qIdx:i,color:npcColor,lvNum:selLv});
   }
-  me.x=(cx+1)*TILE+16; me.y=(cy+1)*TILE+16;
+  // ── วาง GATE BARRIERS ที่ cy*TILE ──
+  const gateTileY=cy;
+  for(let x=2;x<TW-2;x++){
+    if(mapTiles[gateTileY][x]===0||mapTiles[gateTileY][x]===1)
+      mapTiles[gateTileY][x]=100; // tile 100 = gate/barrier
+  }
+  // spawn ตรงกลางของ lobby zone (ต่ำกว่า gate)
+  me.x=(cx+1)*TILE+16+(Math.random()-0.5)*60;
+  me.y=(cy+3)*TILE+16;
 }
 
 function isSolid(wx,wy){
   const tx=wx/TILE|0,ty=wy/TILE|0;
   if(tx<0||ty<0||tx>=TW||ty>=TH)return true;
   const t=mapTiles[ty]?.[tx];
+  if(t===100){ // gate tile — solid ถ้า lobbyPhase, passable ถ้า gate เปิด
+    return inLobbyPhase && !lobbyGateOpen;
+  }
   return t===3||t===10||t===11||t===13||t===16||t===18||t===19||t===20;
 }
 
@@ -653,19 +653,14 @@ function initWave(wave){
   SPR.clearCache();
   const lv=QUESTIONS[selLv];
 
-  // ──────────────────────────────────────────
-  // เลือก question pool ตาม mode
-  // ──────────────────────────────────────────
   let questionSrc=[];
   if(lv.mode==='wave-select'&&lv.waves){
-    // ใช้คำถามจาก wave ที่เลือก (selPyWave)
     const wvData=lv.waves.find(w=>w.id===selPyWave);
     questionSrc=wvData?[...wvData.questions]:[];
   }else{
     questionSrc=[...(lv.questions||[])];
   }
 
-  // ป้องกัน: ถ้าไม่มีคำถามเลยก็ไม่สร้าง NPC
   if(questionSrc.length===0){
     wavePool=[];
     generateMap(selLv,wave);
@@ -674,7 +669,7 @@ function initWave(wave){
     return;
   }
 
-  // สุ่มไม่ซ้ำ
+  // shuffle
   for(let i=questionSrc.length-1;i>0;i--){
     const j=Math.floor(Math.random()*(i+1));
     [questionSrc[i],questionSrc[j]]=[questionSrc[j],questionSrc[i]];
@@ -682,8 +677,11 @@ function initWave(wave){
   wavePool=questionSrc.slice(0,Math.min(QS_PER_WAVE,questionSrc.length));
 
   generateMap(selLv,wave);
+
+  // update HUD wave
   document.getElementById('hud-wave').textContent=`Wave ${wave}`;
   updateWBar();
+
   const badge=document.getElementById('map-badge');
   const waveLabel=lv.mode==='wave-select'&&lv.waves
     ? (lv.waves.find(w=>w.id===selPyWave)?.name||`Wave ${selPyWave}`)
@@ -707,8 +705,13 @@ function drawGroundTile(tx,ty,tile,px,py){
   if(tile===1){gctx.drawImage(SPR.pathTile(mapTheme,tx,ty),px,py);}
   else if(tile===2){gctx.drawImage(SPR.waterTile(animF,tx,ty),px,py);}
   else if(tile===3){gctx.drawImage(SPR.wallTile(mapTheme,tx,ty),px,py);}
+  else if(tile===100){
+    // gate tile — draw as floor + overlay
+    gctx.drawImage(SPR.pathTile(mapTheme,tx,ty),px,py);
+  }
   else{gctx.drawImage(SPR.groundTile(mapTheme,tx,ty),px,py);}
 }
+
 function drawDecoTile(tx,ty,tile,px,py){
   const T=TILE; let sp=null;
   if(tile===10)sp=SPR.tree((tx*3+ty)%3);
@@ -722,39 +725,63 @@ function drawDecoTile(tx,ty,tile,px,py){
   else if(tile===19)sp=SPR.schoolBuilding();
   else if(tile===20)sp=SPR.goalpost();
   else if(tile===21)sp=SPR.lamp();
+  else if(tile===22)sp=SPR.computerDesk(animF);
   if(sp)gctx.drawImage(sp,px+(T-sp.width)/2,py+T-sp.height,sp.width,sp.height);
 }
+
+// ── วาด gate barrier ──
+function drawGateRow(){
+  if(!inLobbyPhase&&lobbyGateOpen)return;
+  const cy=TH>>1;
+  for(let tx=2;tx<TW-2;tx++){
+    if(mapTiles[cy]?.[tx]!==100)continue;
+    const px=tx*TILE-camX|0, py=cy*TILE-camY|0;
+    // วาด barrier sprite
+    gctx.drawImage(SPR.barrier(),px,py-8);
+  }
+  // วาด gate ตรงกลาง (มีเอฟเฟกต์เปิด/ปิด)
+  const gx=(TW>>1)*TILE-camX|0, gy=cy*TILE-camY|0;
+  gctx.drawImage(SPR.gate(lobbyGateOpen,animF),gx-16,gy-24);
+}
+
 function renderNPC(npc){
+  // ถ้า gate ยังปิด — NPC ไม่แสดง ! (ไม่ให้คุย)
   const px=npc.x-camX|0,py=npc.y-camY|0;
   if(px<-60||py<-60||px>gc.width+60||py>gc.height+60)return;
   const done=answeredNPCs.has(npc.id);
-  const near=Math.hypot(me.x-npc.x,me.y-npc.y)<INTERACT*1.5;
+  const near=!inLobbyPhase&&Math.hypot(me.x-npc.x,me.y-npc.y)<INTERACT*1.5;
   const sp=SPR.getNPC(npc.lvNum,animF);
+  // NPC หรี่ถ้ายังอยู่ lobby phase
+  if(inLobbyPhase){gctx.globalAlpha=0.35;}
   gctx.drawImage(sp,px-sp.width/2,py-sp.height+TILE/2);
-  if(!done&&near){
+  gctx.globalAlpha=1.0;
+  if(!inLobbyPhase&&!done&&near){
     const b=Math.sin(animF*.12)*3|0;
     gctx.fillStyle='rgba(0,0,0,.65)'; gctx.fillRect(px-10,py-sp.height-10+b,20,18);
     gctx.font='bold 20px sans-serif'; gctx.textAlign='center';
     gctx.fillStyle='#ffd700'; gctx.fillText('!',px,py-sp.height+6+b);
-  }else if(done){
+  }else if(!inLobbyPhase&&done){
     gctx.font='16px sans-serif'; gctx.textAlign='center'; gctx.fillStyle='#4caf50';
     gctx.fillText('✓',px,py-sp.height+4);
   }
-  const nm=npc.emoji+' '+npc.name;
-  const tw=gctx.measureText(nm).width+8;
-  gctx.fillStyle='rgba(0,0,0,.75)'; gctx.fillRect(px-tw/2,py-sp.height-20,tw,14);
-  gctx.fillStyle='#ffd700'; gctx.font='10px Sarabun,sans-serif'; gctx.textAlign='center';
-  gctx.fillText(nm,px,py-sp.height-8);
+  if(!inLobbyPhase){
+    const nm=npc.emoji+' '+npc.name;
+    const tw=gctx.measureText(nm).width+8;
+    gctx.fillStyle='rgba(0,0,0,.75)'; gctx.fillRect(px-tw/2,py-sp.height-20,tw,14);
+    gctx.fillStyle='#ffd700'; gctx.font='10px Sarabun,sans-serif'; gctx.textAlign='center';
+    gctx.fillText(nm,px,py-sp.height-8);
+  }
 }
+
 function renderPlayer(p,isSelf){
   const px=p.x-camX|0,py=p.y-camY|0;
   if(px<-60||py<-60||px>gc.width+60||py>gc.height+60)return;
   const sp=SPR.getPlayer(p.avatar||0,p.direction||'down',animF,p.moving);
   gctx.drawImage(sp,px-sp.width/2,py-sp.height+TILE/2);
-  if(isSelf){gctx.strokeStyle='rgba(93,222,58,.7)';gctx.lineWidth=2;gctx.beginPath();gctx.arc(px,py,13,0,Math.PI*2);gctx.stroke();}
+  if(isSelf){gctx.strokeStyle='rgba(33,150,243,.7)';gctx.lineWidth=2;gctx.beginPath();gctx.arc(px,py,13,0,Math.PI*2);gctx.stroke();}
   const nm=p.name||'?'; const tw=gctx.measureText(nm).width+7;
   gctx.fillStyle='rgba(0,0,0,.75)'; gctx.fillRect(px-tw/2,py-sp.height-8,tw,13);
-  gctx.fillStyle=isSelf?'#5dde3a':'#fff'; gctx.font='10px Sarabun,sans-serif'; gctx.textAlign='center';
+  gctx.fillStyle=isSelf?'#2196F3':'#fff'; gctx.font='10px Sarabun,sans-serif'; gctx.textAlign='center';
   gctx.fillText(nm,px,py-sp.height+3);
   const bub=bubbles[p.id||'self'];
   if(bub&&bub.timer>0){
@@ -763,26 +790,34 @@ function renderPlayer(p,isSelf){
     gctx.fillStyle='#222'; gctx.fillText(bt,px,py-sp.height-12); bub.timer--;
   }
 }
+
 function renderMinimap(){
   mmx.fillStyle='rgba(0,0,0,.78)'; mmx.fillRect(0,0,112,80);
   const sw=112/TW,sh=80/TH;
   for(let y=0;y<TH;y++)for(let x=0;x<TW;x++){
     const t=mapTiles[y]?.[x];
-    mmx.fillStyle=t===3?'#2a2a38':t>=10?'#1a3a0a':t===2?'#1565c0':t===1||t===15?'#7cad42':'#2d5a1b';
+    mmx.fillStyle=t===3?'#1a2040':t===100?(inLobbyPhase?'#ffd700':'#1a2040'):t>=10?'#1c3a2a':t===2?'#1565c0':t===1||t===15?'#455a64':'#2d3a50';
     mmx.fillRect(x*sw,y*sh,sw,sh);
   }
-  npcDefs.forEach(n=>{mmx.fillStyle=answeredNPCs.has(n.id)?'#4caf50':'#ffd700';mmx.fillRect(n.x/TILE*sw-2,n.y/TILE*sh-2,4,4);});
-  Object.values(players).forEach(p=>{mmx.fillStyle='#81d4fa';mmx.fillRect(p.x/TILE*sw-1,p.y/TILE*sh-1,3,3);});
+  npcDefs.forEach(n=>{
+    mmx.fillStyle=answeredNPCs.has(n.id)?'#4caf50':inLobbyPhase?'rgba(255,215,0,.3)':'#ffd700';
+    mmx.fillRect(n.x/TILE*sw-2,n.y/TILE*sh-2,4,4);
+  });
+  Object.values(players).forEach(p=>{mmx.fillStyle='#2196f3';mmx.fillRect(p.x/TILE*sw-1,p.y/TILE*sh-1,3,3);});
   mmx.fillStyle='#5dde3a'; mmx.fillRect(me.x/TILE*sw-2,me.y/TILE*sh-2,5,5);
 }
+
 function resizeCanvas(){
   const W=window.innerWidth,H=window.innerHeight;
   if(gc.width!==W||gc.height!==H){gc.width=W;gc.height=H;}
 }
+
 function render(){
-  const W=gc.width||window.innerWidth,H=gc.height||window.innerHeight;
+  resizeCanvas();
+  const W=gc.width,H=gc.height;
   gctx.clearRect(0,0,W,H);
-  gctx.fillStyle='#1a2a1a'; gctx.fillRect(0,0,W,H);
+  // office floor bg
+  gctx.fillStyle='#0a0e1a'; gctx.fillRect(0,0,W,H);
   if(!mapTiles||!mapTiles.length)return;
   camX=Math.max(0,Math.min(me.x-W/2,CW-W));
   camY=Math.max(0,Math.min(me.y-H/2,CH-H));
@@ -792,18 +827,32 @@ function render(){
   for(let ty=ty0;ty<ty1;ty++)for(let tx=tx0;tx<tx1;tx++){
     const tile=mapTiles[ty]?.[tx]||0;
     const px=tx*T-camX|0,py=ty*T-camY|0;
-    if(tile<10)drawGroundTile(tx,ty,tile,px,py);
+    if(tile<10||tile===100)drawGroundTile(tx,ty,tile,px,py);
     else{gctx.drawImage(SPR.groundTile(mapTheme,tx,ty),px,py);}
   }
   const decos=[];
-  for(let ty=ty0;ty<ty1;ty++)for(let tx=tx0;tx<tx1;tx++)if((mapTiles[ty]?.[tx]||0)>=10)decos.push({tx,ty,t:mapTiles[ty][tx]});
+  for(let ty=ty0;ty<ty1;ty++)for(let tx=tx0;tx<tx1;tx++){
+    const t=mapTiles[ty]?.[tx]||0;
+    if(t>=10&&t!==100)decos.push({tx,ty,t});
+  }
   decos.sort((a,b)=>a.ty-b.ty);
   decos.forEach(d=>drawDecoTile(d.tx,d.ty,d.t,d.tx*T-camX|0,d.ty*T-camY|0));
+  // draw gate barriers
+  drawGateRow();
   npcDefs.forEach(n=>renderNPC(n));
   const allP=[...Object.values(players),{...me,isSelf:true}];
   allP.sort((a,b)=>a.y-b.y);
   allP.forEach(p=>renderPlayer(p,p.isSelf||(p.id===me.id)));
+  // lobby vignette ถ้ายังอยู่ gate phase
+  if(inLobbyPhase&&!lobbyGateOpen){
+    const cy=(TH>>1)*TILE-camY;
+    const grad=gctx.createLinearGradient(0,cy-TILE*2,0,cy+TILE);
+    grad.addColorStop(0,'rgba(0,0,0,0)');
+    grad.addColorStop(1,'rgba(0,10,30,.4)');
+    gctx.fillStyle=grad; gctx.fillRect(0,cy-TILE*2,W,TILE*3);
+  }
   renderMinimap();
+  // HUD avatar
   const hudAc=document.getElementById('hud-av-c');
   const hudAx=hudAc.getContext('2d'); hudAx.clearRect(0,0,24,36);
   hudAx.drawImage(SPR.getPlayer(selAv,me.direction||'down',animF,me.moving),0,0);
@@ -813,9 +862,12 @@ function render(){
 function loop(ts){
   if(!rafId&&rafId!==0)return;
   const dt=Math.min((ts-lastT)/1000,.05); lastT=ts; animF++;
+  // อัพเดต animF ใน sprites ด้วย (เพราะ NPC ใช้ global)
+  SPR && (SPR.animF=animF);
   try{update(dt); render();}catch(e){console.error('loop error:',e);}
   rafId=requestAnimationFrame(loop);
 }
+
 function update(dt){
   if(dialogOpen||waveWaiting)return;
   const spd=128; let vx=0,vy=0;
@@ -823,14 +875,18 @@ function update(dt){
   if(keys.ArrowUp||keys.KeyW)vy=-1; if(keys.ArrowDown||keys.KeyS)vy=1;
   if(vx&&vy){vx*=.707;vy*=.707;}
   const nx=me.x+vx*spd*dt,ny=me.y+vy*spd*dt,r=9;
+  // collision + gate check
   if(nx>r&&nx<CW-r&&!isSolid(nx-r,me.y)&&!isSolid(nx+r,me.y)&&!isSolid(nx-r,me.y+16)&&!isSolid(nx+r,me.y+16))me.x=nx;
   if(ny>r&&ny<CH-r&&!isSolid(me.x-r,ny)&&!isSolid(me.x+r,ny)&&!isSolid(me.x-r,ny+16)&&!isSolid(me.x+r,ny+16))me.y=ny;
   if(vx<0)me.direction='left'; else if(vx>0)me.direction='right'; else if(vy<0)me.direction='up'; else if(vy>0)me.direction='down';
   me.moving=vx!==0||vy!==0;
   if(Date.now()-lastSent>MOVE_MS){wsSend('MOVE',{x:me.x,y:me.y,direction:me.direction,moving:me.moving});lastSent=Date.now();}
-  for(const n of npcDefs){
-    if(answeredNPCs.has(n.id)||dialogOpen)continue;
-    if(Math.hypot(me.x-n.x,me.y-n.y)<INTERACT&&(keys.Space||keys.KeyE)){keys.Space=false;keys.KeyE=false;openDialog(n);break;}
+  // NPC interaction — เฉพาะตอนที่ gate เปิดแล้ว
+  if(!inLobbyPhase||lobbyGateOpen){
+    for(const n of npcDefs){
+      if(answeredNPCs.has(n.id)||dialogOpen)continue;
+      if(Math.hypot(me.x-n.x,me.y-n.y)<INTERACT&&(keys.Space||keys.KeyE)){keys.Space=false;keys.KeyE=false;openDialog(n);break;}
+    }
   }
   if(animF%300===0){pingT=Date.now();wsSend('PING',{});}
 }
@@ -838,13 +894,8 @@ function update(dt){
 // ══════ DIALOG / QUIZ ══════
 function openDialog(npc){
   dialogOpen=true;
-  // ── guard: ถ้า wavePool ว่างหรือ qIdx เกิน ไม่เปิด dialog ──
   const q=wavePool[npc.qIdx];
-  if(!q){
-    // NPC นี้ไม่มีคำถาม (pool ว่าง) ให้ปิด
-    dialogOpen=false;
-    return;
-  }
+  if(!q){dialogOpen=false;return;}
   document.getElementById('dlg-npc').innerHTML=`${npc.emoji} ${npc.name}`;
   document.getElementById('dlg-sub').textContent=`Wave ${waveNum} · คำถามที่ ${npc.qIdx+1}/${Math.min(wavePool.length,npcDefs.length)}`;
   document.getElementById('quiz-area').style.display='block';
@@ -861,6 +912,7 @@ function openDialog(npc){
   });
   document.getElementById('dialog').classList.add('show');
 }
+
 function selectAns(npc,q,idx,btn){
   document.querySelectorAll('.ob').forEach(b=>b.disabled=true);
   const ok=idx===q.ans;
@@ -883,16 +935,78 @@ function checkWaveClear(){
   if(waveAnswered<n)return;
   setTimeout(()=>{
     closeDialog();
-    // แจ้ง server ว่าเราเสร็จ wave นี้แล้ว → รอเพื่อน
     if(ws&&ws.readyState===1){
       wsSend('WAVE_DONE',{wave:waveNum});
-      // แสดงหน้า waiting ชั่วคราว (server จะตอบ WAVE_WAITING)
       showWaveWaiting();
     }else{
-      // Offline mode: แสดง wave-clear ทันที
       showWaveClearOffline();
     }
   },550);
+}
+
+// ══════ WAVE WAITING UI ══════
+function showWaveWaiting(){
+  waveWaiting=true;
+  document.getElementById('wave-waiting').classList.add('show');
+}
+function hideWaveWaiting(){
+  waveWaiting=false;
+  document.getElementById('wave-waiting').classList.remove('show');
+}
+function updateWaveWaiting(done, total, lb){
+  showWaveWaiting();
+  document.getElementById('ww-prog').textContent=`${done} / ${total} คน เสร็จแล้ว`;
+  const pct=total>0?(done/total)*100:0;
+  document.getElementById('ww-bar').style.width=pct+'%';
+  const ul=document.getElementById('ww-lb'); ul.innerHTML='';
+  (lb||[]).slice(0,6).forEach((p,i)=>{
+    const li=document.createElement('li');
+    const isSelf=p.id===selfId;
+    li.innerHTML=`<span style="color:${i===0?'var(--gold)':i===1?'#c0c0c0':i===2?'#cd7f32':'#556'};width:16px;text-align:center">${i+1}</span>
+      <span style="flex:1;${isSelf?'color:var(--blue);font-weight:700':''}">${p.name}${isSelf?' 👈':''}</span>
+      <span style="color:var(--gold);font-weight:700">${p.score}</span>`;
+    ul.appendChild(li);
+  });
+}
+
+function showWaveClearFromServer(wave, nextWave, lb){
+  updateLB(lb);
+  const n=Math.min(wavePool.length,npcDefs.length);
+  document.getElementById('wc-icon').textContent=waveCorrect>=n?'🏆':'🎉';
+  document.getElementById('wc-title').textContent=`Wave ${wave} สำเร็จ! ทุกคนเสร็จแล้ว`;
+  document.getElementById('wc-sub').textContent=`${MAP_THEMES[mapTheme].name} · ถูก ${waveCorrect}/${n} ข้อ`;
+  document.getElementById('wc-score').textContent=`⭐ ${myScore} คะแนน`;
+  const lv=QUESTIONS[selLv];
+  const isLastWave=lv.mode==='wave-select'?selPyWave>=(lv.waves||[]).length:false;
+  const btns=document.getElementById('wc-btns'); btns.innerHTML='';
+  if(!isLastWave){
+    const btnNext=document.createElement('button');
+    btnNext.className='wc-btn'; btnNext.textContent='Wave ต่อไป →';
+    btnNext.onclick=()=>{
+      document.getElementById('wave-clear').classList.remove('show');
+      if(lv.mode==='wave-select'){
+        savePyProgress(selPyWave);
+        selPyWave=nextWave;
+        document.getElementById('s-game').classList.add('off');
+        showWaveSelect();
+      }else{
+        // reset lobby gate for next wave
+        inLobbyPhase=true; lobbyGateOpen=false;
+        initWave(nextWave);
+      }
+    };
+    btns.appendChild(btnNext);
+  }
+  const btnEnd=document.createElement('button');
+  btnEnd.className='wc-btn wc-btn-end'; btnEnd.textContent='🏆 จบ & ดูผล';
+  btnEnd.onclick=()=>{
+    document.getElementById('wave-clear').classList.remove('show');
+    if(lv.mode==='wave-select') savePyProgress(selPyWave);
+    wsSend('GAME_END',{});
+    doShowResults(buildLocalLB());
+  };
+  btns.appendChild(btnEnd);
+  setTimeout(()=>document.getElementById('wave-clear').classList.add('show'),200);
 }
 
 function showWaveClearOffline(){
@@ -902,11 +1016,7 @@ function showWaveClearOffline(){
   document.getElementById('wc-title').textContent=`Wave ${waveNum} สำเร็จ!`;
   document.getElementById('wc-sub').textContent=`${MAP_THEMES[mapTheme].name} · ถูก ${waveCorrect}/${n} ข้อ`;
   document.getElementById('wc-score').textContent=`⭐ ${myScore} คะแนน`;
-
-  const isLastWave=lv.mode==='wave-select'
-    ? selPyWave>=(lv.waves||[]).length
-    : false;
-
+  const isLastWave=lv.mode==='wave-select'?selPyWave>=(lv.waves||[]).length:false;
   const btns=document.getElementById('wc-btns'); btns.innerHTML='';
   if(!isLastWave){
     const btnNext=document.createElement('button');
@@ -918,12 +1028,10 @@ function showWaveClearOffline(){
         savePyProgress(selPyWave);
         const nextId=selPyWave+1;
         const nextWave=lv.waves?.find(w=>w.id===nextId);
-        if(nextWave){
-          selPyWave=nextId;
-          document.getElementById('s-game').classList.add('off');
-          showWaveSelect();
-        }else initWave(waveNum+1);
+        if(nextWave){selPyWave=nextId;document.getElementById('s-game').classList.add('off');showWaveSelect();}
+        else initWave(waveNum+1);
       }else{
+        inLobbyPhase=true; lobbyGateOpen=false;
         initWave(waveNum+1);
       }
     };
@@ -971,10 +1079,33 @@ function goLobby(){
   document.getElementById('s-results').classList.add('off');
   document.getElementById('s-lobby').classList.remove('off');
   myScore=0; waveNum=1; players={}; answeredNPCs.clear(); waveWaiting=false;
+  inLobbyPhase=true; lobbyGateOpen=false;
   document.getElementById('hud-sc').textContent='0';
 }
 
 // ══════ UI HELPERS ══════
+function updateLobbyPanel(snap){
+  const con=document.getElementById('lobby-players'); con.innerHTML='';
+  const all=snap.players||[];
+  if(!all.length){con.innerHTML='<div style="color:var(--muted);font-size:.76rem;text-align:center;padding:.75rem">ยังไม่มีผู้เล่น...</div>';return;}
+  all.forEach((p,i)=>{
+    const div=document.createElement('div'); div.className='lp-row';
+    const isSelf=p.id===selfId;
+    const avC=document.createElement('canvas'); avC.width=24; avC.height=36;
+    const avCtx=avC.getContext('2d'); avCtx.drawImage(SPR.getPlayer(p.avatar||0,'down',0,false),0,0);
+    const avWrap=document.createElement('div'); avWrap.className='lp-av-c'; avWrap.appendChild(avC);
+    div.appendChild(avWrap);
+    div.innerHTML+=`<span class="lp-name" style="${isSelf?'color:var(--blue)':''}">${p.name}${i===0?' 👑':''}</span><span class="${p.ready?'ready-yes':'ready-no'}">${p.ready?'✅ พร้อม':'⏳ รอ...'}</span>`;
+    con.appendChild(div);
+  });
+  const rdy=all.filter(p=>p.ready).length;
+  document.getElementById('lobby-info').textContent=`ผู้เล่น ${all.length} คน · พร้อม ${rdy}/${all.length}`;
+  document.getElementById('btn-ready').style.display='block';
+  if(isHost||all.length===1){
+    document.getElementById('btn-start-now').style.display='block';
+    document.getElementById('btn-lift-gate').style.display='block';
+  }
+}
 function updateLB(lb){
   const list=document.getElementById('lb-list'); list.innerHTML='';
   (lb||[]).slice(0,8).forEach((p,i)=>{
@@ -1022,7 +1153,7 @@ document.addEventListener('touchmove',e=>{
 },{passive:false});
 document.addEventListener('touchend',()=>{jOn=false;document.getElementById('joy-knob').style.transform='translate(-50%,-50%)';['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].forEach(k=>keys[k]=false);});
 
-// ══════ START ══════
+// ══════ START / JOIN ══════
 function joinRoom(){
   const name=document.getElementById('inp-name').value.trim()||'นักเรียน';
   const room=document.getElementById('inp-room').value.trim()||'default';
@@ -1032,8 +1163,10 @@ function joinRoom(){
     wsSend('JOIN',{name,avatar:selAv,roomId:room});
     document.getElementById('btn-ready').style.display='block';
     document.getElementById('btn-start-now').style.display='block';
+    document.getElementById('btn-lift-gate').style.display='block';
     isHost=true;
   }else{
+    // offline mode: เข้าแผนที่ทันที แบบ lobby gate phase
     me.id=selfId;
     const lv=QUESTIONS[selLv];
     if(lv.mode==='wave-select'){
@@ -1045,11 +1178,12 @@ function joinRoom(){
 }
 
 function doStartGame(pyWaveId){
-  // เรียกจาก wave-select หรือ GAME_START
   if(!me.id)me.id=selfId||('local-'+Date.now());
   resizeCanvas();
   isWaveSelectMode=true;
   selPyWave=pyWaveId||selPyWave;
+  // เริ่มโดยมี lobby gate
+  inLobbyPhase=true; lobbyGateOpen=false;
   initWave(1);
   const lv=QUESTIONS[selLv];
   const wvData=lv.waves?.find(w=>w.id===selPyWave);
@@ -1058,7 +1192,8 @@ function doStartGame(pyWaveId){
   document.getElementById('hud-sc').textContent=myScore;
   document.getElementById('s-wave-select').classList.add('off');
   document.getElementById('s-game').classList.remove('off');
-  addChat(`🎮 Wave ${selPyWave}: ${wvData?wvData.name:'Python'}  เริ่ม!`,'sys');
+  document.getElementById('lobby-gate-banner').classList.add('show');
+  addChat(`🎮 Wave ${selPyWave}: ${wvData?wvData.name:'Python'} — รอครูเปิดประตู`,'sys');
   if(rafId)cancelAnimationFrame(rafId);
   lastT=0; rafId=requestAnimationFrame(t=>{lastT=t;loop(t);});
 }
@@ -1067,6 +1202,8 @@ function startGame(wave){
   if(!me.id)me.id=selfId||('local-'+Date.now());
   resizeCanvas();
   isWaveSelectMode=false;
+  // เริ่มโดยมี lobby gate
+  inLobbyPhase=true; lobbyGateOpen=false;
   initWave(wave||1);
   const lv=QUESTIONS[selLv];
   document.getElementById('hud-name').textContent=me.name;
@@ -1074,13 +1211,14 @@ function startGame(wave){
   document.getElementById('hud-sc').textContent='0';
   document.getElementById('s-lobby').classList.add('off');
   document.getElementById('s-game').classList.remove('off');
-  addChat(`🎮 Wave 1 เริ่ม! ธีม: ${MAP_THEMES[mapTheme].name}`,'sys');
+  document.getElementById('lobby-gate-banner').classList.add('show');
+  addChat(`🎮 เข้าแผนที่ ${MAP_THEMES[mapTheme].name} — รอครูเปิดประตู`,'sys');
   if(rafId)cancelAnimationFrame(rafId);
   lastT=0; rafId=requestAnimationFrame(t=>{lastT=t;loop(t);});
 }
 
 window.addEventListener('load',()=>{buildLobby();connectWS();});
-window.addEventListener('resize',()=>{if(!document.getElementById('s-game').classList.contains('off')){resizeCanvas();}});
+window.addEventListener('resize',resizeCanvas);
 </script>
 </body>
 </html>
