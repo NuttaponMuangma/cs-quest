@@ -3,8 +3,8 @@ services:
     name: cs-quest-game
     env: node
     region: singapore
-    buildCommand: cd server && npm install
-    startCommand: cd server && node server.js
+    buildCommand: cd cs-quest/server && npm install
+    startCommand: cd cs-quest/server && node server.js
     envVars:
       - key: PORT
         value: 3000
